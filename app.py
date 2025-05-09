@@ -46,6 +46,14 @@ def init_db():
             check_out TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id)
         )''')
+        # Create consent table for GDPR compliance
+        cursor.execute('''CREATE TABLE IF NOT EXISTS user_consents (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            consent_status TEXT,
+            consent_date TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )''')
         # Insert default admin if not exists
         cursor.execute('SELECT * FROM users WHERE username=?', ("admin",))
         if cursor.fetchone() is None:
@@ -376,6 +384,124 @@ def rectify_attendance():
         flash(f'Fehler bei der Aktualisierung der Anwesenheitsaufzeichnung: {str(e)}', 'error')
         return redirect(url_for('data_access'))
 
+@app.route('/data_access', methods=['GET'])
+def data_access():
+    """Handle data access requests (DSGVO/GDPR right to access)"""
+    return render_template('data_access.html', user_data=None)
+
+@app.route('/request_data_access', methods=['POST'])
+def request_data_access():
+    """Process data access request with authentication"""
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    if not username or not password:
+        flash('Benutzername und Passwort werden benötigt.', 'error')
+        return redirect(url_for('data_access'))
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Verify user credentials
+    cursor.execute('SELECT id, username, password FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user[2], password):
+        flash('Ungültiger Benutzername oder Passwort.', 'error')
+        return redirect(url_for('data_access'))
+    
+    user_id = user[0]
+    username = user[1]
+    
+    # Get user's attendance records
+    cursor.execute('''
+        SELECT id, check_in, check_out FROM attendance 
+        WHERE user_id = ? 
+        ORDER BY check_in DESC
+    ''', (user_id,))
+    
+    attendance_records = cursor.fetchall()
+    records = []
+    total_seconds = 0
+    
+    # Process attendance records
+    for rec in attendance_records:
+        record_id = rec[0]
+        check_in = rec[1]
+        check_out = rec[2]
+        
+        # Format date and time for display
+        check_in_date = None
+        check_in_time = None
+        check_out_time = None
+        duration = None
+        
+        if check_in:
+            dt_in = try_parse(check_in)
+            if dt_in:
+                check_in_date = dt_in.strftime('%d.%m.%Y')
+                check_in_time = dt_in.strftime('%H:%M:%S')
+        
+        if check_out:
+            dt_out = try_parse(check_out)
+            if dt_out and dt_in:
+                check_out_time = dt_out.strftime('%H:%M:%S')
+                
+                # Make both naive for calculation
+                if hasattr(dt_in, 'tzinfo') and dt_in.tzinfo is not None:
+                    dt_in = dt_in.replace(tzinfo=None)
+                if hasattr(dt_out, 'tzinfo') and dt_out.tzinfo is not None:
+                    dt_out = dt_out.replace(tzinfo=None)
+                
+                diff = (dt_out - dt_in).total_seconds()
+                if diff > 0:
+                    total_seconds += int(diff)
+                    hours = int(diff) // 3600
+                    minutes = (int(diff) % 3600) // 60
+                    seconds = int(diff) % 60
+                    duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        records.append({
+            'id': record_id,
+            'date': check_in_date or '(Kein Datum)',
+            'check_in': check_in_time or '(Kein Check-in)',
+            'check_out': check_out_time or '(Kein Check-out)',
+            'duration': duration or '(Nicht berechnet)'
+        })
+    
+    # Calculate total duration
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    total_duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    
+    # Get consent status
+    cursor.execute('SELECT consent_status, consent_date FROM user_consents WHERE user_id = ? ORDER BY consent_date DESC LIMIT 1', (user_id,))
+    consent = cursor.fetchone()
+    consent_status = consent[0] if consent else "Nicht angegeben"
+    consent_date = consent[1] if consent and len(consent) > 1 else None
+    
+    # Prepare user data object
+    user_data = {
+        'user_id': user_id,
+        'username': username,
+        'records': records,
+        'total_duration': total_duration,
+        'consent_status': consent_status,
+        'consent_date': consent_date
+    }
+    
+    # Store password in session for data export
+    password_placeholder = '*' * len(password)
+    session['temp_password'] = password
+    
+    return render_template('data_access.html', user_data=user_data, password_placeholder=password_placeholder)
+
+@app.route('/privacy_policy')
+def privacy_policy():
+    """Display the privacy policy"""
+    return render_template('privacy_policy.html')
+
 def get_username_by_id(user_id):
     """Helper function to get username by ID"""
     db = get_db()
@@ -558,6 +684,34 @@ def user_report(username):
     total_time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     records_with_durations = list(zip(records, durations))
     return render_template('user_report.html', username=username, records=records_with_durations, total_time=total_time_str, all_users=False)
+
+@app.route('/update_consent', methods=['POST'])
+def update_consent():
+    """Update user consent status (DSGVO/GDPR compliance)"""
+    if not session.get('admin_logged_in'):
+        return {'success': False, 'message': 'Not authorized'}, 403
+    
+    data = request.get_json()
+    user_id = data.get('user_id')
+    consent_status = data.get('consent_status')
+    
+    if not user_id or not consent_status:
+        return {'success': False, 'message': 'Missing required parameters'}
+    
+    db = get_db()
+    cursor = db.cursor()
+    now = get_local_time()
+    
+    try:
+        cursor.execute(
+            'INSERT INTO user_consents (user_id, consent_status, consent_date) VALUES (?, ?, ?)',
+            (user_id, consent_status, now)
+        )
+        db.commit()
+        return {'success': True, 'message': 'Einwilligungsstatus erfolgreich aktualisiert'}
+    except Exception as e:
+        db.rollback()
+        return {'success': False, 'message': f'Fehler bei der Aktualisierung: {str(e)}'}
 
 if __name__ == '__main__':
     init_db()
