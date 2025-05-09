@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Report - {{ username }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!--{% include 'menu.html' %} -->
+    <div class="container">
+        <h1>User Report</h1>
+        <h2 style="margin-bottom:1.5em;">{{ username }}</h2>
+        {% if records and records|length > 0 %}
+        <div style="overflow-x:auto;">
+        <div style="text-align:right;margin-bottom:1em;">
+            <button onclick="window.print()" style="padding:0.5em 1.5em;background:#1976d2;color:#fff;border:none;border-radius:6px;font-size:1em;cursor:pointer;margin-right:1em;">Print</button>
+            <button onclick="generatePDF()" style="padding:0.5em 1.5em;background:#388e3c;color:#fff;border:none;border-radius:6px;font-size:1em;cursor:pointer;">Download PDF</button>
+        </div>
+        <table class="attendance-table" id="report-table">
+            <thead>
+                <tr>
+                    {% if all_users %}<th>User</th>{% endif %}
+                    <th>Date</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rec, duration in records %}
+                <tr>
+                    {% if all_users %}<td>{{ rec[0] }}</td>{% endif %}
+                    {% if all_users %}
+                        <td>{% if rec[1] %}{{ rec[1][:10] }}{% elif rec[2] %}{{ rec[2][:10] }}{% else %}-{% endif %}</td>
+                        <td>{% if rec[1] %}{{ rec[1][11:19] }}{% else %}-{% endif %}</td>
+                        <td>{% if rec[2] %}{{ rec[2][11:19] }}{% else %}-{% endif %}</td>
+                    {% else %}
+                        <td>{% if rec[0] %}{{ rec[0][:10] }}{% elif rec[1] %}{{ rec[1][:10] }}{% else %}-{% endif %}</td>
+                        <td>{% if rec[0] %}{{ rec[0][11:19] }}{% else %}-{% endif %}</td>
+                        <td>{% if rec[1] %}{{ rec[1][11:19] }}{% else %}-{% endif %}</td>
+                    {% endif %}
+                    <td>{{ duration }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div style="margin-top:1.5em;font-weight:bold;font-size:1.1em;" id="total-time">
+            Total time: <span style="color:#1976d2;">{{ total_time }}</span>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script>
+        function getReportFileName() {
+            const username = "{{ username|replace(' ', '_')|lower }}";
+            const urlParams = new URLSearchParams(window.location.search);
+            let suffix = '';
+            if (urlParams.get('date')) {
+                suffix = urlParams.get('date');
+            } else if (urlParams.get('week')) {
+                suffix = urlParams.get('week');
+            } else if (urlParams.get('month')) {
+                suffix = urlParams.get('month');
+            } else {
+                const today = new Date();
+                suffix = today.toISOString().slice(0,10);
+            }
+            return `user_report_${username}_${suffix}.pdf`;
+        }
+        
+        function generatePDF() {
+            // Make sure libraries are loaded
+            if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+                alert('PDF libraries are still loading. Please try again in a moment.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt', 'a4');
+            
+            // Add title
+            doc.setFontSize(18);
+            doc.text("User Report - {{ username }}", 40, 30);
+            
+            // Capture the table
+            const reportElement = document.getElementById('report-table');
+            
+            html2canvas(reportElement).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const imgWidth = pageWidth - 80;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                
+                // Add the table image
+                doc.addImage(imgData, 'PNG', 40, 40, imgWidth, imgHeight);
+                
+                // Add total time at the bottom
+                const totalTimeY = 50 + imgHeight;
+                doc.setFontSize(12);
+                doc.text("Total time: {{ total_time }}", 40, totalTimeY);
+                
+                // Save with formatted filename
+                doc.save(getReportFileName());
+            });
+        }
+        
+        // Wait for document to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force a small delay to ensure libraries are available
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                console.log("User report ready for " + "{{ username }}" + 
+                    (urlParams.get('date') ? " on date " + urlParams.get('date') : "") +
+                    (urlParams.get('week') ? " for week " + urlParams.get('week') : "") +
+                    (urlParams.get('month') ? " for month " + urlParams.get('month') : ""));
+            }, 500);
+        });
+        </script>
+        {% else %}
+        <div style="color:#b71c1c; background:#ffeaea; border:1px solid #ffcdd2; padding:1em; border-radius:8px; margin-top:2em;">
+            No attendance records found for this user.
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

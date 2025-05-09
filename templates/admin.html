@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    <!--<div class="top-right">
+        <a href="/logout">Logout</a>
+    </div> -->
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <!--<form id="summary-form" method="get" action="/admin_summary" style="margin-bottom:2em;text-align:left;">
+            <fieldset style="border:1px solid #b0bec5;padding:1em 1.5em;border-radius:8px;">
+                <legend><b>Generate Summary</b></legend>
+                <label for="user_id">User:</label>
+                <select name="user_id" id="user_id">
+                    <option value="">All Users</option>
+                    {% for user in users %}
+                    <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endfor %}
+                </select>
+                <label for="date_from">From:</label>
+                <input type="date" name="date_from" id="date_from">
+                <label for="date_to">To:</label>
+                <input type="date" name="date_to" id="date_to">
+                <label for="week">Week:</label>
+                <input type="week" name="week" id="week">
+                <label for="month">Month:</label>
+                <input type="month" name="month" id="month">
+                <button type="submit">Generate</button>
+            </fieldset>
+        </form> -->
+        <div id="summary-result">
+            {% if summary %}
+                <h3>Summary</h3>
+                {{ summary|safe }}
+            {% endif %}
+        </div>
+        <h2>Attendance Records</h2>
+        <div style="overflow-x:auto;">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rec in records %}
+                <tr>
+                    <td>{{ rec[1] }}</td>
+                    <td>{% if rec[2] %}{{ rec[2][:10] }}{% elif rec[3] %}{{ rec[3][:10] }}{% else %}-{% endif %}</td>
+                    <td>{% if rec[2] %}{{ rec[2][11:19] }}{% else %}-{% endif %}</td>
+                    <td>{% if rec[3] %}{{ rec[3][11:19] }}{% else %}-{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+       <!-- <h2>User Management</h2>
+        <a href="/user_management" target="_blank" class="user-management-link">Open User Management in New Tab</a> -->
+        <h2 style="margin-top:2em;">Generate User Report</h2>
+        <form id="report-form" style="margin-bottom:2em; display: flex; flex-wrap: wrap; gap: 1.5em; align-items: flex-end; background: #f4f6f8; padding: 1.5em 1em; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div style="flex:1; min-width:180px;">
+                <label for="report-user-id">User</label>
+                <select id="report-user-id" name="user_id" style="width:100%;padding:0.5em;">
+                    <option value="" selected>All users</option>
+                    {% set seen = [] %}
+                    {% for rec in records %}
+                        {% if rec[1] not in seen %}
+                            <option value="{{ rec[1] }}">{{ rec[1] }}</option>
+                            {% set _ = seen.append(rec[1]) %}
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="flex:1; min-width:140px;">
+                <label for="report-date">Date</label>
+                <input type="date" id="report-date" name="date" style="width:100%;padding:0.5em;">
+            </div>
+            <div style="flex:1; min-width:140px;">
+                <label for="report-week">Week</label>
+                <input type="week" id="report-week" name="week" style="width:100%;padding:0.5em;">
+            </div>
+            <div style="flex:1; min-width:140px;">
+                <label for="report-month">Month</label>
+                <input type="month" id="report-month" name="month" style="width:100%;padding:0.5em;">
+            </div>
+            <div style="flex:1; min-width:120px;">
+                <button type="button" id="generate-report-btn" style="width:100%;padding:0.7em 0; background:#1976d2; color:#fff; border:none; border-radius:6px; font-size:1em; cursor:pointer;">Generate Report</button>
+            </div>
+        </form>
+        <script>
+        var userSelect = document.getElementById('report-user-id');
+        var dateInput = document.getElementById('report-date');
+        document.getElementById('generate-report-btn').onclick = function() {
+            var username = userSelect.value;
+            var date = dateInput.value;
+            var week = document.getElementById('report-week').value;
+            var month = document.getElementById('report-month').value;
+            var params = [];
+            if (date) params.push('date=' + encodeURIComponent(date));
+            if (week) params.push('week=' + encodeURIComponent(week));
+            if (month) params.push('month=' + encodeURIComponent(month));
+            var url = '/user_report/';
+            if (username) {
+                url += encodeURIComponent(username);
+            } else {
+                url += 'all';
+            }
+            if (params.length > 0) url += '?' + params.join('&');
+            window.open(url, '_blank', 'width=900,height=700');
+        };
+        </script>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

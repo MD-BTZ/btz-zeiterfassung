@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    <div class="container">
+        <h1>User Management</h1>
+        <h2>Add New User</h2>
+        {% if error %}
+        <div style="color: #b71c1c; background: #ffeaea; border: 1px solid #ffcdd2; padding: 0.7em 1em; border-radius: 6px; margin-bottom: 1em;">
+            {{ error }}
+        </div>
+        {% endif %}
+        <form id="add-user-form" action="/add_user" method="post" style="margin-bottom:2em;">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Add User</button>
+        </form>
+        <div id="add-user-feedback" style="display:none;margin-bottom:1em;"></div>
+        <div id="delete-user-feedback" style="display:none;margin-bottom:1em;"></div>
+        <h2>All Users</h2>
+        <table class="attendance-table" id="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-user-id="{{ user[0] }}">
+                    <td>{{ user[0] }}</td>
+                    <td>{{ user[1] }}</td>
+                    <td>
+                        <button class="delete-user-btn" data-user-id="{{ user[0] }}" style="background:#b71c1c;">Delete</button>
+                        <form action="/reset_password/{{ user[0] }}" method="post" style="display:inline;">
+                            <input type="password" name="new_password" placeholder="New password" required style="width:120px;">
+                            <button type="submit">Reset PW</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // AJAX delete user (already present)
+            document.querySelectorAll('.delete-user-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!confirm('Delete user?')) return;
+                    var userId = btn.getAttribute('data-user-id');
+                    var feedback = document.getElementById('delete-user-feedback');
+                    fetch(`/delete_user/${userId}`, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        feedback.style.display = 'block';
+                        feedback.textContent = data.message;
+                        feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                        feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                        feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                        feedback.style.padding = '0.7em 1em';
+                        feedback.style.borderRadius = '6px';
+                        if (data.success) {
+                            var row = btn.closest('tr');
+                            row.parentNode.removeChild(row);
+                        }
+                    })
+                    .catch(() => {
+                        feedback.style.display = 'block';
+                        feedback.textContent = 'Error deleting user.';
+                        feedback.style.color = '#b71c1c';
+                        feedback.style.background = '#ffeaea';
+                        feedback.style.border = '1px solid #ffcdd2';
+                    });
+                });
+            });
+            // AJAX add user
+            document.getElementById('add-user-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                var form = this;
+                var formData = new FormData(form);
+                var feedback = document.getElementById('add-user-feedback');
+                fetch('/add_user', {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    feedback.style.display = 'block';
+                    feedback.textContent = data.message;
+                    feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                    feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                    feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                    feedback.style.padding = '0.7em 1em';
+                    feedback.style.borderRadius = '6px';
+                    if (data.success) {
+                        var usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+                        var newRow = usersTable.insertRow();
+                        var userId = data.user_id;
+                        var username = data.username;
+                        newRow.setAttribute('data-user-id', userId);
+                        newRow.innerHTML = `<td>${userId}</td><td>${username}</td><td><button class='delete-user-btn' data-user-id='${userId}' style='background:#b71c1c;'>Delete</button><form action='/reset_password/${userId}' method='post' style='display:inline;'><input type='password' name='new_password' placeholder='New password' required style='width:120px;'><button type='submit'>Reset PW</button></form></td>`;
+                        form.reset();
+                        // Re-attach delete event to new button
+                        newRow.querySelector('.delete-user-btn').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (!confirm('Delete user?')) return;
+                            var userId = this.getAttribute('data-user-id');
+                            var feedback = document.getElementById('delete-user-feedback');
+                            fetch(`/delete_user/${userId}`, {
+                                method: 'POST',
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                feedback.style.display = 'block';
+                                feedback.textContent = data.message;
+                                feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                                feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                                feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                                feedback.style.padding = '0.7em 1em';
+                                feedback.style.borderRadius = '6px';
+                                if (data.success) {
+                                    var row = this.closest('tr');
+                                    row.parentNode.removeChild(row);
+                                }
+                            })
+                            .catch(() => {
+                                feedback.style.display = 'block';
+                                feedback.textContent = 'Error deleting user.';
+                                feedback.style.color = '#b71c1c';
+                                feedback.style.background = '#ffeaea';
+                                feedback.style.border = '1px solid #ffcdd2';
+                            });
+                        });
+                    }
+                })
+                .catch(() => {
+                    feedback.style.display = 'block';
+                    feedback.textContent = 'Error adding user.';
+                    feedback.style.color = '#b71c1c';
+                    feedback.style.background = '#ffeaea';
+                    feedback.style.border = '1px solid #ffcdd2';
+                });
+            });
+        });
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zeiterfassung - Check In/Out</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    <div class="container">
+        <h1>Zeiterfassungssystem</h1>
+        
+        <!-- Flash messages moved here, before the form -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Form starts after flash messages -->
+        <form action="" method="post" id="attendance-form">
+            <select name="user_id" required>
+                <option value="" disabled selected>Wähle Benutzer</option>
+                {% for user in users %}
+                    <option value="{{ user[0] }}">{{ user[1] }}</option>
+                {% endfor %}
+            </select>
+            <div style="display:flex; gap:1em; justify-content:center;">
+                <button type="submit" name="action" value="checkin">Check In</button>
+                <button type="submit" name="action" value="checkout">Check Out</button>
+            </div>
+        </form>
+    </div>
+    <script>
+    document.getElementById('attendance-form').onsubmit = function(e) {
+        var action = document.activeElement.value;
+        if (action === 'checkin') {
+            this.action = '/checkin';
+        } else if (action === 'checkout') {
+            this.action = '/checkout';
+        }
+    };
+    </script>
+</body>
+</html>

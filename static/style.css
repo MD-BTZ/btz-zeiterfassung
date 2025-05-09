@@ -1,0 +1,185 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: #1976d2;
+    padding: 1em 0;
+    margin-bottom: 2em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.menu-panel a {
+    color: #fff;
+    margin: 0 1.5em;
+    text-decoration: none;
+    font-weight: bold;
+}
+.menu-panel a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    background: #fff;
+    padding: 2em 3em;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    text-align: center;
+    min-width: 320px;
+    margin-top: 5em;
+}
+
+h1 {
+    color: #2d3a4b;
+    margin-bottom: 1.5em;
+}
+
+form {
+    margin-bottom: 1.5em;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 90%;
+    padding: 0.6em 0.8em;
+    margin: 0.5em 0 1em 0;
+    border: 1px solid #b0bec5;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border: 1.5px solid #1976d2;
+    outline: none;
+}
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 0.2em;
+    color: #2d3a4b;
+    font-weight: 500;
+}
+
+button {
+    padding: 0.7em 2em;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #1565c0;
+}
+
+a {
+    display: inline-block;
+    margin-top: 1.5em;
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: bold;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+.top-right {
+    position: absolute;
+    top: 2em;
+    right: 3em;
+}
+
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+    background: #fafbfc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.attendance-table th, .attendance-table td {
+    padding: 0.75em 1em;
+    text-align: left;
+}
+.attendance-table th {
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+}
+.attendance-table tr:nth-child(even) {
+    background: #f0f4f8;
+}
+.attendance-table tr:hover {
+    background: #e3eaf6;
+}
+.attendance-table td {
+    color: #2d3a4b;
+    font-size: 0.98em;
+}
+
+#attendance-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5em;
+}
+#attendance-form select {
+    width: 90%;
+    padding: 0.6em 0.8em;
+    border: 1px solid #b0bec5;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border 0.2s;
+    margin-bottom: 0;
+}
+#attendance-form select:focus {
+    border: 1.5px solid #1976d2;
+    outline: none;
+}
+#attendance-form div {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+    width: 100%;
+}
+#attendance-form button {
+    flex: 1 1 0;
+    min-width: 120px;
+}
+
+/* Flash Messages */
+.flash-message {
+    padding: 0.8em 1em;
+    margin-bottom: 1.5em;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.flash-message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.flash-message.error {
+    background-color: #ffeaea;
+    color: #b71c1c;
+    border: 1px solid #ffcdd2;
+}

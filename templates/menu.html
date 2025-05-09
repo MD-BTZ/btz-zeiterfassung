@@ -1,0 +1,14 @@
+<nav class="menu-panel" style="background:#1976d2;padding:1em 0;margin-bottom:2em;display:flex;justify-content:space-between;">
+    <div>
+        <a href="/" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Home</a>
+        <a href="/admin" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Admin</a>
+        <a href="/user_management" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">User Management</a>
+    </div>
+    <div style="margin-right:2em;">
+        {% if session.get('admin_logged_in') %}
+            <a href="/logout" style="color:#fff;text-decoration:none;font-weight:bold;">Logout</a>
+        {% else %}
+            <a href="/login" style="color:#fff;text-decoration:none;font-weight:bold;">Login</a>
+        {% endif %}
+    </div>
+</nav>
