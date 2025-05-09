@@ -23,12 +23,38 @@
         </form>
         <div id="add-user-feedback" style="display:none;margin-bottom:1em;"></div>
         <div id="delete-user-feedback" style="display:none;margin-bottom:1em;"></div>
+        
+        <!-- Consent Management Section -->
+        <h2>Consent Management</h2>
+        <div id="consent-feedback" style="display:none;margin-bottom:1em;"></div>
+        <form id="consent-form" style="background: #f4f6f8; padding: 1.5em; border-radius: 10px; margin-bottom: 2em;">
+            <p style="text-align: left; margin-bottom: 1em;">Manage user data processing consent:</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em;">
+                <select id="consent-user-id" name="user_id" style="flex: 2; min-width: 200px; padding: 0.5em;">
+                    <option value="" selected disabled>Select User</option>
+                    {% for user in users %}
+                    <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endfor %}
+                </select>
+                <select id="consent-status" name="consent_status" style="flex: 1; min-width: 150px; padding: 0.5em;">
+                    <option value="granted">Consent Granted</option>
+                    <option value="declined">Consent Declined</option>
+                </select>
+                <button type="submit" id="update-consent-btn" style="flex: 1; min-width: 150px; background: #388e3c;">Update Consent</button>
+            </div>
+            <div style="text-align: left; font-size: 0.9em; color: #546e7a;">
+                <p>Data processed includes attendance records and user information.</p>
+                <p>For more information, please see our <a href="/privacy_policy" style="color: #1976d2;">Privacy Policy</a>.</p>
+            </div>
+        </form>
+        
         <h2>All Users</h2>
         <table class="attendance-table" id="users-table">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Username</th>
+                    <th>Consent Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -37,6 +63,7 @@
                 <tr data-user-id="{{ user[0] }}">
                     <td>{{ user[0] }}</td>
                     <td>{{ user[1] }}</td>
+                    <td class="consent-status" data-user-id="{{ user[0] }}">{% if user|length > 2 %}{{ user[2] }}{% else %}Unknown{% endif %}</td>
                     <td>
                         <button class="delete-user-btn" data-user-id="{{ user[0] }}" style="background:#b71c1c;">Delete</button>
                         <form action="/reset_password/{{ user[0] }}" method="post" style="display:inline;">
@@ -152,6 +179,60 @@
                     feedback.style.color = '#b71c1c';
                     feedback.style.background = '#ffeaea';
                     feedback.style.border = '1px solid #ffcdd2';
+                });
+            });
+            // AJAX update consent
+            document.getElementById('consent-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const userId = document.getElementById('consent-user-id').value;
+                const consentStatus = document.getElementById('consent-status').value;
+                const feedback = document.getElementById('consent-feedback');
+                
+                if (!userId) {
+                    feedback.style.display = 'block';
+                    feedback.textContent = 'Please select a user';
+                    feedback.style.color = '#b71c1c';
+                    feedback.style.background = '#ffeaea';
+                    feedback.style.border = '1px solid #ffcdd2';
+                    feedback.style.padding = '0.7em 1em';
+                    feedback.style.borderRadius = '6px';
+                    return;
+                }
+                
+                fetch('/update_consent', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest' 
+                    },
+                    body: JSON.stringify({ user_id: userId, consent_status: consentStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    feedback.style.display = 'block';
+                    feedback.textContent = data.message;
+                    feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                    feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                    feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                    feedback.style.padding = '0.7em 1em';
+                    feedback.style.borderRadius = '6px';
+                    
+                    if (data.success) {
+                        // Update the consent status in the table
+                        const statusCell = document.querySelector(`.consent-status[data-user-id="${userId}"]`);
+                        if (statusCell) {
+                            statusCell.textContent = consentStatus === 'granted' ? 'Consent Granted' : 'Consent Declined';
+                        }
+                    }
+                })
+                .catch(() => {
+                    feedback.style.display = 'block';
+                    feedback.textContent = 'Fehler beim Aktualisieren der Einwilligung';
+                    feedback.style.color = '#b71c1c';
+                    feedback.style.background = '#ffeaea';
+                    feedback.style.border = '1px solid #ffcdd2';
+                    feedback.style.padding = '0.7em 1em';
+                    feedback.style.borderRadius = '6px';
                 });
             });
         });

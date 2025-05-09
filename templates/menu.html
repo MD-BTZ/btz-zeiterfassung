@@ -3,6 +3,8 @@
         <a href="/" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Home</a>
         <a href="/admin" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Admin</a>
         <a href="/user_management" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">User Management</a>
+        <a href="/data_access" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Data Access</a>
+        <a href="/privacy_policy" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Datenschutzerklärung</a>
     </div>
     <div style="margin-right:2em;">
         {% if session.get('admin_logged_in') %}
@@ -12,3 +14,5 @@
         {% endif %}
     </div>
 </nav>
+
+{% include 'cookie-consent.html' %}

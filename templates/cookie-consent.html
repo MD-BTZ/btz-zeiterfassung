@@ -1,0 +1,91 @@
+<!-- DSGVO-compliant cookie consent banner -->
+<div id="cookie-consent-banner" class="cookie-banner" style="display: none;">
+    <div class="cookie-content">
+        <h3>Cookie-Hinweis</h3>
+        <p>Diese Website verwendet nur technisch notwendige Cookies, um Ihnen die bestmögliche Funktionalität zu bieten. Wir speichern und verwenden:</p>
+        <ul>
+            <li>Session-Cookies für die Anmeldung und Sitzungsverwaltung</li>
+            <li>Keine Tracking- oder Marketing-Cookies</li>
+        </ul>
+        <p>Mit der Nutzung dieser Website erklären Sie sich mit der Verwendung dieser Cookies einverstanden. Weitere Informationen finden Sie in unserer <a href="/privacy_policy">Datenschutzerklärung</a>.</p>
+        
+        <div class="cookie-actions">
+            <button id="cookie-accept" class="btn-primary">Akzeptieren</button>
+            <button id="cookie-essential-only" class="btn-secondary">Nur notwendige Cookies</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 9999;
+        border-top: 1px solid #e0e0e0;
+        font-size: 14px;
+    }
+    
+    .cookie-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .cookie-content h3 {
+        margin-top: 0;
+        color: #333;
+    }
+    
+    .cookie-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    
+    .btn-primary {
+        background: #1976d2;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .btn-secondary {
+        background: #f5f5f5;
+        color: #333;
+        border: 1px solid #ddd;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if consent was already given
+        const cookieConsent = localStorage.getItem('cookie-consent');
+        
+        if (!cookieConsent) {
+            // Show cookie banner if no consent was given yet
+            document.getElementById('cookie-consent-banner').style.display = 'block';
+        }
+        
+        // Handle accept button
+        document.getElementById('cookie-accept').addEventListener('click', function() {
+            localStorage.setItem('cookie-consent', 'full');
+            document.getElementById('cookie-consent-banner').style.display = 'none';
+        });
+        
+        // Handle essential only button
+        document.getElementById('cookie-essential-only').addEventListener('click', function() {
+            localStorage.setItem('cookie-consent', 'essential');
+            document.getElementById('cookie-consent-banner').style.display = 'none';
+        });
+    });
+</script>

@@ -256,6 +256,134 @@ def reset_password(user_id):
     flash(f"Password for {username} has been reset successfully", "success")
     return redirect(url_for('user_management'))
 
+@app.route('/rectify_data', methods=['POST'])
+def rectify_user_data():
+    """Handle user data correction requests (DSGVO/GDPR right to rectification)"""
+    user_id = request.form.get('user_id')
+    username = request.form.get('username')
+    new_password = request.form.get('new_password')
+    current_password = request.form.get('current_password')
+    
+    if not user_id or not username or not current_password:
+        flash('Alle erforderlichen Felder müssen ausgefüllt werden.', 'error')
+        return redirect(url_for('data_access'))
+    
+    # Authenticate the user first
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT id, username, password FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user[2], current_password):
+        flash('Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihr aktuelles Passwort.', 'error')
+        return redirect(url_for('data_access'))
+    
+    try:
+        # Check if username exists (if it's changed)
+        if username != user[1]:
+            cursor.execute('SELECT id FROM users WHERE username = ? AND id != ?', (username, user_id))
+            if cursor.fetchone():
+                flash(f"Benutzername '{username}' wird bereits verwendet.", 'error')
+                return redirect(url_for('data_access'))
+            
+            # Update username
+            cursor.execute('UPDATE users SET username = ? WHERE id = ?', (username, user_id))
+        
+        # Update password if provided
+        if new_password:
+            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+            cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+        
+        db.commit()
+        flash('Ihre Daten wurden erfolgreich aktualisiert.', 'success')
+        
+        # Re-authenticate with new credentials
+        if 'admin_logged_in' not in session:
+            # Create a hidden form for automatic re-auth after password change
+            return f'''
+                <html>
+                <body onload="document.getElementById('re-auth-form').submit()">
+                    <form id="re-auth-form" method="post" action="/request_data_access">
+                        <input type="hidden" name="username" value="{username}">
+                        <input type="hidden" name="password" value="{new_password if new_password else current_password}">
+                    </form>
+                    <p>Authentifiziere erneut mit neuen Anmeldedaten...</p>
+                </body>
+                </html>
+            '''
+        
+        return redirect(url_for('data_access'))
+    
+    except Exception as e:
+        db.rollback()
+        flash(f'Fehler bei der Aktualisierung der Daten: {str(e)}', 'error')
+        return redirect(url_for('data_access'))
+
+@app.route('/rectify_attendance', methods=['POST'])
+def rectify_attendance():
+    """Handle attendance record correction (DSGVO/GDPR right to rectification)"""
+    record_id = request.form.get('record_id')
+    user_id = request.form.get('user_id')
+    date = request.form.get('date')
+    check_in = request.form.get('check_in')
+    check_out = request.form.get('check_out')
+    current_password = request.form.get('current_password')
+    
+    if not record_id or not user_id or not date or not check_in or not current_password:
+        flash('Alle erforderlichen Felder müssen ausgefüllt werden.', 'error')
+        return redirect(url_for('data_access'))
+    
+    # Authenticate the user first
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT password FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user[0], current_password):
+        flash('Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihr aktuelles Passwort.', 'error')
+        return redirect(url_for('data_access'))
+    
+    try:
+        # Format the datetime strings
+        check_in_datetime = f"{date} {check_in}:00"
+        
+        if check_out:
+            check_out_datetime = f"{date} {check_out}:00"
+            cursor.execute('UPDATE attendance SET check_in = ?, check_out = ? WHERE id = ? AND user_id = ?',
+                         (check_in_datetime, check_out_datetime, record_id, user_id))
+        else:
+            cursor.execute('UPDATE attendance SET check_in = ?, check_out = NULL WHERE id = ? AND user_id = ?',
+                         (check_in_datetime, record_id, user_id))
+        
+        db.commit()
+        flash('Anwesenheitsaufzeichnung wurde erfolgreich aktualisiert.', 'success')
+        
+        # Re-authenticate to show updated data
+        return f'''
+            <html>
+            <body onload="document.getElementById('re-auth-form').submit()">
+                <form id="re-auth-form" method="post" action="/request_data_access">
+                    <input type="hidden" name="username" value="{get_username_by_id(user_id)}">
+                    <input type="hidden" name="password" value="{current_password}">
+                </form>
+                <p>Aktualisiere Daten...</p>
+            </body>
+            </html>
+        '''
+    
+    except Exception as e:
+        db.rollback()
+        flash(f'Fehler bei der Aktualisierung der Anwesenheitsaufzeichnung: {str(e)}', 'error')
+        return redirect(url_for('data_access'))
+
+def get_username_by_id(user_id):
+    """Helper function to get username by ID"""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    return user[0] if user else ""
+
 def try_parse(dt_str):
     """Try to parse a datetime string using multiple formats, with improved error handling."""
     if not dt_str:
