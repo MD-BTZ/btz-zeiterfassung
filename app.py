@@ -4,9 +4,11 @@ import sqlite3
 import os
 from datetime import datetime, timedelta
 import pytz
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this in production
+bcrypt = Bcrypt(app)
 DATABASE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'attendance.db')
 
 # Set the timezone to CEST (Central European Summer Time)
@@ -47,7 +49,8 @@ def init_db():
         # Insert default admin if not exists
         cursor.execute('SELECT * FROM users WHERE username=?', ("admin",))
         if cursor.fetchone() is None:
-            cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', ("admin", "admin"))
+            hashed_password = bcrypt.generate_password_hash("admin").decode('utf-8')
+            cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', ("admin", hashed_password))
         db.commit()
 
 @app.route('/')
@@ -170,7 +173,9 @@ def add_user():
     error = None
     user_id = None
     try:
-        cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+        # Hash the password before storing
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
         db.commit()
         user_id = cursor.lastrowid
     except sqlite3.IntegrityError:
@@ -193,11 +198,13 @@ def login():
         password = request.form['password']
         db = get_db()
         cursor = db.cursor()
-        cursor.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
+        cursor.execute('SELECT * FROM users WHERE username=?', (username,))
         user = cursor.fetchone()
-        if user:
+        if user and bcrypt.check_password_hash(user[2], password):  # user[2] is the password field
             session['admin_logged_in'] = True
             return redirect(url_for('admin'))
+        else:
+            flash('Invalid username or password', 'error')
     return render_template('login.html')
 
 @app.route('/logout')
@@ -224,6 +231,30 @@ def delete_user(user_id):
     cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
     db.commit()
     return {'success': True, 'message': 'User deleted successfully'}
+
+@app.route('/reset_password/<int:user_id>', methods=['POST'])
+def reset_password(user_id):
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('login'))
+    
+    new_password = request.form['new_password']
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Hash the new password
+    hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    
+    # Update the user's password
+    cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+    db.commit()
+    
+    # Get username for feedback message
+    cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    username = user[0] if user else "Unknown"
+    
+    flash(f"Password for {username} has been reset successfully", "success")
+    return redirect(url_for('user_management'))
 
 def try_parse(dt_str):
     """Try to parse a datetime string using multiple formats, with improved error handling."""
