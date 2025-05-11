@@ -225,8 +225,8 @@
                 url += '?' + params.join('&');
             }
             
-            // Open report in new window
-            window.open(url, '_blank', 'width=900,height=700');
+            // For users, we'll just navigate to the URL which will prompt for authentication if needed
+            window.location.href = url;
         });
     });
     </script>

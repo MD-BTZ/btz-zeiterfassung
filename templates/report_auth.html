@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bericht Authentifizierung</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    <div class="container">
+        <h1>Berichtsauthentifizierung</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="auth-form" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+            <h2>Passwort bestätigen</h2>
+            <p>Um Ihren Bericht einzusehen, bestätigen Sie bitte Ihr Passwort:</p>
+            
+            <form action="/user_report/{{ username }}" method="post" style="margin-top: 20px;">
+                <input type="hidden" name="date" value="{{ request.args.get('date', '') }}">
+                <input type="hidden" name="week" value="{{ request.args.get('week', '') }}">
+                <input type="hidden" name="month" value="{{ request.args.get('month', '') }}">
+                
+                <div style="margin-bottom: 15px;">
+                    <label for="password" style="display: block; margin-bottom: 5px;">Passwort:</label>
+                    <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                
+                <button type="submit" style="background-color: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Bestätigen</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -770,15 +770,56 @@ def try_parse(dt_str):
         print(f"Failed to parse datetime: '{dt_str}'")
         return None
 
-@app.route('/user_report/<username>')
+@app.route('/user_report/<username>', methods=['GET', 'POST'])
 def user_report(username):
-    if not session.get('admin_logged_in'):
-        return redirect(url_for('login'))
-    db = get_db()
-    cursor = db.cursor()
+    # Get filter parameters
     date = request.args.get('date')
     week = request.args.get('week')
     month = request.args.get('month')
+    
+    # Connect to database
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Admin check
+    is_admin = session.get('admin_logged_in', False)
+    current_user = session.get('username')
+    
+    # If it's a POST request with password for non-admin authentication
+    if request.method == 'POST' and not is_admin:
+        password = request.form.get('password')
+        
+        # Verify user credentials
+        cursor.execute('SELECT id, password FROM users WHERE username = ?', (username,))
+        user_record = cursor.fetchone()
+        
+        if not user_record or not bcrypt.check_password_hash(user_record[1], password):
+            flash('Ungültiges Passwort für Berichtszugriff.', 'error')
+            return redirect(url_for('index'))
+    # Regular GET request access control
+    elif not is_admin:
+        if current_user != username:
+            flash('Sie können nur Ihre eigenen Berichte einsehen. Bitte geben Sie Ihr Passwort ein.', 'error')
+            return render_template('report_auth.html', username=username)
+        
+    # Handle 'all' reports (admin only)
+    if username == 'all':
+        if not is_admin:
+            flash('Nur Administratoren können Berichte für alle Benutzer einsehen.', 'error')
+            return redirect(url_for('index'))
+            
+    # Pass any query parameters from POST to GET if needed
+    if request.method == 'POST':
+        form_date = request.form.get('date')
+        form_week = request.form.get('week')
+        form_month = request.form.get('month')
+        
+        if form_date and not date:
+            date = form_date
+        if form_week and not week:
+            week = form_week
+        if form_month and not month:
+            month = form_month
     # If 'all' is selected, show all users for the filter
     if username == 'all' or not username:
         query = '''SELECT users.username, attendance.check_in, attendance.check_out FROM attendance JOIN users ON attendance.user_id = users.id WHERE 1=1'''
