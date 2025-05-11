@@ -1,10 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, session, g, flash
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify, send_file
 from markupsafe import Markup
 import sqlite3
 import os
 from datetime import datetime, timedelta
 import pytz
 from flask_bcrypt import Bcrypt
+from functools import wraps
+import json
+import csv
+import io
+import datetime as dt
+from werkzeug.utils import secure_filename
+# For PDF export
+try:
+    import pdfkit
+except ImportError:
+    pdfkit = None
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this in production
@@ -53,6 +64,13 @@ def init_db():
             consent_status TEXT,
             consent_date TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id)
+        )''')
+        # Create data deletion log table
+        cursor.execute('''CREATE TABLE IF NOT EXISTS data_deletion_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            deletion_date TIMESTAMP,
+            record_count INTEGER
         )''')
         # Insert default admin if not exists
         cursor.execute('SELECT * FROM users WHERE username=?', ("admin",))
@@ -265,8 +283,8 @@ def reset_password(user_id):
     return redirect(url_for('user_management'))
 
 @app.route('/rectify_data', methods=['POST'])
-def rectify_user_data():
-    """Handle user data correction requests (DSGVO/GDPR right to rectification)"""
+def rectify_data():
+    """Process data rectification request with authentication"""
     user_id = request.form.get('user_id')
     username = request.form.get('username')
     new_password = request.form.get('new_password')
@@ -276,113 +294,101 @@ def rectify_user_data():
         flash('Alle erforderlichen Felder müssen ausgefüllt werden.', 'error')
         return redirect(url_for('data_access'))
     
-    # Authenticate the user first
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('SELECT id, username, password FROM users WHERE id = ?', (user_id,))
+    
+    # Verify user exists
+    cursor.execute('SELECT id, password FROM users WHERE id = ?', (user_id,))
     user = cursor.fetchone()
     
-    if not user or not bcrypt.check_password_hash(user[2], current_password):
-        flash('Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihr aktuelles Passwort.', 'error')
+    if not user:
+        flash('Benutzer nicht gefunden.', 'error')
+        return redirect(url_for('data_access'))
+    
+    # Verify current password
+    if not bcrypt.check_password_hash(user[1], current_password):
+        flash('Das aktuelle Passwort ist nicht korrekt.', 'error')
         return redirect(url_for('data_access'))
     
     try:
-        # Check if username exists (if it's changed)
-        if username != user[1]:
-            cursor.execute('SELECT id FROM users WHERE username = ? AND id != ?', (username, user_id))
-            if cursor.fetchone():
-                flash(f"Benutzername '{username}' wird bereits verwendet.", 'error')
-                return redirect(url_for('data_access'))
-            
-            # Update username
-            cursor.execute('UPDATE users SET username = ? WHERE id = ?', (username, user_id))
+        # Update username
+        cursor.execute('UPDATE users SET username = ? WHERE id = ?', (username, user_id))
         
         # Update password if provided
         if new_password:
-            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-            cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+            pw_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
+            cursor.execute('UPDATE users SET password = ? WHERE id = ?', (pw_hash, user_id))
+        
+        # Add to consent log that user updated their data
+        consent_timestamp = datetime.now().isoformat()
+        cursor.execute('''
+            INSERT INTO user_consents (user_id, consent_status, consent_date)
+            VALUES (?, ?, ?)
+        ''', (user_id, "Daten aktualisiert", consent_timestamp))
         
         db.commit()
         flash('Ihre Daten wurden erfolgreich aktualisiert.', 'success')
         
-        # Re-authenticate with new credentials
-        if 'admin_logged_in' not in session:
-            # Create a hidden form for automatic re-auth after password change
-            return f'''
-                <html>
-                <body onload="document.getElementById('re-auth-form').submit()">
-                    <form id="re-auth-form" method="post" action="/request_data_access">
-                        <input type="hidden" name="username" value="{username}">
-                        <input type="hidden" name="password" value="{new_password if new_password else current_password}">
-                    </form>
-                    <p>Authentifiziere erneut mit neuen Anmeldedaten...</p>
-                </body>
-                </html>
-            '''
+        # Update session with new username if the logged-in user is updating their own data
+        if 'user_id' in session and int(session['user_id']) == int(user_id):
+            session['username'] = username
         
-        return redirect(url_for('data_access'))
-    
     except Exception as e:
         db.rollback()
         flash(f'Fehler bei der Aktualisierung der Daten: {str(e)}', 'error')
-        return redirect(url_for('data_access'))
+    
+    return redirect(url_for('data_access'))
 
 @app.route('/rectify_attendance', methods=['POST'])
 def rectify_attendance():
-    """Handle attendance record correction (DSGVO/GDPR right to rectification)"""
+    """Process attendance record rectification request"""
     record_id = request.form.get('record_id')
     user_id = request.form.get('user_id')
-    date = request.form.get('date')
-    check_in = request.form.get('check_in')
-    check_out = request.form.get('check_out')
+    date = request.form.get('date')  # Format: YYYY-MM-DD
+    check_in = request.form.get('check_in')  # Format: HH:MM:SS
+    check_out = request.form.get('check_out')  # Format: HH:MM:SS
     current_password = request.form.get('current_password')
     
     if not record_id or not user_id or not date or not check_in or not current_password:
         flash('Alle erforderlichen Felder müssen ausgefüllt werden.', 'error')
         return redirect(url_for('data_access'))
     
-    # Authenticate the user first
     db = get_db()
     cursor = db.cursor()
+    
+    # Verify user exists and password is correct
     cursor.execute('SELECT password FROM users WHERE id = ?', (user_id,))
     user = cursor.fetchone()
     
     if not user or not bcrypt.check_password_hash(user[0], current_password):
-        flash('Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihr aktuelles Passwort.', 'error')
+        flash('Authentifizierung fehlgeschlagen.', 'error')
         return redirect(url_for('data_access'))
     
     try:
-        # Format the datetime strings
-        check_in_datetime = f"{date} {check_in}:00"
+        # Format datetime strings
+        check_in_datetime = f"{date}T{check_in}:00"  # Format: YYYY-MM-DDTHH:MM:SS
         
         if check_out:
-            check_out_datetime = f"{date} {check_out}:00"
-            cursor.execute('UPDATE attendance SET check_in = ?, check_out = ? WHERE id = ? AND user_id = ?',
-                         (check_in_datetime, check_out_datetime, record_id, user_id))
+            check_out_datetime = f"{date}T{check_out}:00"  # Format: YYYY-MM-DDTHH:MM:SS
+            cursor.execute('''
+                UPDATE attendance SET check_in = ?, check_out = ?
+                WHERE id = ? AND user_id = ?
+            ''', (check_in_datetime, check_out_datetime, record_id, user_id))
         else:
-            cursor.execute('UPDATE attendance SET check_in = ?, check_out = NULL WHERE id = ? AND user_id = ?',
-                         (check_in_datetime, record_id, user_id))
+            cursor.execute('''
+                UPDATE attendance SET check_in = ?, check_out = NULL
+                WHERE id = ? AND user_id = ?
+            ''', (check_in_datetime, record_id, user_id))
         
         db.commit()
-        flash('Anwesenheitsaufzeichnung wurde erfolgreich aktualisiert.', 'success')
+        flash('Anwesenheitsaufzeichnung erfolgreich aktualisiert.', 'success')
         
-        # Re-authenticate to show updated data
-        return f'''
-            <html>
-            <body onload="document.getElementById('re-auth-form').submit()">
-                <form id="re-auth-form" method="post" action="/request_data_access">
-                    <input type="hidden" name="username" value="{get_username_by_id(user_id)}">
-                    <input type="hidden" name="password" value="{current_password}">
-                </form>
-                <p>Aktualisiere Daten...</p>
-            </body>
-            </html>
-        '''
-    
     except Exception as e:
         db.rollback()
         flash(f'Fehler bei der Aktualisierung der Anwesenheitsaufzeichnung: {str(e)}', 'error')
-        return redirect(url_for('data_access'))
+    
+    # Re-authenticate to see updated data
+    return redirect(url_for('data_access'))
 
 @app.route('/data_access', methods=['GET'])
 def data_access():
@@ -496,6 +502,224 @@ def request_data_access():
     session['temp_password'] = password
     
     return render_template('data_access.html', user_data=user_data, password_placeholder=password_placeholder)
+
+@app.route('/export_data', methods=['POST'])
+def export_data():
+    """Export user data in various formats (CSV, PDF, JSON)"""
+    username = request.form.get('username')
+    password = session.get('temp_password')  # Get stored password from session
+    export_format = request.form.get('format', 'csv')
+    
+    if not username or not password:
+        flash('Benutzername und Passwort werden benötigt.', 'error')
+        return redirect(url_for('data_access'))
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Verify user credentials
+    cursor.execute('SELECT id, username, password FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user[2], password):
+        flash('Ungültiger Benutzername oder Passwort.', 'error')
+        return redirect(url_for('data_access'))
+    
+    user_id = user[0]
+    username = user[1]
+    
+    # Get user's attendance records
+    cursor.execute('''
+        SELECT id, check_in, check_out FROM attendance 
+        WHERE user_id = ? 
+        ORDER BY check_in DESC
+    ''', (user_id,))
+    
+    attendance_records = cursor.fetchall()
+    records = []
+    total_seconds = 0
+    
+    # Process attendance records
+    for rec in attendance_records:
+        record_id = rec[0]
+        check_in = rec[1]
+        check_out = rec[2]
+        
+        # Format date and time for display
+        check_in_date = None
+        check_in_time = None
+        check_out_time = None
+        duration = None
+        
+        if check_in:
+            dt_in = try_parse(check_in)
+            if dt_in:
+                check_in_date = dt_in.strftime('%d.%m.%Y')
+                check_in_time = dt_in.strftime('%H:%M:%S')
+        
+        if check_out:
+            dt_out = try_parse(check_out)
+            if dt_out and dt_in:
+                check_out_time = dt_out.strftime('%H:%M:%S')
+                
+                # Make both naive for calculation
+                if hasattr(dt_in, 'tzinfo') and dt_in.tzinfo is not None:
+                    dt_in = dt_in.replace(tzinfo=None)
+                if hasattr(dt_out, 'tzinfo') and dt_out.tzinfo is not None:
+                    dt_out = dt_out.replace(tzinfo=None)
+                
+                diff = (dt_out - dt_in).total_seconds()
+                if diff > 0:
+                    total_seconds += int(diff)
+                    hours = int(diff) // 3600
+                    minutes = (int(diff) % 3600) // 60
+                    seconds = int(diff) % 60
+                    duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        records.append({
+            'id': record_id,
+            'date': check_in_date or '(Kein Datum)',
+            'check_in': check_in_time or '(Kein Check-in)',
+            'check_out': check_out_time or '(Kein Check-out)',
+            'duration': duration or '(Nicht berechnet)'
+        })
+    
+    # Calculate total duration
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    total_duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    
+    # Get consent status
+    cursor.execute('SELECT consent_status, consent_date FROM user_consents WHERE user_id = ? ORDER BY consent_date DESC LIMIT 1', (user_id,))
+    consent = cursor.fetchone()
+    consent_status = consent[0] if consent else "Nicht angegeben"
+    consent_date = consent[1] if consent and len(consent) > 1 else None
+    
+    # Prepare user data object
+    user_data = {
+        'user_id': user_id,
+        'username': username,
+        'records': records,
+        'total_duration': total_duration,
+        'consent_status': consent_status,
+        'consent_date': consent_date
+    }
+    
+    # Export according to requested format
+    if export_format == 'csv':
+        return export_as_csv(user_data)
+    elif export_format == 'pdf':
+        return export_as_pdf(user_data)
+    elif export_format == 'json':
+        return export_as_json(user_data)
+    else:
+        flash('Ungültiges Exportformat.', 'error')
+        return redirect(url_for('data_access'))
+
+def export_as_csv(user_data):
+    """Export user data as CSV file"""
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(['Benutzername', user_data['username']])
+    writer.writerow(['Benutzer-ID', user_data['user_id']])
+    writer.writerow(['Einwilligungsstatus', user_data['consent_status']])
+    if user_data['consent_date']:
+        writer.writerow(['Letzte Aktualisierung der Einwilligung', user_data['consent_date']])
+    writer.writerow([])  # Empty row as separator
+    
+    # Write attendance records header
+    writer.writerow(['Datum', 'Check-In', 'Check-Out', 'Dauer'])
+    
+    # Write attendance records
+    for record in user_data['records']:
+        writer.writerow([
+            record['date'],
+            record['check_in'],
+            record['check_out'],
+            record['duration']
+        ])
+    
+    # Write total duration
+    writer.writerow([])
+    writer.writerow(['Gesamtzeit', user_data['total_duration']])
+    
+    # Create response
+    output.seek(0)
+    filename = f"zeiterfassung_export_{user_data['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+    
+    return send_file(
+        io.BytesIO(output.getvalue().encode('utf-8-sig')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=filename
+    )
+
+def export_as_pdf(user_data):
+    """Export user data as PDF file"""
+    if pdfkit is None:
+        flash('PDF-Export ist nicht verfügbar. Bitte installieren Sie wkhtmltopdf und pdfkit.', 'error')
+        return redirect(url_for('data_access'))
+    
+    # Render HTML template with user data
+    export_date = datetime.now().strftime('%d.%m.%Y %H:%M:%S')
+    current_year = datetime.now().year
+    rendered_html = render_template(
+        'full_data_export.html', 
+        user_data=user_data, 
+        export_date=export_date,
+        current_year=current_year
+    )
+    
+    # Convert HTML to PDF
+    pdf_options = {
+        'encoding': 'UTF-8',
+        'page-size': 'A4',
+        'margin-top': '1cm',
+        'margin-right': '1cm',
+        'margin-bottom': '1cm',
+        'margin-left': '1cm',
+    }
+    pdf = pdfkit.from_string(rendered_html, False, options=pdf_options)
+    
+    # Create response
+    filename = f"zeiterfassung_export_{user_data['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+    
+    return send_file(
+        io.BytesIO(pdf),
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=filename
+    )
+
+def export_as_json(user_data):
+    """Export user data as JSON file"""
+    # Create a clean copy of the user data for export
+    export_data = {
+        'user': {
+            'username': user_data['username'],
+            'user_id': user_data['user_id'],
+            'consent_status': user_data['consent_status'],
+        },
+        'attendance_records': user_data['records'],
+        'total_duration': user_data['total_duration'],
+        'export_timestamp': datetime.now().isoformat()
+    }
+    
+    if user_data['consent_date']:
+        export_data['user']['consent_date'] = user_data['consent_date']
+    
+    # Create response
+    filename = f"zeiterfassung_export_{user_data['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
+    
+    return send_file(
+        io.BytesIO(json.dumps(export_data, indent=2, ensure_ascii=False).encode('utf-8')),
+        mimetype='application/json',
+        as_attachment=True,
+        download_name=filename
+    )
 
 @app.route('/privacy_policy')
 def privacy_policy():
@@ -712,6 +936,112 @@ def update_consent():
     except Exception as e:
         db.rollback()
         return {'success': False, 'message': f'Fehler bei der Aktualisierung: {str(e)}'}
+
+@app.route('/log_consent', methods=['POST'])
+def log_consent():
+    """Log user consent for DSGVO compliance"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        consent_type = data.get('consent_type', 'unknown')
+        
+        if not user_id:
+            return jsonify({'status': 'error', 'message': 'User ID is required'}), 400
+        
+        # Verify user exists
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute('SELECT id FROM users WHERE id = ?', (user_id,))
+        
+        if not cursor.fetchone():
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
+        
+        # Log consent
+        consent_timestamp = datetime.now().isoformat()
+        consent_status = f"Cookie-Einwilligung: {consent_type}"
+        
+        cursor.execute('''
+            INSERT INTO user_consents (user_id, consent_status, consent_date)
+            VALUES (?, ?, ?)
+        ''', (user_id, consent_status, consent_timestamp))
+        
+        db.commit()
+        return jsonify({'status': 'success'}), 200
+        
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/request_data_deletion', methods=['POST'])
+def request_data_deletion():
+    """Process data deletion request with authentication"""
+    username = request.form.get('username')
+    password = request.form.get('password')
+    confirm_deletion = request.form.get('confirm_deletion')
+    
+    if not username or not password:
+        flash('Benutzername und Passwort werden benötigt.', 'error')
+        return redirect(url_for('data_access'))
+    
+    if not confirm_deletion:
+        flash('Bitte bestätigen Sie die Datenlöschung.', 'error')
+        return redirect(url_for('data_access'))
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Verify user credentials
+    cursor.execute('SELECT id, username, password FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user[2], password):
+        flash('Ungültiger Benutzername oder Passwort.', 'error')
+        return redirect(url_for('data_access'))
+    
+    user_id = user[0]
+    
+    try:
+        # Begin transaction
+        db.execute('BEGIN TRANSACTION')
+        
+        # First, export the data for record-keeping
+        cursor.execute('''
+            SELECT id, check_in, check_out FROM attendance 
+            WHERE user_id = ? 
+            ORDER BY check_in DESC
+        ''', (user_id,))
+        
+        attendance_records = cursor.fetchall()
+        
+        # Store deletion log with anonymized data
+        deletion_timestamp = datetime.now().isoformat()
+        cursor.execute('''
+            INSERT INTO data_deletion_log (user_id, deletion_date, record_count)
+            VALUES (?, ?, ?)
+        ''', (user_id, deletion_timestamp, len(attendance_records)))
+        
+        # Delete user consent records
+        cursor.execute('DELETE FROM user_consents WHERE user_id = ?', (user_id,))
+        
+        # Delete attendance records
+        cursor.execute('DELETE FROM attendance WHERE user_id = ?', (user_id,))
+        
+        # Finally, delete the user
+        cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+        
+        # Commit transaction
+        db.commit()
+        
+        # Clear any session data
+        session.clear()
+        
+        flash('Ihre Daten wurden erfolgreich gelöscht. Wir bedauern, dass Sie uns verlassen.', 'success')
+        return redirect(url_for('index'))
+        
+    except Exception as e:
+        # Rollback in case of error
+        db.rollback()
+        flash(f'Fehler bei der Datenlöschung: {str(e)}', 'error')
+        return redirect(url_for('data_access'))
 
 if __name__ == '__main__':
     init_db()

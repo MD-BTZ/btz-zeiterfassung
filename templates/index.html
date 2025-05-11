@@ -21,28 +21,53 @@
         {% endwith %}
         
         <!-- Form starts after flash messages -->
-        <form action="" method="post" id="attendance-form">
-            <select name="user_id" required>
-                <option value="" disabled selected>Wähle Benutzer</option>
-                {% for user in users %}
-                    <option value="{{ user[0] }}">{{ user[1] }}</option>
-                {% endfor %}
-            </select>
-            <div style="display:flex; gap:1em; justify-content:center;">
-                <button type="submit" name="action" value="checkin">Check In</button>
-                <button type="submit" name="action" value="checkout">Check Out</button>
+        <div id="attendance-forms">
+            <div>
+                <select id="user-selector" required>
+                    <option value="" disabled selected>Wähle Benutzer</option>
+                    {% for user in users %}q
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endfor %}
+                </select>
             </div>
-        </form>
+            <div style="display:flex; gap:1em; justify-content:center; margin-top: 10px;">
+                <form action="/checkin" method="post" class="inline-form">
+                    <input type="hidden" name="user_id" id="checkin-user-id">
+                    <button type="submit" id="checkin-btn" disabled>Check In</button>
+                </form>
+                <form action="/checkout" method="post" class="inline-form">
+                    <input type="hidden" name="user_id" id="checkout-user-id">
+                    <button type="submit" id="checkout-btn" disabled>Check Out</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <script>
-    document.getElementById('attendance-form').onsubmit = function(e) {
-        var action = document.activeElement.value;
-        if (action === 'checkin') {
-            this.action = '/checkin';
-        } else if (action === 'checkout') {
-            this.action = '/checkout';
+    <style>
+        .inline-form {
+            display: inline-block;
         }
-    };
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userSelector = document.getElementById('user-selector');
+        const checkinUserIdField = document.getElementById('checkin-user-id');
+        const checkoutUserIdField = document.getElementById('checkout-user-id');
+        const checkinBtn = document.getElementById('checkin-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        userSelector.addEventListener('change', function() {
+            const selectedUserId = this.value;
+            if (selectedUserId) {
+                checkinUserIdField.value = selectedUserId;
+                checkoutUserIdField.value = selectedUserId;
+                checkinBtn.disabled = false;
+                checkoutBtn.disabled = false;
+            } else {
+                checkinBtn.disabled = true;
+                checkoutBtn.disabled = true;
+            }
+        });
+    });
     </script>
 </body>
 </html>

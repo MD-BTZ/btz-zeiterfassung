@@ -80,12 +80,38 @@
         document.getElementById('cookie-accept').addEventListener('click', function() {
             localStorage.setItem('cookie-consent', 'full');
             document.getElementById('cookie-consent-banner').style.display = 'none';
+            
+            // If user is logged in, log the consent to server
+            logConsentToServer('full');
         });
         
         // Handle essential only button
         document.getElementById('cookie-essential-only').addEventListener('click', function() {
             localStorage.setItem('cookie-consent', 'essential');
             document.getElementById('cookie-consent-banner').style.display = 'none';
+            
+            // If user is logged in, log the consent to server
+            logConsentToServer('essential');
         });
+        
+        // Function to log consent to server if user is logged in
+        function logConsentToServer(consentType) {
+            // Check if user is logged in by looking for user_id in sessionStorage
+            const userId = sessionStorage.getItem('user_id');
+            if (userId) {
+                fetch('/log_consent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        consent_type: consentType
+                    })
+                }).catch(error => {
+                    console.error('Error logging consent:', error);
+                });
+            }
+        }
     });
 </script>

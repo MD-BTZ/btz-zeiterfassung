@@ -15,6 +15,12 @@
         </form>
         <a href="/">Back to Home</a>
     </div>
+    {% if 'user_id' in session %}
+    <script>
+        // Store user ID in sessionStorage for consent tracking
+        sessionStorage.setItem('user_id', '{{ session.user_id }}');
+    </script>
+    {% endif %}
     <script src="/static/script.js"></script>
 </body>
 </html>
