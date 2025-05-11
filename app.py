@@ -794,10 +794,10 @@ def try_parse(dt_str):
 
 @app.route('/user_report/<username>', methods=['GET', 'POST'])
 def user_report(username):
-    # Get filter parameters
-    date = request.args.get('date')
-    week = request.args.get('week')
-    month = request.args.get('month')
+    # Get filter parameters from both GET and POST requests
+    date = request.args.get('date') or request.form.get('date', '')
+    week = request.args.get('week') or request.form.get('week', '')
+    month = request.args.get('month') or request.form.get('month', '')
     
     # Connect to database
     db = get_db()
@@ -807,30 +807,51 @@ def user_report(username):
     is_admin = session.get('admin_logged_in', False)
     current_user = session.get('username')
     
-    # If it's a POST request with password for non-admin authentication
-    if request.method == 'POST' and not is_admin:
-        password = request.form.get('password')
-        
-        # Verify user credentials
-        cursor.execute('SELECT id, password FROM users WHERE username = ?', (username,))
-        user_record = cursor.fetchone()
-        
-        if not user_record or not bcrypt.check_password_hash(user_record[1], password):
-            flash('Ungültiges Passwort für Berichtszugriff.', 'error')
-            return redirect(url_for('index'))
-    # Regular GET request access control
-    elif not is_admin:
-        if current_user != username:
-            flash('Sie können nur Ihre eigenen Berichte einsehen. Bitte geben Sie Ihr Passwort ein.', 'error')
-            return render_template('report_auth.html', username=username)
-        
-    # Handle 'all' reports (admin only)
-    if username == 'all':
-        if not is_admin:
-            flash('Nur Administratoren können Berichte für alle Benutzer einsehen.', 'error')
-            return redirect(url_for('index'))
-            
-    # Pass any query parameters from POST to GET if needed
+    # Authorization logic
+    # 1. Admin can access any report
+    # 2. Regular user can only access their own report with password
+    # 3. Regular user who is logged in can access their own report without password
+    
+    # Non-admin trying to access reports (either needs to be the same user or provide password)
+    if not is_admin:
+        # Accessing another user's report or 'all' users
+        if current_user != username or username == 'all':
+            if request.method == 'POST':
+                # Check password authentication
+                password = request.form.get('password')
+                
+                # Only allow username == current_user or admin can see 'all'
+                if username != current_user and username != 'all':
+                    flash('Sie können nur Ihre eigenen Berichte einsehen.', 'error')
+                    return redirect(url_for('index'))
+                    
+                if username == 'all':
+                    flash('Nur Administratoren können Berichte für alle Benutzer einsehen.', 'error')
+                    return redirect(url_for('index'))
+                
+                # Verify credentials for the user
+                cursor.execute('SELECT id, password FROM users WHERE username = ?', (current_user,))
+                user_record = cursor.fetchone()
+                
+                if not user_record or not bcrypt.check_password_hash(user_record[1], password):
+                    flash('Ungültiges Passwort für Berichtszugriff.', 'error')
+                    return redirect(url_for('index'))
+            else:
+                # GET request - show auth form for other users' reports
+                if username == 'all':
+                    flash('Nur Administratoren können Berichte für alle Benutzer einsehen.', 'error')
+                    return redirect(url_for('index'))
+                else:
+                    # Redirect to own report page if trying to access someone else's report
+                    if username != current_user:
+                        flash('Sie können nur Ihre eigenen Berichte einsehen.', 'error')
+                        return redirect(url_for('user_report', username=current_user))
+                    
+                    # Show password form for own report
+                    return render_template('report_auth.html', username=username, 
+                                         date=date, week=week, month=month)
+    
+    # Handle form parameters from POST requests
     if request.method == 'POST':
         form_date = request.form.get('date')
         form_week = request.form.get('week')
