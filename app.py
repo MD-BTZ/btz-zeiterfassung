@@ -81,10 +81,22 @@ def init_db():
 
 @app.route('/')
 def index():
+    # Check if user is logged in
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('SELECT id, username FROM users')
-    users = cursor.fetchall()
+    
+    # Admin can see all users
+    if session.get('admin_logged_in'):
+        cursor.execute('SELECT id, username FROM users')
+        users = cursor.fetchall()
+    else:
+        # Regular users can only see themselves
+        cursor.execute('SELECT id, username FROM users WHERE id = ?', (session.get('user_id'),))
+        users = cursor.fetchall()
+    
     return render_template('index.html', users=users)
 
 @app.route('/checkin', methods=['POST'])
@@ -227,15 +239,25 @@ def login():
         cursor.execute('SELECT * FROM users WHERE username=?', (username,))
         user = cursor.fetchone()
         if user and bcrypt.check_password_hash(user[2], password):  # user[2] is the password field
-            session['admin_logged_in'] = True
-            return redirect(url_for('admin'))
+            # Store user info in session
+            session['admin_logged_in'] = (username == 'admin')
+            session['username'] = username
+            session['user_id'] = user[0]
+            
+            # Redirect admins to admin panel, regular users to homepage
+            if username == 'admin':
+                return redirect(url_for('admin'))
+            else:
+                return redirect(url_for('index'))
         else:
             flash('Invalid username or password', 'error')
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('admin_logged_in', None)
+    # Clear all session data
+    session.clear()
+    flash('Sie wurden erfolgreich abgemeldet.', 'success')
     return redirect(url_for('login'))
 
 @app.route('/user_management')

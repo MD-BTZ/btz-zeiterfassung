@@ -26,21 +26,30 @@
         <!-- Form starts after flash messages -->
         <div id="attendance-forms">
             <div style="margin-bottom: 15px;">
-                <select id="user-selector" required>
-                    <option value="" disabled selected>Wähle Benutzer</option>
-                    {% for user in users %}
-                        <option value="{{ user[0] }}">{{ user[1] }}</option>
-                    {% endfor %}
-                </select>
+                {% if session.get('admin_logged_in') %}
+                    <!-- Admin sees dropdown with all users -->
+                    <select id="user-selector" required>
+                        <option value="" disabled selected>Wähle Benutzer</option>
+                        {% for user in users %}
+                            <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <!-- Regular users only see themselves -->
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">
+                        Angemeldet als: <strong>{{ session.get('username') }}</strong>
+                        <input type="hidden" id="user-selector" value="{{ users[0][0] }}">
+                    </div>
+                {% endif %}
             </div>
             <div style="display:flex; gap:1em; justify-content:center; margin-top: 10px;">
                 <form action="/checkin" method="post" class="inline-form">
                     <input type="hidden" name="user_id" id="checkin-user-id">
-                    <button type="submit" id="checkin-btn" disabled>Check In</button>
+                    <button type="submit" id="checkin-btn">Check In</button>
                 </form>
                 <form action="/checkout" method="post" class="inline-form">
                     <input type="hidden" name="user_id" id="checkout-user-id">
-                    <button type="submit" id="checkout-btn" disabled>Check Out</button>
+                    <button type="submit" id="checkout-btn">Check Out</button>
                 </form>
             </div>
             
@@ -112,8 +121,9 @@
         const checkinBtn = document.getElementById('checkin-btn');
         const checkoutBtn = document.getElementById('checkout-btn');
         
-        userSelector.addEventListener('change', function() {
-            const selectedUserId = this.value;
+        // Initialize user ID for forms
+        function updateUserIds() {
+            const selectedUserId = userSelector.value;
             if (selectedUserId) {
                 checkinUserIdField.value = selectedUserId;
                 checkoutUserIdField.value = selectedUserId;
@@ -123,7 +133,15 @@
                 checkinBtn.disabled = true;
                 checkoutBtn.disabled = true;
             }
-        });
+        }
+        
+        // For admin dropdown, listen for changes
+        if (userSelector.tagName === 'SELECT') {
+            userSelector.addEventListener('change', updateUserIds);
+        }
+        
+        // Initial setup
+        updateUserIds();
         
         // Report generation handling
         const reportDateInput = document.getElementById('report-date');
@@ -188,13 +206,21 @@
         
         // Generate report
         generateReportBtn.addEventListener('click', function() {
-            const selectedUserId = userSelector.value;
-            const selectedOption = userSelector.options[userSelector.selectedIndex];
-            const username = selectedOption ? selectedOption.text : null;
+            let username;
             
-            if (!username) {
-                alert('Bitte wählen Sie einen Benutzer aus.');
-                return;
+            // Different approach based on whether we're admin or regular user
+            if (userSelector.tagName === 'SELECT') {
+                // For admin dropdown
+                const selectedOption = userSelector.options[userSelector.selectedIndex];
+                username = selectedOption ? selectedOption.text : null;
+                
+                if (!username) {
+                    alert('Bitte wählen Sie einen Benutzer aus.');
+                    return;
+                }
+            } else {
+                // For regular users (session username)
+                username = '{{ session.get("username") }}';
             }
             
             // Update month hidden field (week is updated by the datepicker)

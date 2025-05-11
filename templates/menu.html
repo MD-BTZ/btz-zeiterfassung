@@ -1,13 +1,18 @@
 <nav class="menu-panel" style="background:#1976d2;padding:1em 0;margin-bottom:2em;display:flex;justify-content:space-between;">
     <div>
         <a href="/" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Home</a>
-        <a href="/admin" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Admin</a>
-        <a href="/user_management" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">User Management</a>
+        
+        {% if session.get('admin_logged_in') %}
+            <a href="/admin" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Admin</a>
+            <a href="/user_management" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">User Management</a>
+        {% endif %}
+        
         <a href="/data_access" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Data Access</a>
         <a href="/privacy_policy" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Datenschutzerklärung</a>
     </div>
     <div style="margin-right:2em;">
-        {% if session.get('admin_logged_in') %}
+        {% if session.get('username') %}
+            <span style="color:#fff;margin-right:1.5em;font-weight:bold;">{{ session.get('username') }}</span>
             <a href="/logout" style="color:#fff;text-decoration:none;font-weight:bold;">Logout</a>
         {% else %}
             <a href="/login" style="color:#fff;text-decoration:none;font-weight:bold;">Login</a>
