@@ -183,3 +183,84 @@ a:hover {
     color: #b71c1c;
     border: 1px solid #ffcdd2;
 }
+
+/* Week picker custom styles */
+.ui-datepicker .ui-datepicker-calendar .ui-state-highlight {
+    background-color: #e6f2ff;
+    border-color: #1976d2;
+}
+
+.ui-datepicker .ui-datepicker-calendar .ui-state-active {
+    background-color: #1976d2;
+    border-color: #0d47a1;
+    color: #fff;
+}
+
+.ui-datepicker .ui-datepicker-calendar td {
+    text-align: center;
+    padding: 3px;
+}
+
+.ui-datepicker .ui-datepicker-calendar th:first-child {
+    background-color: #f0f0f0;
+    color: #666;
+    font-weight: normal;
+    text-align: center;
+}
+
+/* Make datepicker match our theme */
+.ui-datepicker {
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    font-size: 14px;
+}
+
+.ui-datepicker .ui-datepicker-header {
+    border-radius: 6px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    margin-bottom: 5px;
+}
+
+.ui-datepicker .ui-datepicker-title {
+    font-weight: bold;
+}
+
+.ui-datepicker .ui-datepicker-prev span, 
+.ui-datepicker .ui-datepicker-next span {
+    filter: brightness(10);
+}
+
+/* Highlighted week styles */
+.ui-datepicker td.ui-week-highlight {
+    background-color: #e3f2fd !important;
+}
+
+.ui-datepicker td.ui-week-highlight a {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+/* Week number column */
+.ui-datepicker-week-col {
+    background-color: #f5f5f5;
+    color: #666;
+    font-size: 0.9em;
+    text-align: center;
+    border-right: 1px solid #ddd;
+}
+
+/* Week picker button styles */
+#week-picker {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 30px;
+}
+
+#selected-week-display {
+    min-width: 100px;
+    text-align: center;
+}

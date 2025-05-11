@@ -3,6 +3,9 @@
 <head>
     <title>Zeiterfassung - Check In/Out</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body>
     {% include 'menu.html' %}
@@ -22,10 +25,10 @@
         
         <!-- Form starts after flash messages -->
         <div id="attendance-forms">
-            <div>
+            <div style="margin-bottom: 15px;">
                 <select id="user-selector" required>
                     <option value="" disabled selected>Wähle Benutzer</option>
-                    {% for user in users %}q
+                    {% for user in users %}
                         <option value="{{ user[0] }}">{{ user[1] }}</option>
                     {% endfor %}
                 </select>
@@ -39,6 +42,60 @@
                     <input type="hidden" name="user_id" id="checkout-user-id">
                     <button type="submit" id="checkout-btn" disabled>Check Out</button>
                 </form>
+            </div>
+            
+            <!-- Report options -->
+            <div style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+                <h3>Bericht generieren</h3>
+                <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">Bitte wählen Sie eine der folgenden Optionen:</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px;">
+                    <!-- Date selector -->
+                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                        <label for="report-date">Datum:</label>
+                        <input type="date" id="report-date" name="date" style="padding: 5px;">
+                    </div>
+                    
+                    <!-- Week selector with calendar -->
+                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                        <label for="week-picker">Woche:</label>
+                        <div style="display: flex; gap: 5px; align-items: center;">
+                            <input type="text" id="week-picker" style="padding: 5px; width: 120px;" placeholder="KW wählen" readonly>
+                            <span id="selected-week-display" style="background: #f0f0f0; padding: 5px; border-radius: 3px; font-size: 0.9em;"></span>
+                            <input type="hidden" id="report-week" name="week">
+                        </div>
+                    </div>
+                    
+                    <!-- Month selector with fallback -->
+                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                        <label for="report-month-select">Monat:</label>
+                        <div style="display: flex; gap: 5px; align-items: center;">
+                            <select id="report-month-select" style="padding: 5px; width: 100px;">
+                                <option value="" selected disabled>Monat</option>
+                                <option value="1">Januar</option>
+                                <option value="2">Februar</option>
+                                <option value="3">März</option>
+                                <option value="4">April</option>
+                                <option value="5">Mai</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Dezember</option>
+                            </select>
+                            <select id="report-month-year" style="padding: 5px; width: 80px;">
+                                {% for year in range(2023, 2026) %}
+                                <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" id="report-month" name="month">
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button type="button" id="generate-report-btn" style="padding: 8px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Bericht generieren</button>
+                </div>
             </div>
         </div>
     </div>
@@ -67,7 +124,112 @@
                 checkoutBtn.disabled = true;
             }
         });
+        
+        // Report generation handling
+        const reportDateInput = document.getElementById('report-date');
+        const reportWeekInput = document.getElementById('report-week');
+        const reportMonthInput = document.getElementById('report-month');
+        
+        // Week picker element
+        const weekPicker = document.getElementById('week-picker');
+        const selectedWeekDisplay = document.getElementById('selected-week-display');
+        
+        // Month selector elements
+        const reportMonthSelect = document.getElementById('report-month-select');
+        const reportMonthYear = document.getElementById('report-month-year');
+        
+        const generateReportBtn = document.getElementById('generate-report-btn');
+        
+        // Function to clear all inputs
+        function clearAllInputs() {
+            reportDateInput.value = '';
+            reportWeekInput.value = '';
+            reportMonthInput.value = '';
+            weekPicker.value = '';
+            selectedWeekDisplay.textContent = '';
+            reportMonthSelect.selectedIndex = 0;
+        }
+        
+        // Week picker initialization is handled by week-picker.js
+        
+        // Make inputs mutually exclusive
+        reportDateInput.addEventListener('input', function() {
+            if (this.value) {
+                reportWeekInput.value = '';
+                reportMonthInput.value = '';
+                weekPicker.value = '';
+                selectedWeekDisplay.textContent = '';
+                reportMonthSelect.selectedIndex = 0;
+            }
+        });
+        
+        // Handle month selection
+        reportMonthSelect.addEventListener('change', function() {
+            if (this.value) {
+                reportDateInput.value = '';
+                reportWeekInput.value = '';
+                weekPicker.value = '';
+                selectedWeekDisplay.textContent = '';
+                
+                // Format as YYYY-MM
+                const month = this.value.padStart(2, '0');
+                const year = reportMonthYear.value;
+                reportMonthInput.value = `${year}-${month}`;
+            }
+        });
+        
+        reportMonthYear.addEventListener('change', function() {
+            if (reportMonthSelect.value) {
+                const month = reportMonthSelect.value.padStart(2, '0');
+                const year = this.value;
+                reportMonthInput.value = `${year}-${month}`;
+            }
+        });
+        
+        // Generate report
+        generateReportBtn.addEventListener('click', function() {
+            const selectedUserId = userSelector.value;
+            const selectedOption = userSelector.options[userSelector.selectedIndex];
+            const username = selectedOption ? selectedOption.text : null;
+            
+            if (!username) {
+                alert('Bitte wählen Sie einen Benutzer aus.');
+                return;
+            }
+            
+            // Update month hidden field (week is updated by the datepicker)
+            if (reportMonthSelect.value && reportMonthYear.value) {
+                const month = reportMonthSelect.value.padStart(2, '0');
+                const year = reportMonthYear.value;
+                reportMonthInput.value = `${year}-${month}`;
+            }
+            
+            const date = reportDateInput.value;
+            const week = reportWeekInput.value;
+            const month = reportMonthInput.value;
+            
+            // Verify at least one filter is selected
+            if (!date && !week && !month) {
+                alert('Bitte wählen Sie ein Datum, eine Woche oder einen Monat aus.');
+                return;
+            }
+            
+            // Build report URL
+            let params = [];
+            if (date) params.push('date=' + encodeURIComponent(date));
+            if (week) params.push('week=' + encodeURIComponent(week));
+            if (month) params.push('month=' + encodeURIComponent(month));
+            
+            let url = '/user_report/' + encodeURIComponent(username);
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            
+            // Open report in new window
+            window.open(url, '_blank', 'width=900,height=700');
+        });
     });
     </script>
+    <script src="/static/week-picker.js"></script>
 </body>
 </html>
