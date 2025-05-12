@@ -3,6 +3,7 @@
 <head>
     <title>Zeiterfassung - Check In/Out</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -58,6 +59,68 @@
                 <form action="/checkout" method="post" class="inline-form">
                     <input type="hidden" name="user_id" id="checkout-user-id">
                     <button type="submit" id="checkout-btn">Check Out</button>
+                </form>
+            </div>
+            
+            <!-- Automatic Break Detection Settings -->
+            <div style="margin-top: 20px;">
+                <button type="button" id="toggle-break-settings" class="text-button" style="background: none; border: none; text-decoration: underline; color: #1976d2; cursor: pointer; font-size: 0.9em;">Pauseneinstellungen anzeigen</button>
+                <div id="break-settings-container" style="display: none; margin-top: 10px; padding: 15px; background: #f8f9fa; border-radius: 5px; border: 1px solid #e9ecef;">
+                    <h4 style="margin-top: 0; margin-bottom: 10px;">Automatische Pausenerkennung</h4>
+                    <form action="/update_user_settings" method="post">
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="auto-break-detection" name="auto_break_detection" value="1" style="margin-right: 8px;">
+                                <span>Automatische Pausenerkennung aktivieren</span>
+                            </label>
+                            <p style="font-size: 0.85em; color: #6c757d; margin: 5px 0 0 25px;">Erkennt lange Inaktivitätsperioden und schlägt Pausen vor</p>
+                        </div>
+                        
+                        <div id="threshold-container" style="margin-bottom: 10px; margin-left: 25px; display: none;">
+                            <label for="auto-break-threshold" style="display: block; margin-bottom: 5px;">Schwellenwert für Inaktivität (Minuten):</label>
+                            <input type="number" id="auto-break-threshold" name="auto_break_threshold" value="30" min="5" max="120" style="width: 80px; padding: 5px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="exclude-breaks-from-billing" name="exclude_breaks" value="1" style="margin-right: 8px;">
+                                <span>Pausenzeit von abrechenbaren Stunden ausschließen</span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" style="background: #1976d2; color: white; border: none; padding: 7px 15px; border-radius: 4px; cursor: pointer;">Einstellungen speichern</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Manual break entry -->
+            <div id="manual-break-entry" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px; display: none;">
+                <h4 style="margin-top: 0;">Pause manuell eintragen</h4>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Tragen Sie manuell eine Pause für den aktuellen Tag ein:</p>
+                <form id="add-break-form" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 10px;">
+                    <input type="hidden" id="break-attendance-id" name="attendance_id">
+                    
+                    <div style="flex: 1;">
+                        <label for="break-start" style="display: block; margin-bottom: 5px; font-size: 0.9em;">Start:</label>
+                        <input type="time" id="break-start" name="break_start" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <label for="break-end" style="display: block; margin-bottom: 5px; font-size: 0.9em;">Ende:</label>
+                        <input type="time" id="break-end" name="break_end" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 0.9em;">Abrechnung:</label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="break-excluded" name="break_excluded" value="1" style="margin-right: 5px;">
+                            <span style="font-size: 0.9em;">Nicht abrechenbar</span>
+                        </label>
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <button type="button" id="add-break-btn" style="width: 100%; padding: 8px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Pause hinzufügen</button>
+                    </div>
                 </form>
             </div>
             
@@ -260,7 +323,7 @@
             }
             
             // For admin, open in new window; for users, navigate directly
-            const isAdmin = {{ 'true' if session.get('admin_logged_in') else 'false' }};
+            const isAdmin = "{{ 'true' if session.get('admin_logged_in') else 'false' }}" === "true";
             
             if (isAdmin) {
                 // Admin opens report in new window
