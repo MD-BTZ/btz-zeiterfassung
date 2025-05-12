@@ -7,7 +7,19 @@
 <body>
     {% include 'menu.html' %}
     <div class="container">
-        <h1>Admin Login</h1>
+        <h1>Login</h1>
+        
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         <form method="post">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
@@ -19,6 +31,11 @@
     <script>
         // Store user ID in sessionStorage for consent tracking
         sessionStorage.setItem('user_id', '{{ session.user_id }}');
+    </script>
+    {% else %}
+    <script>
+        // Clear any previous user ID if we're not logged in
+        sessionStorage.removeItem('user_id');
     </script>
     {% endif %}
     <script src="/static/script.js"></script>

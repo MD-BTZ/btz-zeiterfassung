@@ -231,6 +231,9 @@ def add_user():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Clear any existing flash messages that might be from a previous session
+    session.pop('_flashes', None)
+    
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -239,10 +242,16 @@ def login():
         cursor.execute('SELECT * FROM users WHERE username=?', (username,))
         user = cursor.fetchone()
         if user and bcrypt.check_password_hash(user[2], password):  # user[2] is the password field
+            # Clear previous session data completely to avoid any issues
+            session.clear()
+            
             # Store user info in session
             session['admin_logged_in'] = (username == 'admin')
             session['username'] = username
             session['user_id'] = user[0]
+            
+            # Set a flash message for successful login
+            flash('Sie wurden erfolgreich angemeldet.', 'success')
             
             # Redirect admins to admin panel, regular users to homepage
             if username == 'admin':
@@ -257,7 +266,11 @@ def login():
 def logout():
     # Clear all session data
     session.clear()
+    
+    # Add flash message about successful logout
     flash('Sie wurden erfolgreich abgemeldet.', 'success')
+    
+    # Return to login page
     return redirect(url_for('login'))
 
 @app.route('/user_management')

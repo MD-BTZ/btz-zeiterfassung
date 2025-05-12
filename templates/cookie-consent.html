@@ -68,11 +68,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Check if we're on the login page
+        const isLoginPage = window.location.pathname === '/login';
+        
         // Check if consent was already given
         const cookieConsent = localStorage.getItem('cookie-consent');
         
-        if (!cookieConsent) {
-            // Show cookie banner if no consent was given yet
+        if (!cookieConsent && !isLoginPage) {
+            // Only show banner if no consent given AND not on login page
             document.getElementById('cookie-consent-banner').style.display = 'block';
         }
         
@@ -112,6 +115,9 @@
                     console.error('Error logging consent:', error);
                 });
             }
+            
+            // Make sure this doesn't affect login/logout flow
+            return false;
         }
     });
 </script>

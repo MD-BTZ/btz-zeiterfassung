@@ -9,6 +9,14 @@
 </head>
 <body>
     {% include 'menu.html' %}
+    
+    <!-- Store user ID in sessionStorage after successful login -->
+    {% if session.get('user_id') %}
+    <script>
+        sessionStorage.setItem('user_id', '{{ session.get("user_id") }}');
+    </script>
+    {% endif %}
+    
     <div class="container">
         <h1>Zeiterfassungssystem</h1>
         
@@ -251,8 +259,16 @@
                 url += '?' + params.join('&');
             }
             
-            // For users, we'll just navigate to the URL which will prompt for authentication if needed
-            window.location.href = url;
+            // For admin, open in new window; for users, navigate directly
+            const isAdmin = {{ 'true' if session.get('admin_logged_in') else 'false' }};
+            
+            if (isAdmin) {
+                // Admin opens report in new window
+                window.open(url, '_blank', 'width=900,height=700');
+            } else {
+                // For users, navigate directly which may prompt for authentication
+                window.location.href = url;
+            }
         });
     });
     </script>
