@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pauseneinstellungen</title>
+    <title>Systemweite Pauseneinstellungen - Admin</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -170,8 +170,18 @@
 <body>
     {% include 'menu.html' %}
     
+    {% if not session.get('admin_logged_in') %}
+        <div class="container">
+            <div class="flash-message error">
+                Zugriff verweigert. Diese Seite ist nur für Administratoren zugänglich.
+            </div>
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="/" style="color: #1976d2;">Zurück zur Startseite</a>
+            </p>
+        </div>
+    {% else %}
     <div class="container">
-        <h1>Pauseneinstellungen</h1>
+        <h1>Systemweite Pauseneinstellungen (Admin)</h1>
         
         <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -185,10 +195,10 @@
         {% endwith %}
         
         <div class="settings-container">
-            <h2>Automatische Pausenerkennung</h2>
+            <h2>Systemweite Pausenerkennung</h2>
             <p style="color: #666; margin-bottom: 1.5em;">
-                Die automatische Pausenerkennung hilft Ihnen, längere Inaktivitätsperioden zu erkennen und als Pausen zu markieren.
-                Diese können optional von der abrechenbaren Arbeitszeit ausgeschlossen werden.
+                Die automatische Pausenerkennung hilft dem Unternehmen, längere Inaktivitätsperioden zu erkennen und als Pausen zu markieren.
+                Diese können optional von der abrechenbaren Arbeitszeit ausgeschlossen werden. Diese Einstellungen gelten für alle Benutzer.
             </p>
             
             <form action="/update_user_settings" method="post" class="settings-form">
@@ -243,15 +253,16 @@
         
         <!-- Break History -->
         <div class="settings-container breaks-history">
-            <h2>Pausenverlauf</h2>
+            <h2>Systemweiter Pausenverlauf</h2>
             {% if breaks %}
                 <p style="color: #666; margin-bottom: 1em;">
-                    Ihre letzten 20 erkannten Pausen:
+                    Die letzten 30 Pausen aus dem gesamten System:
                 </p>
                 <div style="overflow-x: auto;">
                     <table class="break-history-table">
                         <thead>
                             <tr>
+                                <th>Benutzer</th>
                                 <th>Datum</th>
                                 <th>Start</th>
                                 <th>Ende</th>
@@ -263,6 +274,7 @@
                         <tbody>
                             {% for break_item in breaks %}
                                 <tr>
+                                    <td><strong>{{ break_item[6] }}</strong></td>
                                     <td>{{ break_item[1][:10] }}</td>
                                     <td>{{ break_item[1][11:19] }}</td>
                                     <td>{{ break_item[2][11:19] }}</td>
@@ -293,6 +305,7 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {

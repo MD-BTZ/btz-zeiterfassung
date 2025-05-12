@@ -31,14 +31,14 @@
 The application now includes an automatic break detection system that:
 - Detects long periods of inactivity
 - Suggests breaks based on configurable thresholds
-- Allows users to exclude break time from billable hours
+- Allows excluding break time from billable hours
 - Supports manual entry of breaks
 
-### Break Settings
-Users can configure their break preferences:
+### Break Settings (Admin Only)
+Administrators can configure system-wide break preferences:
 1. Enable/disable automatic break detection
 2. Set inactivity threshold (minutes)
-3. Choose whether to exclude breaks from billable hours
+3. Choose whether to exclude breaks from billable hours for all users
 
 ## Notes
 - The database (`attendance.db`) is created automatically.

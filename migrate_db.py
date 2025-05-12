@@ -81,6 +81,17 @@ def migrate_db():
             FOREIGN KEY(user_id) REFERENCES users(id)
         )''')
         
+        # Check if system-wide settings exist (user_id = 0)
+        cursor.execute("SELECT id FROM user_settings WHERE user_id = 0")
+        system_settings = cursor.fetchone()
+        
+        if not system_settings:
+            # Create default system-wide settings
+            print("Creating default system-wide break settings...")
+            cursor.execute('''INSERT INTO user_settings 
+                           (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
+                           VALUES (0, 1, 30, 1)''')
+        
         conn.commit()
         print("Migration completed successfully!")
         

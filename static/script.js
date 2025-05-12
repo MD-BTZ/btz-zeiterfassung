@@ -31,33 +31,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Toggle break settings container visibility
-    const toggleBreakSettings = document.getElementById('toggle-break-settings');
-    if (toggleBreakSettings) {
-        toggleBreakSettings.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Check if we're on the break settings page already
-            if (window.location.pathname === '/break_settings') {
-                return;
-            }
-            
-            // If we're on a different page, check if there's a local container
-            const settingsContainer = document.getElementById('break-settings-container');
-            if (settingsContainer) {
-                // We're on a page with a local settings container
-                if (settingsContainer.style.display === 'none' || settingsContainer.style.display === '') {
-                    settingsContainer.style.display = 'block';
-                    toggleBreakSettings.textContent = 'Pauseneinstellungen ausblenden';
-                } else {
-                    settingsContainer.style.display = 'none';
-                    toggleBreakSettings.textContent = 'Pauseneinstellungen anzeigen';
-                }
+    // Toggle break settings container functionality removed - now using direct link instead
+    // Local settings container functionality preserved for pages that might use it
+    const settingsContainer = document.getElementById('break-settings-container');
+    if (settingsContainer) {
+        // Add toggle button for local container
+        const containerParent = settingsContainer.parentNode;
+        const toggleButton = document.createElement('button');
+        toggleButton.textContent = 'Pauseneinstellungen anzeigen';
+        toggleButton.className = 'btn btn-primary';
+        toggleButton.style.marginBottom = '10px';
+        
+        toggleButton.addEventListener('click', function() {
+            if (settingsContainer.style.display === 'none' || settingsContainer.style.display === '') {
+                settingsContainer.style.display = 'block';
+                toggleButton.textContent = 'Pauseneinstellungen ausblenden';
             } else {
-                // No local container, navigate to the break settings page
-                window.location.href = '/break_settings';
+                settingsContainer.style.display = 'none';
+                toggleButton.textContent = 'Pauseneinstellungen anzeigen';
             }
         });
+        
+        // Insert toggle button before the container
+        containerParent.insertBefore(toggleButton, settingsContainer);
     }
     
     // Handle manual break entry

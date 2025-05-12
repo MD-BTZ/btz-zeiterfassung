@@ -196,19 +196,23 @@ def checkout():
     cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
     username = cursor.fetchone()[0]
     
-    # Check for user break settings
+    # First check for system-wide break settings (user_id = 0)
     cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                    FROM user_settings WHERE user_id = ?''', (user_id,))
-    user_settings = cursor.fetchone()
+                    FROM user_settings WHERE user_id = 0''')
+    system_settings = cursor.fetchone()
     
+    # Set default values
     auto_break_detection = False
     auto_break_threshold = 30
     exclude_breaks = False
     
-    if user_settings:
-        auto_break_detection = bool(user_settings[0])
-        auto_break_threshold = int(user_settings[1])
-        exclude_breaks = bool(user_settings[2])
+    # Apply system-wide settings if available
+    if system_settings:
+        auto_break_detection = bool(system_settings[0])
+        auto_break_threshold = int(system_settings[1])
+        exclude_breaks = bool(system_settings[2])
+    
+    # User-specific settings are no longer checked - we're using system-wide settings only
     
     # First check if there's an active check-in
     cursor.execute('''SELECT id, check_in FROM attendance 
@@ -325,13 +329,18 @@ def break_settings():
     if not session.get('username'):
         return redirect(url_for('login'))
     
-    user_id = session.get('user_id')
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        flash('Nur Administratoren können auf die Pauseneinstellungen zugreifen', 'error')
+        return redirect(url_for('index'))
+    
     db = get_db()
     cursor = db.cursor()
     
-    # Get current user settings
+    # Get global (system-wide) settings - use a default user_id for system settings
+    # We'll use 0 as a special ID for system-wide settings
     cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                    FROM user_settings WHERE user_id = ?''', (user_id,))
+                    FROM user_settings WHERE user_id = 0''')
     settings = cursor.fetchone()
     
     if settings:
@@ -348,16 +357,17 @@ def break_settings():
             'exclude_breaks': False
         }
     
-    # Get user's break history
+    # Get recent break history for all users
     cursor.execute('''
         SELECT b.id, b.start_time, b.end_time, b.duration_minutes, 
-               b.is_excluded_from_billing, b.is_auto_detected
+               b.is_excluded_from_billing, b.is_auto_detected, 
+               u.username
         FROM breaks b
         JOIN attendance a ON b.attendance_id = a.id
-        WHERE a.user_id = ?
+        JOIN users u ON a.user_id = u.id
         ORDER BY b.start_time DESC
-        LIMIT 20
-    ''', (user_id,))
+        LIMIT 30
+    ''')
     break_history = cursor.fetchall()
     
     return render_template('break_settings.html', settings=user_settings, breaks=break_history)
@@ -367,7 +377,6 @@ def update_user_settings():
     if not session.get('username'):
         return redirect(url_for('login'))
     
-    user_id = session.get('user_id')
     auto_break_detection = request.form.get('auto_break_detection', '0') == '1'
     auto_break_threshold = int(request.form.get('auto_break_threshold', '30'))
     exclude_breaks = request.form.get('exclude_breaks', '0') == '1'
@@ -375,7 +384,14 @@ def update_user_settings():
     db = get_db()
     cursor = db.cursor()
     
-    # Check if settings exist for this user
+    # If admin is updating - use system-wide settings (user_id = 0)
+    if session.get('admin_logged_in'):
+        user_id = 0  # Special ID for system-wide settings
+        flash('Systemweite Pauseneinstellungen wurden aktualisiert', 'success')
+    else:
+        user_id = session.get('user_id')
+    
+    # Check if settings exist for this user or system-wide settings
     cursor.execute('SELECT id FROM user_settings WHERE user_id = ?', (user_id,))
     settings = cursor.fetchone()
     
@@ -439,11 +455,11 @@ def get_user_settings():
     if not session.get('username'):
         return redirect(url_for('login'))
     
-    user_id = session.get('user_id')
     db = get_db()
     cursor = db.cursor()
+    # Use system-wide settings (user_id = 0)
     cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                    FROM user_settings WHERE user_id = ?''', (user_id,))
+                    FROM user_settings WHERE user_id = 0''')
     settings = cursor.fetchone()
     
     if settings:
