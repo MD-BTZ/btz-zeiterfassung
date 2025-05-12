@@ -7,7 +7,11 @@
             <a href="/user_management" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">User Management</a>
         {% endif %}
         
-        <a href="/data_access" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Data Access</a>
+        {% if session.get('username') %}
+            <a href="#" id="toggle-break-settings" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Pauseneinstellungen</a>
+        {% endif %}
+        
+        <a href="/data_access" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Datenzugriff</a>
         <a href="/privacy_policy" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Datenschutzerklärung</a>
     </div>
     <div style="margin-right:2em;">

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pauseneinstellungen</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/breaks.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        /* Additional styles for break settings page */
+        .settings-container {
+            background: white;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2em;
+        }
+        
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5em;
+        }
+        
+        .setting-group {
+            padding: 1em;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-right: 10px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        
+        .breaks-history {
+            margin-top: 2em;
+        }
+        
+        .break-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1em;
+        }
+        
+        .break-history-table th, .break-history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .break-history-table th {
+            background-color: #f4f6f8;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .break-history-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .auto-detected-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        
+        .manual-badge {
+            background: #eee;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        
+        .excluded-badge {
+            background: #ffebee;
+            color: #c62828;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        
+        .included-badge {
+            background: #e8f5e9;
+            color: #388e3c;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        .range-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
+        
+        .range-slider {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        <h1>Pauseneinstellungen</h1>
+        
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="settings-container">
+            <h2>Automatische Pausenerkennung</h2>
+            <p style="color: #666; margin-bottom: 1.5em;">
+                Die automatische Pausenerkennung hilft Ihnen, längere Inaktivitätsperioden zu erkennen und als Pausen zu markieren.
+                Diese können optional von der abrechenbaren Arbeitszeit ausgeschlossen werden.
+            </p>
+            
+            <form action="/update_user_settings" method="post" class="settings-form">
+                <div class="setting-group">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <label class="switch">
+                            <input type="checkbox" id="auto-break-detection" name="auto_break_detection" value="1" {% if settings.auto_break_detection %}checked{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                        <span style="font-weight: bold; font-size: 1.1em;">Automatische Pausenerkennung aktivieren</span>
+                    </div>
+                    <p style="margin-left: 70px; color: #666; font-size: 0.9em;">
+                        Erkennt längere Inaktivitätszeiträume und markiert diese automatisch als Pausen.
+                    </p>
+                </div>
+                
+                <div id="threshold-container" class="setting-group" style="display: {% if settings.auto_break_detection %}block{% else %}none{% endif %}">
+                    <h3 style="margin-top: 0;">Inaktivitätsschwelle</h3>
+                    <p style="color: #666; margin-bottom: 15px;">
+                        Legen Sie fest, nach wie vielen Minuten Inaktivität eine automatische Pause erkannt werden soll.
+                    </p>
+                    
+                    <div class="range-container">
+                        <input type="range" id="threshold-slider" min="5" max="120" step="5" value="{{ settings.auto_break_threshold }}" class="range-slider">
+                        <div class="range-labels">
+                            <span>5 Min</span>
+                            <span>Schwellenwert: <span id="threshold-value">{{ settings.auto_break_threshold }}</span> Minuten</span>
+                            <span>120 Min</span>
+                        </div>
+                        <input type="hidden" id="auto-break-threshold" name="auto_break_threshold" value="{{ settings.auto_break_threshold }}">
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <label class="switch">
+                            <input type="checkbox" id="exclude-breaks-from-billing" name="exclude_breaks" value="1" {% if settings.exclude_breaks %}checked{% endif %}>
+                            <span class="slider"></span>
+                        </label>
+                        <span style="font-weight: bold; font-size: 1.1em;">Pausen von abrechenbaren Stunden ausschließen</span>
+                    </div>
+                    <p style="margin-left: 70px; color: #666; font-size: 0.9em;">
+                        Wenn aktiviert, werden erkannte Pausenzeiten nicht als Arbeitszeit abgerechnet.
+                    </p>
+                </div>
+                
+                <div style="margin-top: 1em;">
+                    <button type="submit" style="padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer;">Einstellungen speichern</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Break History -->
+        <div class="settings-container breaks-history">
+            <h2>Pausenverlauf</h2>
+            {% if breaks %}
+                <p style="color: #666; margin-bottom: 1em;">
+                    Ihre letzten 20 erkannten Pausen:
+                </p>
+                <div style="overflow-x: auto;">
+                    <table class="break-history-table">
+                        <thead>
+                            <tr>
+                                <th>Datum</th>
+                                <th>Start</th>
+                                <th>Ende</th>
+                                <th>Dauer</th>
+                                <th>Typ</th>
+                                <th>Abrechnung</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for break_item in breaks %}
+                                <tr>
+                                    <td>{{ break_item[1][:10] }}</td>
+                                    <td>{{ break_item[1][11:19] }}</td>
+                                    <td>{{ break_item[2][11:19] }}</td>
+                                    <td>{{ break_item[3] }} Min</td>
+                                    <td>
+                                        {% if break_item[5] %}
+                                            <span class="auto-detected-badge">Automatisch</span>
+                                        {% else %}
+                                            <span class="manual-badge">Manuell</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if break_item[4] %}
+                                            <span class="excluded-badge">Nicht abrechenbar</span>
+                                        {% else %}
+                                            <span class="included-badge">Abrechenbar</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: #666;">
+                    Keine Pausendaten gefunden. Pausen werden angezeigt, sobald sie erkannt oder manuell eingetragen werden.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const autoBreakDetection = document.getElementById('auto-break-detection');
+            const thresholdContainer = document.getElementById('threshold-container');
+            const thresholdSlider = document.getElementById('threshold-slider');
+            const thresholdValue = document.getElementById('threshold-value');
+            const thresholdInput = document.getElementById('auto-break-threshold');
+            
+            // Toggle threshold input visibility based on checkbox state
+            autoBreakDetection.addEventListener('change', function() {
+                thresholdContainer.style.display = this.checked ? 'block' : 'none';
+            });
+            
+            // Update displayed threshold value when slider is moved
+            thresholdSlider.addEventListener('input', function() {
+                thresholdValue.textContent = this.value;
+                thresholdInput.value = this.value;
+            });
+        });
+    </script>
+</body>
+</html>

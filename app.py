@@ -17,10 +17,57 @@ try:
 except ImportError:
     pdfkit = None
 
+# Helper function to parse datetime strings
+def try_parse(date_string):
+    """Try to parse a datetime string in various formats."""
+    if not date_string:
+        return None
+    
+    formats = [
+        '%Y-%m-%d %H:%M:%S',
+        '%Y-%m-%d %H:%M:%S.%f',
+        '%Y-%m-%dT%H:%M:%S',
+        '%Y-%m-%dT%H:%M:%S.%f'
+    ]
+    
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_string, fmt)
+        except ValueError:
+            continue
+    
+    return None
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this in production
 bcrypt = Bcrypt(app)
 DATABASE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'attendance.db')
+
+# Helper functions for templates
+def get_duration(start_time, end_time):
+    try:
+        start_dt = try_parse(start_time)
+        end_dt = try_parse(end_time)
+        if start_dt and end_dt:
+            duration = end_dt - start_dt
+            total_seconds = max(0, int(duration.total_seconds()))
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            return f"{hours:02d}:{minutes:02d}"
+        return "-"
+    except Exception:
+        return "-"
+
+def format_minutes(minutes):
+    if minutes is None:
+        return "-"
+    hours = minutes // 60
+    mins = minutes % 60
+    return f"{hours:02d}:{mins:02d}"
+
+# Add template helpers to Jinja environment
+app.jinja_env.globals.update(get_duration=get_duration)
+app.jinja_env.globals.update(format_minutes=format_minutes)
 
 # Set the timezone to CEST (Central European Summer Time)
 TIMEZONE = 'Europe/Berlin'
@@ -55,6 +102,28 @@ def init_db():
             user_id INTEGER,
             check_in TIMESTAMP,
             check_out TIMESTAMP,
+            has_auto_breaks BOOLEAN DEFAULT 0,
+            billable_minutes INTEGER,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )''')
+        # Create breaks table for automatic break detection
+        cursor.execute('''CREATE TABLE IF NOT EXISTS breaks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            attendance_id INTEGER,
+            start_time TIMESTAMP,
+            end_time TIMESTAMP,
+            duration_minutes INTEGER,
+            is_excluded_from_billing BOOLEAN DEFAULT 0,
+            is_auto_detected BOOLEAN DEFAULT 0,
+            FOREIGN KEY(attendance_id) REFERENCES attendance(id)
+        )''')
+        # Create user settings table
+        cursor.execute('''CREATE TABLE IF NOT EXISTS user_settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            auto_break_detection_enabled BOOLEAN DEFAULT 0,
+            auto_break_threshold_minutes INTEGER DEFAULT 30,
+            exclude_breaks_from_billing BOOLEAN DEFAULT 0,
             FOREIGN KEY(user_id) REFERENCES users(id)
         )''')
         # Create consent table for GDPR compliance
@@ -127,6 +196,20 @@ def checkout():
     cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
     username = cursor.fetchone()[0]
     
+    # Check for user break settings
+    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
+                    FROM user_settings WHERE user_id = ?''', (user_id,))
+    user_settings = cursor.fetchone()
+    
+    auto_break_detection = False
+    auto_break_threshold = 30
+    exclude_breaks = False
+    
+    if user_settings:
+        auto_break_detection = bool(user_settings[0])
+        auto_break_threshold = int(user_settings[1])
+        exclude_breaks = bool(user_settings[2])
+    
     # First check if there's an active check-in
     cursor.execute('''SELECT id, check_in FROM attendance 
                      WHERE user_id = ? AND check_out IS NULL 
@@ -137,10 +220,10 @@ def checkout():
         # There is an active check-in, update it with checkout time
         checkin_id = active_checkin[0]
         check_in_time = active_checkin[1]
-        cursor.execute('UPDATE attendance SET check_out = ? WHERE id = ?', (now_str, checkin_id))
-        db.commit()
         
-        # Calculate duration for feedback
+        # Calculate billable time and store checkout
+        billable_minutes = 0
+        
         try:
             # For safety, ensure we're working with consistent datetime objects
             checkin_dt = try_parse(check_in_time)
@@ -157,18 +240,68 @@ def checkout():
                 else:
                     # Calculate duration
                     duration = checkout_dt - checkin_dt
-                    
-                    # Ensure positive duration
                     total_seconds = max(0, int(duration.total_seconds()))
+                    billable_minutes = total_seconds // 60
+                    
+                    # Format for display
                     hours = total_seconds // 3600
                     minutes = (total_seconds % 3600) // 60
                     seconds = total_seconds % 60
                     duration_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-                    flash(f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}. Duration: {duration_str}', 'success')
+                    
+                    # Check for inactive periods if auto break detection is enabled
+                    detected_breaks = []
+                    long_break_detected = False
+                    
+                    if auto_break_detection and total_seconds > (auto_break_threshold * 60 * 2):
+                        # This is a simplified example - in a real-world app, this would use actual activity data
+                        # For this example, we'll assume if the time is greater than 2x the threshold, there was a break
+                        estimated_break_start = checkin_dt + timedelta(minutes=billable_minutes // 2 - auto_break_threshold)
+                        estimated_break_end = estimated_break_start + timedelta(minutes=auto_break_threshold)
+                        
+                        # Create break record
+                        break_start_str = estimated_break_start.strftime('%Y-%m-%d %H:%M:%S')
+                        break_end_str = estimated_break_end.strftime('%Y-%m-%d %H:%M:%S')
+                        
+                        cursor.execute('''INSERT INTO breaks 
+                                       (attendance_id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected)
+                                       VALUES (?, ?, ?, ?, ?, 1)''', 
+                                       (checkin_id, break_start_str, break_end_str, auto_break_threshold, exclude_breaks))
+                        
+                        detected_breaks.append({
+                            'start': break_start_str,
+                            'end': break_end_str,
+                            'duration': auto_break_threshold
+                        })
+                        
+                        # Adjust billable time if breaks are excluded
+                        if exclude_breaks:
+                            billable_minutes -= auto_break_threshold
+                        
+                        long_break_detected = True
+                    
+                    # Update attendance record with checkout time and billable minutes
+                    cursor.execute('UPDATE attendance SET check_out = ?, billable_minutes = ?, has_auto_breaks = ? WHERE id = ?', 
+                                  (now_str, billable_minutes, long_break_detected, checkin_id))
+                    db.commit()
+                    
+                    success_message = f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}. Duration: {duration_str}'
+                    
+                    if long_break_detected:
+                        break_time = f"{auto_break_threshold} Minuten"
+                        success_message += f'. Eine automatische Pause von {break_time} wurde erkannt.'
+                        if exclude_breaks:
+                            success_message += ' Diese Zeit wurde von den abrechenbaren Stunden ausgeschlossen.'
+                    
+                    flash(success_message, 'success')
             else:
+                cursor.execute('UPDATE attendance SET check_out = ? WHERE id = ?', (now_str, checkin_id))
+                db.commit()
                 flash(f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}', 'success')
         except Exception as e:
             # Continue without showing duration
+            cursor.execute('UPDATE attendance SET check_out = ? WHERE id = ?', (now_str, checkin_id))
+            db.commit()
             flash(f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}', 'success')
     else:
         # Check if there was any check-in today
@@ -187,13 +320,208 @@ def checkout():
     
     return redirect(url_for('index'))
 
+@app.route('/break_settings')
+def break_settings():
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Get current user settings
+    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
+                    FROM user_settings WHERE user_id = ?''', (user_id,))
+    settings = cursor.fetchone()
+    
+    if settings:
+        user_settings = {
+            'auto_break_detection': settings[0],
+            'auto_break_threshold': settings[1],
+            'exclude_breaks': settings[2]
+        }
+    else:
+        # Default settings
+        user_settings = {
+            'auto_break_detection': False,
+            'auto_break_threshold': 30,
+            'exclude_breaks': False
+        }
+    
+    # Get user's break history
+    cursor.execute('''
+        SELECT b.id, b.start_time, b.end_time, b.duration_minutes, 
+               b.is_excluded_from_billing, b.is_auto_detected
+        FROM breaks b
+        JOIN attendance a ON b.attendance_id = a.id
+        WHERE a.user_id = ?
+        ORDER BY b.start_time DESC
+        LIMIT 20
+    ''', (user_id,))
+    break_history = cursor.fetchall()
+    
+    return render_template('break_settings.html', settings=user_settings, breaks=break_history)
+
+@app.route('/update_user_settings', methods=['POST'])
+def update_user_settings():
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    auto_break_detection = request.form.get('auto_break_detection', '0') == '1'
+    auto_break_threshold = int(request.form.get('auto_break_threshold', '30'))
+    exclude_breaks = request.form.get('exclude_breaks', '0') == '1'
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Check if settings exist for this user
+    cursor.execute('SELECT id FROM user_settings WHERE user_id = ?', (user_id,))
+    settings = cursor.fetchone()
+    
+    if settings:
+        # Update existing settings
+        cursor.execute('''UPDATE user_settings 
+                        SET auto_break_detection_enabled = ?, 
+                            auto_break_threshold_minutes = ?, 
+                            exclude_breaks_from_billing = ?
+                        WHERE user_id = ?''', 
+                        (auto_break_detection, auto_break_threshold, exclude_breaks, user_id))
+    else:
+        # Create new settings
+        cursor.execute('''INSERT INTO user_settings 
+                       (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
+                       VALUES (?, ?, ?, ?)''', 
+                       (user_id, auto_break_detection, auto_break_threshold, exclude_breaks))
+    
+    db.commit()
+    flash('Pauseneinstellungen wurden aktualisiert', 'success')
+    
+    # Determine where to redirect based on referrer
+    referrer = request.referrer
+    if referrer and 'break_settings' in referrer:
+        return redirect(url_for('break_settings'))
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/add_break', methods=['POST'])
+def add_break():
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    attendance_id = request.form.get('attendance_id')
+    start_time = request.form.get('start_time')
+    end_time = request.form.get('end_time')
+    is_excluded = request.form.get('is_excluded', '0') == '1'
+    is_auto = request.form.get('is_auto', '0') == '1'
+    
+    # Calculate duration in minutes
+    start_dt = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+    end_dt = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+    duration = int((end_dt - start_dt).total_seconds() / 60)
+    
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('''INSERT INTO breaks 
+                   (attendance_id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected)
+                   VALUES (?, ?, ?, ?, ?, ?)''', 
+                   (attendance_id, start_time, end_time, duration, is_excluded, is_auto))
+    db.commit()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {'success': True, 'message': 'Pause wurde hinzugefügt'}
+    
+    flash('Pause wurde hinzugefügt', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/get_user_settings')
+def get_user_settings():
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
+                    FROM user_settings WHERE user_id = ?''', (user_id,))
+    settings = cursor.fetchone()
+    
+    if settings:
+        return {
+            'auto_break_detection': settings[0],
+            'auto_break_threshold': settings[1],
+            'exclude_breaks': settings[2]
+        }
+    else:
+        # Return defaults if no settings exist
+        return {
+            'auto_break_detection': False,
+            'auto_break_threshold': 30,
+            'exclude_breaks': False
+        }
+
+@app.route('/get_breaks/<int:attendance_id>')
+def get_breaks(attendance_id):
+    if not session.get('username'):
+        return jsonify({'error': 'Not authorized'}), 401
+    
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('''SELECT id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected 
+                    FROM breaks WHERE attendance_id = ?''', (attendance_id,))
+    break_records = cursor.fetchall()
+    
+    breaks = []
+    for record in break_records:
+        breaks.append({
+            'id': record[0],
+            'start_time': record[1],
+            'end_time': record[2],
+            'duration': record[3],
+            'is_excluded': bool(record[4]),
+            'is_auto': bool(record[5])
+        })
+    
+    return jsonify({'breaks': breaks})
+    
+@app.route('/get_today_attendance/<int:user_id>')
+def get_today_attendance(user_id):
+    if not session.get('username'):
+        return jsonify({'error': 'Not authorized'}), 401
+    
+    # Verify the user is requesting their own attendance or is admin
+    if session.get('user_id') != user_id and not session.get('admin_logged_in'):
+        return jsonify({'error': 'Not authorized to access this user\'s attendance'}), 403
+    
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('''SELECT id, check_in, check_out 
+                    FROM attendance 
+                    WHERE user_id = ? AND date(check_in) = ? 
+                    ORDER BY check_in DESC LIMIT 1''', (user_id, today))
+    attendance = cursor.fetchone()
+    
+    if attendance:
+        return jsonify({
+            'attendance': {
+                'id': attendance[0],
+                'check_in': attendance[1],
+                'check_out': attendance[2]
+            }
+        })
+    
+    return jsonify({'attendance': None})
+
 @app.route('/admin')
 def admin():
     if not session.get('admin_logged_in'):
         return redirect(url_for('login'))
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('''SELECT attendance.id, users.username, attendance.check_in, attendance.check_out
+    cursor.execute('''SELECT attendance.id, users.username, attendance.check_in, attendance.check_out, 
+                      attendance.has_auto_breaks, attendance.billable_minutes
                       FROM attendance
                       JOIN users ON attendance.user_id = users.id
                       ORDER BY attendance.check_in DESC''')

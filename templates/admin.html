@@ -3,9 +3,62 @@
 <head>
     <title>Admin Panel</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        /* Fix Week Picker alignment issues */
+        .ui-datepicker-trigger {
+            vertical-align: middle;
+        }
+        #week-picker {
+            vertical-align: middle;
+            line-height: normal;
+            height: 2.5em !important;
+            box-sizing: border-box;
+        }
+        /* Ensure consistent form field heights */
+        select, input[type="date"], input[type="text"] {
+            height: 2.5em;
+            box-sizing: border-box;
+        }
+        /* Fix label alignment */
+        #report-form label {
+            display: block;
+            margin-bottom: 0.3em;
+            line-height: 1.2;
+        }
+        /* Ensure consistent form elements */
+        .form-field-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            min-height: 5em;
+            position: relative;
+        }
+        /* Fix jQuery UI datepicker issues */
+        .ui-datepicker {
+            font-size: 0.9em;
+        }
+        .hasDatepicker {
+            position: relative;
+        }
+        /* Break indicator styling */
+        .break-indicator {
+            margin-right: 5px;
+            cursor: help;
+        }
+        .show-breaks-btn {
+            text-decoration: none;
+            color: #1976d2;
+            font-size: 0.9em;
+        }
+        .show-breaks-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     {% include 'menu.html' %}
@@ -41,15 +94,18 @@
                 {{ summary|safe }}
             {% endif %}
         </div>
-        <h2>Attendance Records</h2>
+        <h2>Anwesenheitsübersicht</h2>
         <div style="overflow-x:auto;">
         <table class="attendance-table">
             <thead>
                 <tr>
                     <th>User</th>
-                    <th>Date</th>
+                    <th>Datum</th>
                     <th>Check In</th>
                     <th>Check Out</th>
+                    <th>Gesamtzeit</th>
+                    <th>Abrechenbar</th>
+                    <th>Pausen</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,18 +115,40 @@
                     <td>{% if rec[2] %}{{ rec[2][:10] }}{% elif rec[3] %}{{ rec[3][:10] }}{% else %}-{% endif %}</td>
                     <td>{% if rec[2] %}{{ rec[2][11:19] }}{% else %}-{% endif %}</td>
                     <td>{% if rec[3] %}{{ rec[3][11:19] }}{% else %}-{% endif %}</td>
+                    <td>{% if rec[2] and rec[3] %}{{ get_duration(rec[2], rec[3]) }}{% else %}-{% endif %}</td>
+                    <td>{% if rec[5] %}{{ format_minutes(rec[5]) }}{% else %}-{% endif %}</td>
+                    <td>
+                        {% if rec[4] %}
+                        <span class="break-indicator" title="Automatische Pausen erkannt">⏱️</span>
+                        <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec[0] }}">Anzeigen</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         </div>
+        
+        <!-- Modal for displaying breaks -->
+        <div id="breaks-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+            <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <span id="close-modal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+                <h3>Pausendetails</h3>
+                <div id="breaks-content">
+                    <p>Keine Pausendaten gefunden.</p>
+                </div>
+            </div>
+        </div>
+        
        <!-- <h2>User Management</h2>
         <a href="/user_management" target="_blank" class="user-management-link">Open User Management in New Tab</a> -->
         <h2 style="margin-top:2em;">Bericht generieren</h2>
         <form id="report-form" style="margin-bottom:2em; display: flex; flex-wrap: wrap; gap: 1.5em; align-items: flex-end; background: #f4f6f8; padding: 1.5em 1em; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-            <div style="flex:1; min-width:180px;">
-                <label for="report-user-id">User</label>
-                <select id="report-user-id" name="user_id" style="width:100%;padding:0.5em;">
+            <div class="form-field-container" style="flex:1; min-width:180px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
+                <label for="report-user-id" style="margin-bottom: 0.3em; display: block;">User</label>
+                <select id="report-user-id" name="user_id" style="width:100%;padding:0.5em; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
                     <option value="" selected>All users</option>
                     {% set seen = [] %}
                     {% for rec in records %}
@@ -81,22 +159,22 @@
                     {% endfor %}
                 </select>
             </div>
-            <div style="flex:1; min-width:140px;">
-                <label for="report-date">Date</label>
-                <input type="date" id="report-date" name="date" style="width:100%;padding:0.5em;">
+            <div class="form-field-container" style="flex:1; min-width:140px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
+                <label for="report-date" style="margin-bottom: 0.3em; display: block;">Datum</label>
+                <input type="date" id="report-date" name="date" style="width:100%;padding:0.5em; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
             </div>
-            <div style="flex:1; min-width:180px;">
-                <label for="week-picker">Week</label>
-                <div style="display: flex; gap: 5px; align-items: center;">
-                    <input type="text" id="week-picker" style="padding: 0.5em; flex: 1;" placeholder="Select Week" readonly>
-                    <span id="selected-week-display" style="background: #f0f0f0; padding: 5px; border-radius: 3px; font-size: 0.9em; min-width: 80px;"></span>
+            <div class="form-field-container" style="flex:1; min-width:180px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
+                <label for="week-picker" style="margin-bottom: 0.3em; display: block;">Woche</label>
+                <div style="position: relative; width: 100%; display: flex; align-items: center;">
+                    <input type="text" id="week-picker" name="week" style="width:100%; padding:0.5em; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;" placeholder="Woche wählen" readonly>
+                    <span id="selected-week-display" style="display:none;"></span>
                     <input type="hidden" id="report-week" name="week">
                 </div>
             </div>
-            <div style="flex:1; min-width:180px;">
-                <label for="report-month-select">Month</label>
-                <div style="display: flex; gap: 5px; align-items: center;">
-                    <select id="report-month-select" style="padding: 0.5em; flex: 1;">
+            <div class="form-field-container" style="flex:1; min-width:180px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
+                <label for="report-month-select" style="margin-bottom: 0.3em; display: block;">Monat</label>
+                <div style="display: flex; gap: 5px; align-items: center; width: 100%;">
+                    <select id="report-month-select" style="padding: 0.5em; flex: 1; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
                         <option value="" selected disabled>Monat</option>
                         <option value="1">Januar</option>
                         <option value="2">Februar</option>
@@ -111,7 +189,7 @@
                         <option value="11">November</option>
                         <option value="12">Dezember</option>
                     </select>
-                    <select id="report-month-year" style="padding: 0.5em; flex: 1;">
+                    <select id="report-month-year" style="padding: 0.5em; flex: 1; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
                         {% for year in range(2023, 2026) %}
                         <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
                         {% endfor %}
@@ -119,8 +197,8 @@
                     <input type="hidden" id="report-month" name="month">
                 </div>
             </div>
-            <div style="flex:1; min-width:120px;">
-                <button type="button" id="generate-report-btn" style="width:100%;padding:0.7em 0; background:#1976d2; color:#fff; border:none; border-radius:6px; font-size:1em; cursor:pointer;">Generate Report</button>
+            <div class="form-field-container" style="flex:1; min-width:120px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
+                <button type="button" id="generate-report-btn" style="width:100%;padding:0.7em 0; background:#1976d2; color:#fff; border:none; border-radius:6px; font-size:1em; cursor:pointer; margin-top: auto;">Bericht generieren</button>
             </div>
         </form>
         <script>
@@ -219,5 +297,85 @@
     </div>
     <script src="/static/script.js"></script>
     <script src="/static/week-picker.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Break details modal functionality
+            const modal = document.getElementById('breaks-modal');
+            const closeModal = document.getElementById('close-modal');
+            const breaksContent = document.getElementById('breaks-content');
+            const showBreaksBtns = document.querySelectorAll('.show-breaks-btn');
+            
+            // Close modal when clicking X
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Show breaks when clicking 'Show' button
+            showBreaksBtns.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const attendanceId = this.getAttribute('data-attendance-id');
+                    
+                    // Show loading state
+                    breaksContent.innerHTML = '<p>Pausendaten werden geladen...</p>';
+                    modal.style.display = 'block';
+                    
+                    // Fetch break details
+                    fetch('/get_breaks/' + attendanceId)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.breaks && data.breaks.length > 0) {
+                                // Create table for breaks
+                                let html = `<table style="width:100%; border-collapse: collapse; margin-top: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Start</th>
+                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Ende</th>
+                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Dauer (Min)</th>
+                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Typ</th>
+                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Abrechnung</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+                                
+                                data.breaks.forEach(function(breakItem) {
+                                    const startTime = breakItem.start_time ? breakItem.start_time.substring(11, 19) : '-';
+                                    const endTime = breakItem.end_time ? breakItem.end_time.substring(11, 19) : '-';
+                                    const breakType = breakItem.is_auto ? 'Automatisch' : 'Manuell';
+                                    const billingStatus = breakItem.is_excluded ? 'Nicht abrechenbar' : 'Abrechenbar';
+                                    
+                                    html += `<tr>
+                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${startTime}</td>
+                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${endTime}</td>
+                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${breakItem.duration}</td>
+                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${breakType}</td>
+                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${billingStatus}</td>
+                                    </tr>`;
+                                });
+                                
+                                html += `</tbody></table>`;
+                                breaksContent.innerHTML = html;
+                            } else {
+                                breaksContent.innerHTML = '<p>Keine Pausendaten gefunden.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching breaks:', error);
+                            breaksContent.innerHTML = '<p>Fehler beim Laden der Pausendaten.</p>';
+                        });
+                });
+            });
+        });
+    </script>
 </body>
 </html>
