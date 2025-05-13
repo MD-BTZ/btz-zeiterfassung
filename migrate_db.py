@@ -60,7 +60,7 @@ def migrate_db():
             cursor.execute("ALTER TABLE attendance_new RENAME TO attendance")
         
         # Create breaks table if it doesn't exist
-        cursor.execute('''CREATE TABLE IF NOT EXISTS breaks (
+        cursor.execute("""CREATE TABLE IF NOT EXISTS breaks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             attendance_id INTEGER,
             start_time TIMESTAMP,
@@ -68,29 +68,43 @@ def migrate_db():
             duration_minutes INTEGER,
             is_excluded_from_billing BOOLEAN DEFAULT 0,
             is_auto_detected BOOLEAN DEFAULT 0,
+            description TEXT, -- Added description column
             FOREIGN KEY(attendance_id) REFERENCES attendance(id)
+        )""")
+
+        # Check and add description column to breaks table if it wasn't created by the above
+        # (e.g. if table already existed without it)
+        cursor.execute("PRAGMA table_info(breaks)")
+        breaks_columns = [column[1] for column in cursor.fetchall()]
+        if 'description' not in breaks_columns:
+            print("Adding 'description' column to breaks table...")
+            cursor.execute("ALTER TABLE breaks ADD COLUMN description TEXT")
+        
+        # Drop the old user_settings table if it exists, as we are replacing it
+        # with a more flexible key-value system_settings table.
+        cursor.execute("DROP TABLE IF EXISTS user_settings")
+        print("Dropped old 'user_settings' table if it existed.")
+
+        # Create system_settings table if it doesn't exist (key-value store)
+        cursor.execute('''CREATE TABLE IF NOT EXISTS system_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT
         )''')
-        
-        # Create user settings table if it doesn't exist
-        cursor.execute('''CREATE TABLE IF NOT EXISTS user_settings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            auto_break_detection_enabled BOOLEAN DEFAULT 0,
-            auto_break_threshold_minutes INTEGER DEFAULT 30,
-            exclude_breaks_from_billing BOOLEAN DEFAULT 0,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )''')
-        
-        # Check if system-wide settings exist (user_id = 0)
-        cursor.execute("SELECT id FROM user_settings WHERE user_id = 0")
-        system_settings = cursor.fetchone()
-        
-        if not system_settings:
-            # Create default system-wide settings
-            print("Creating default system-wide break settings...")
-            cursor.execute('''INSERT INTO user_settings 
-                           (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
-                           VALUES (0, 1, 30, 1)''')
+        print("Ensured 'system_settings' table exists.")
+
+        # Populate system_settings with default values if they don't exist
+        default_settings = {
+            'auto_break_detection': '1',  # '1' for true, '0' for false
+            'exclude_breaks_from_billing': '1', # '1' for true, '0' for false
+            'statutory_break_6h_work_threshold': '360', # minutes (work > 6 hours)
+            'statutory_break_6h_duration': '30',        # minutes
+            'statutory_break_9h_work_threshold': '540', # minutes (work > 9 hours)
+            'statutory_break_9h_duration': '45'         # minutes
+        }
+
+        for key, value in default_settings.items():
+            cursor.execute("INSERT OR IGNORE INTO system_settings (key, value) VALUES (?, ?)", (key, value))
+        print(f"Populated 'system_settings' with default values: {default_settings}")
         
         conn.commit()
         print("Migration completed successfully!")

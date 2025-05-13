@@ -11,6 +11,8 @@ import csv
 import io
 import datetime as dt
 from werkzeug.utils import secure_filename
+import traceback # Added for more detailed error logging
+
 # For PDF export
 try:
     import pdfkit
@@ -24,10 +26,16 @@ def try_parse(date_string):
         return None
     
     formats = [
+        # Standard formats
         '%Y-%m-%d %H:%M:%S',
         '%Y-%m-%d %H:%M:%S.%f',
         '%Y-%m-%dT%H:%M:%S',
-        '%Y-%m-%dT%H:%M:%S.%f'
+        '%Y-%m-%dT%H:%M:%S.%f',
+        # Formats with timezone info
+        '%Y-%m-%d %H:%M:%S%z',
+        '%Y-%m-%d %H:%M:%S.%f%z',
+        '%Y-%m-%dT%H:%M:%S%z',
+        '%Y-%m-%dT%H:%M:%S.%f%z'
     ]
     
     for fmt in formats:
@@ -35,6 +43,13 @@ def try_parse(date_string):
             return datetime.strptime(date_string, fmt)
         except ValueError:
             continue
+    
+    # If standard parsing fails, try using dateutil as a fallback
+    try:
+        from dateutil import parser
+        return parser.parse(date_string)
+    except:
+        pass
     
     return None
 
@@ -174,14 +189,27 @@ def checkin():
     cursor = db.cursor()
     user_id = request.form.get('user_id')
     now = get_local_time()
-    cursor.execute('INSERT INTO attendance (user_id, check_in) VALUES (?, ?)', (user_id, now))
     
-    # Get username for feedback message
+    # Get username for feedback messages
     cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
     username = cursor.fetchone()[0]
     
+    # Check if user has an active check-in (no check-out)
+    cursor.execute('''SELECT id FROM attendance 
+                      WHERE user_id = ? AND check_out IS NULL 
+                      ORDER BY check_in DESC LIMIT 1''', (user_id,))
+    active_checkin = cursor.fetchone()
+    
+    if active_checkin:
+        flash(f'{username} ist bereits eingecheckt. Bitte zuerst auschecken.', 'error')
+        return redirect(url_for('index'))
+    
+    # Format the time consistently before storing in the database
+    now_str = now.strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute('INSERT INTO attendance (user_id, check_in) VALUES (?, ?)', (user_id, now_str))
+    
     db.commit()
-    flash(f'Successfully checked in {username} at {now.strftime("%H:%M:%S")}', 'success')
+    flash(f'Erfolgreich eingeloggt: {username} um {now.strftime("%H:%M:%S")}', 'success')
     return redirect(url_for('index'))
 
 @app.route('/checkout', methods=['POST'])
@@ -190,11 +218,16 @@ def checkout():
     cursor = db.cursor()
     user_id = request.form.get('user_id')
     now = get_local_time()
+    # Store with consistent format - no timezone info in the database string
     now_str = now.strftime('%Y-%m-%d %H:%M:%S')  # Store as string for database
     
     # Get username for feedback message
     cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
     username = cursor.fetchone()[0]
+    
+    # Check for confirmation (if required, can be disabled with parameter)
+    confirm = request.form.get('confirm', 'false')
+    skip_confirmation = request.form.get('skip_confirmation', 'false') == 'true'
     
     # First check for system-wide break settings (user_id = 0)
     cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
@@ -225,88 +258,136 @@ def checkout():
         checkin_id = active_checkin[0]
         check_in_time = active_checkin[1]
         
+        # Check if confirmation is required for long check-ins
+        if confirm != 'true' and not skip_confirmation:
+            try:
+                checkin_dt = try_parse(check_in_time)
+                if checkin_dt:
+                    # Calculate hours since check-in
+                    duration = now - checkin_dt
+                    hours_since_checkin = duration.total_seconds() / 3600
+                    
+                    # If check-in was more than 10 hours ago, require confirmation
+                    if hours_since_checkin > 10:
+                        return render_template('checkout_confirm.html', 
+                                              user_id=user_id, 
+                                              username=username, 
+                                              check_in_time=checkin_dt.strftime("%H:%M:%S"), 
+                                              hours=int(hours_since_checkin))
+            except Exception as e:
+                # If there's an error calculating time, proceed with checkout
+                print(f"Error while checking confirmation need: {str(e)}")
+        
         # Calculate billable time and store checkout
         billable_minutes = 0
         
         try:
-            # For safety, ensure we're working with consistent datetime objects
-            checkin_dt = try_parse(check_in_time)
-            checkout_dt = datetime.now()  # Use current time for consistent calculation
+            checkin_dt = try_parse(check_in_time) 
+            checkout_dt = try_parse(now_str) 
             
-            if checkin_dt:
-                # Make both naive datetimes
-                if hasattr(checkin_dt, 'tzinfo') and checkin_dt.tzinfo is not None:
-                    checkin_dt = checkin_dt.replace(tzinfo=None)
-                
-                # Check if check-in time is reasonable (not in the future)
-                if checkin_dt > checkout_dt:
-                    flash(f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}', 'success')
-                else:
-                    # Calculate duration
-                    duration = checkout_dt - checkin_dt
-                    total_seconds = max(0, int(duration.total_seconds()))
-                    billable_minutes = total_seconds // 60
+            if not (checkin_dt and checkout_dt):
+                flash('Fehler beim Parsen der Check-in/Check-out Zeiten.', 'error')
+                if 'db' in locals(): # Check if db is defined
+                    db.close()
+                return redirect(url_for('index'))
+
+            total_work_duration_minutes = int((checkout_dt - checkin_dt).total_seconds() / 60)
+            
+            # Fetch system settings for break automation
+            cursor.execute("SELECT value FROM system_settings WHERE key = 'auto_break_detection'")
+            auto_break_setting = cursor.fetchone()
+            auto_break_detection_enabled = auto_break_setting[0] == '1' if auto_break_setting else False
+
+            cursor.execute("SELECT value FROM system_settings WHERE key = 'exclude_breaks_from_billing'")
+            exclude_breaks_setting = cursor.fetchone()
+            # Default to True: exclude breaks from billing if setting not found or '1'
+            exclude_breaks_from_billing_applies = True 
+            if exclude_breaks_setting: # If the setting exists
+                exclude_breaks_from_billing_applies = exclude_breaks_setting[0] == '1'
+
+
+            has_auto_breaks_flag = False # Initialize flag
+
+            if auto_break_detection_enabled and total_work_duration_minutes > 0 : 
+                statutory_break_due_minutes = 0
+                if total_work_duration_minutes > 9 * 60:  # More than 9 hours
+                    statutory_break_due_minutes = 45
+                elif total_work_duration_minutes > 6 * 60:  # More than 6 hours
+                    statutory_break_due_minutes = 30
+
+                if statutory_break_due_minutes > 0:
+                    cursor.execute("SELECT SUM(duration_minutes) FROM breaks WHERE attendance_id = ?", (checkin_id,))
+                    sum_existing_breaks_row = cursor.fetchone()
+                    existing_break_minutes_taken = sum_existing_breaks_row[0] if sum_existing_breaks_row and sum_existing_breaks_row[0] is not None else 0
                     
-                    # Format for display
-                    hours = total_seconds // 3600
-                    minutes = (total_seconds % 3600) // 60
-                    seconds = total_seconds % 60
-                    duration_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                    break_to_add_minutes = statutory_break_due_minutes - existing_break_minutes_taken
                     
-                    # Check for inactive periods if auto break detection is enabled
-                    detected_breaks = []
-                    long_break_detected = False
-                    
-                    if auto_break_detection and total_seconds > (auto_break_threshold * 60 * 2):
-                        # This is a simplified example - in a real-world app, this would use actual activity data
-                        # For this example, we'll assume if the time is greater than 2x the threshold, there was a break
-                        estimated_break_start = checkin_dt + timedelta(minutes=billable_minutes // 2 - auto_break_threshold)
-                        estimated_break_end = estimated_break_start + timedelta(minutes=auto_break_threshold)
+                    if break_to_add_minutes > 0:
+                        auto_break_end_dt = checkout_dt
+                        auto_break_start_dt = checkout_dt - timedelta(minutes=break_to_add_minutes)
+
+                        # Ensure auto break start is not before check-in time
+                        if auto_break_start_dt < checkin_dt:
+                            auto_break_start_dt = checkin_dt
                         
-                        # Create break record
-                        break_start_str = estimated_break_start.strftime('%Y-%m-%d %H:%M:%S')
-                        break_end_str = estimated_break_end.strftime('%Y-%m-%d %H:%M:%S')
+                        auto_break_start_str = auto_break_start_dt.strftime('%Y-%m-%d %H:%M:%S')
+                        auto_break_end_str = auto_break_end_dt.strftime('%Y-%m-%d %H:%M:%S')
                         
-                        cursor.execute('''INSERT INTO breaks 
-                                       (attendance_id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected)
-                                       VALUES (?, ?, ?, ?, ?, 1)''', 
-                                       (checkin_id, break_start_str, break_end_str, auto_break_threshold, exclude_breaks))
+                        actual_inserted_duration = break_to_add_minutes
                         
-                        detected_breaks.append({
-                            'start': break_start_str,
-                            'end': break_end_str,
-                            'duration': auto_break_threshold
-                        })
-                        
-                        # Adjust billable time if breaks are excluded
-                        if exclude_breaks:
-                            billable_minutes -= auto_break_threshold
-                        
-                        long_break_detected = True
-                    
-                    # Update attendance record with checkout time and billable minutes
-                    cursor.execute('UPDATE attendance SET check_out = ?, billable_minutes = ?, has_auto_breaks = ? WHERE id = ?', 
-                                  (now_str, billable_minutes, long_break_detected, checkin_id))
-                    db.commit()
-                    
-                    success_message = f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}. Duration: {duration_str}'
-                    
-                    if long_break_detected:
-                        break_time = f"{auto_break_threshold} Minuten"
-                        success_message += f'. Eine automatische Pause von {break_time} wurde erkannt.'
-                        if exclude_breaks:
-                            success_message += ' Diese Zeit wurde von den abrechenbaren Stunden ausgeschlossen.'
-                    
-                    flash(success_message, 'success')
-            else:
-                cursor.execute('UPDATE attendance SET check_out = ? WHERE id = ?', (now_str, checkin_id))
-                db.commit()
-                flash(f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}', 'success')
-        except Exception as e:
-            # Continue without showing duration
-            cursor.execute('UPDATE attendance SET check_out = ? WHERE id = ?', (now_str, checkin_id))
+                        # Ensure the break slot is valid (start < end) before inserting
+                        if auto_break_start_dt < auto_break_end_dt:
+                            cursor.execute("""INSERT INTO breaks 
+                                              (attendance_id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected, description)
+                                              VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                                           (checkin_id, auto_break_start_str, auto_break_end_str, actual_inserted_duration, 
+                                            exclude_breaks_from_billing_applies, True, "Automatische Pause gem. ArbZG"))
+                            has_auto_breaks_flag = True
+                        else:
+                            app.logger.info(f"Skipped inserting auto-break for attendance_id {checkin_id} due to invalid time slot (start: {auto_break_start_str}, end: {auto_break_end_str}).")
+
+            # Recalculate total_excluded_break_minutes (includes any newly added auto-breaks if they are set to be excluded)
+            cursor.execute("""
+                SELECT SUM(duration_minutes) FROM breaks 
+                WHERE attendance_id = ? AND is_excluded_from_billing = 1
+            """, (checkin_id,))
+            total_excluded_break_minutes_row = cursor.fetchone()
+            total_excluded_break_minutes = total_excluded_break_minutes_row[0] if total_excluded_break_minutes_row and total_excluded_break_minutes_row[0] is not None else 0
+            
+            billable_minutes = total_work_duration_minutes - total_excluded_break_minutes
+            if billable_minutes < 0: # Billable time cannot be negative
+                billable_minutes = 0
+
+            # Update attendance record with checkout time, calculated billable minutes, and auto_break flag
+            cursor.execute('''UPDATE attendance SET check_out = ?, billable_minutes = ?, has_auto_breaks = ?
+                              WHERE id = ?''', (now_str, billable_minutes, has_auto_breaks_flag, checkin_id))
             db.commit()
-            flash(f'Successfully checked out {username} at {now.strftime("%H:%M:%S")}', 'success')
+            
+            username = session.get('username', 'Benutzer') # Get username from session, with a default
+            # Update flash message to include total work duration, total breaks, and billable time
+            flash_message = f'Erfolgreich ausgeloggt: {username} um {now.strftime("%H:%M:%S")}. '
+            flash_message += f'Gesamtarbeitszeit: {format_minutes(total_work_duration_minutes)}. '
+            
+            # Get total break duration (both excluded and included) for the flash message
+            cursor.execute("SELECT SUM(duration_minutes) FROM breaks WHERE attendance_id = ?", (checkin_id,))
+            total_breaks_for_flash_row = cursor.fetchone()
+            total_breaks_for_flash = total_breaks_for_flash_row[0] if total_breaks_for_flash_row and total_breaks_for_flash_row[0] is not None else 0
+            
+            flash_message += f'Pausen gesamt: {format_minutes(total_breaks_for_flash)}. '
+            flash_message += f'Verrechenbare Zeit: {format_minutes(billable_minutes)}.'
+            if has_auto_breaks_flag:
+                flash_message += ' (Automatische Pausen wurden hinzugefügt.)'
+            flash(flash_message, 'success')
+
+        except Exception as e:
+            if 'db' in locals(): # Check if db was initialized
+                db.rollback()
+            app.logger.error(f"Error during checkout for user {session.get('user_id','<unknown>')}, checkin_id {checkin_id if 'checkin_id' in locals() else '<unknown>'}: {e}") # checkin_id might not be defined if error is early
+            app.logger.error(traceback.format_exc()) # Ensure traceback is imported
+            flash(f'Ein Fehler ist beim Auschecken aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.', 'error') # Generic error for user
+        finally:
+            if 'db' in locals(): 
+                db.close()
     else:
         # Check if there was any check-in today
         today = datetime.now().strftime('%Y-%m-%d')  # Using naive datetime for date comparison
@@ -318,9 +399,9 @@ def checkout():
         if recent and recent[1]:  # Already has checkout
             flash(f'{username} has already checked out today at {recent[1][11:19]}. Please check in first.', 'error')
         elif not recent:  # No check-in today at all
-            flash(f'No check-in record found for {username} today. Please check in first.', 'error')
+            flash(f'Kein Check-in für {username} heute gefunden. Bitte zuerst einchecken.', 'error')
         else:
-            flash(f'No active check-in found for {username}. Something went wrong.', 'error')
+            flash(f'Kein aktiver Check-in für {username} gefunden. Etwas ist schiefgelaufen.', 'error')
     
     return redirect(url_for('index'))
 
@@ -435,6 +516,10 @@ def add_break():
     start_dt = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
     end_dt = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
     duration = int((end_dt - start_dt).total_seconds() / 60)
+    
+    # Short auto-breaks (≤ 5 minutes) should not be excluded from billing
+    if is_auto and duration <= 5:
+        is_excluded = False
     
     db = get_db()
     cursor = db.cursor()
@@ -623,7 +708,21 @@ def user_management():
         return redirect(url_for('login'))
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('SELECT id, username FROM users ORDER BY username ASC')
+    
+    # Fetch users along with their most recent consent status
+    cursor.execute('''
+        SELECT u.id, u.username, 
+               COALESCE(
+                   (SELECT c.consent_status 
+                    FROM user_consents c 
+                    WHERE c.user_id = u.id 
+                    ORDER BY c.consent_date DESC 
+                    LIMIT 1), 
+                   'Nicht angegeben'
+               ) as consent_status
+        FROM users u
+        ORDER BY u.username ASC
+    ''')
     users = cursor.fetchall()
     return render_template('user_management.html', users=users)
 
@@ -1271,12 +1370,9 @@ def user_report(username):
                         hours = int(diff) // 3600
                         minutes = (int(diff) % 3600) // 60
                         seconds = int(diff) % 60
-                        duration_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-                    else:
-                        duration_str = "Invalid times"
-                else:
-                    duration_str = "Invalid format"
-            records_with_durations.append(((username_row, check_in, check_out), duration_str))
+                        duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        
+        # Calculate total duration
         hours = total_seconds // 3600
         minutes = (total_seconds % 3600) // 60
         seconds = total_seconds % 60

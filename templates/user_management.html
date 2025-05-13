@@ -1,50 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Management</title>
+    <title>Benutzerverwaltung</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     {% include 'menu.html' %}
     <div class="container">
-        <h1>User Management</h1>
-        <h2>Add New User</h2>
+        <h1>Benutzerverwaltung</h1>
+        <h2>Benutzerkonto anlegen</h2>
         {% if error %}
         <div style="color: #b71c1c; background: #ffeaea; border: 1px solid #ffcdd2; padding: 0.7em 1em; border-radius: 6px; margin-bottom: 1em;">
             {{ error }}
         </div>
         {% endif %}
         <form id="add-user-form" action="/add_user" method="post" style="margin-bottom:2em;">
-            <label for="username">Username:</label>
+            <label for="username">Benutzername:</label>
             <input type="text" id="username" name="username" required>
-            <label for="password">Password:</label>
+            <label for="password">Passwort:</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Add User</button>
+            <button type="submit">Benutzer anlegen</button>
         </form>
         <div id="add-user-feedback" style="display:none;margin-bottom:1em;"></div>
         <div id="delete-user-feedback" style="display:none;margin-bottom:1em;"></div>
         
         <!-- Consent Management Section -->
-        <h2>Consent Management</h2>
+        <h2>Verwaltung der Einwilligung zur Datenverarbeitung</h2>
         <div id="consent-feedback" style="display:none;margin-bottom:1em;"></div>
         <form id="consent-form" style="background: #f4f6f8; padding: 1.5em; border-radius: 10px; margin-bottom: 2em;">
-            <p style="text-align: left; margin-bottom: 1em;">Manage user data processing consent:</p>
+            <p style="text-align: left; margin-bottom: 1em;">Verwaltung der Einwilligung zur Verarbeitung personenbezogener Daten:</p>
             <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em;">
                 <select id="consent-user-id" name="user_id" style="flex: 2; min-width: 200px; padding: 0.5em;">
-                    <option value="" selected disabled>Select User</option>
+                    <option value="" selected disabled>Benutzer auswählen</option>
                     {% for user in users %}
                     <option value="{{ user[0] }}">{{ user[1] }}</option>
                     {% endfor %}
                 </select>
                 <select id="consent-status" name="consent_status" style="flex: 1; min-width: 150px; padding: 0.5em;">
-                    <option value="granted">Consent Granted</option>
-                    <option value="declined">Consent Declined</option>
+                    <option value="granted">Einwilligung erteilt</option>
+                    <option value="declined">Einwilligung verweigert</option>
                 </select>
-                <button type="submit" id="update-consent-btn" style="flex: 1; min-width: 150px; background: #388e3c;">Update Consent</button>
+                <button type="submit" id="update-consent-btn" style="flex: 1; min-width: 150px; background: #388e3c;">Einwilligung aktualisieren</button>
             </div>
             <div style="text-align: left; font-size: 0.9em; color: #546e7a;">
-                <p>Data processed includes attendance records and user information.</p>
-                <p>For more information, please see our <a href="/privacy_policy" style="color: #1976d2;">Privacy Policy</a>.</p>
+                <p>Verarbeitete Daten umfassen Anwesenheitsaufzeichnungen und Benutzerinformationen.</p>
+                <p>Weitere Informationen finden Sie in unserer <a href="/privacy_policy" style="color: #1976d2;">Datenschutzerklärung</a>.</p>
             </div>
         </form>
         
