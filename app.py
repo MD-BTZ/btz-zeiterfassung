@@ -293,17 +293,20 @@ def checkout():
 
             total_work_duration_minutes = int((checkout_dt - checkin_dt).total_seconds() / 60)
             
-            # Fetch system settings for break automation
-            cursor.execute("SELECT value FROM system_settings WHERE key = 'auto_break_detection'")
-            auto_break_setting = cursor.fetchone()
-            auto_break_detection_enabled = auto_break_setting[0] == '1' if auto_break_setting else False
-
-            cursor.execute("SELECT value FROM system_settings WHERE key = 'exclude_breaks_from_billing'")
-            exclude_breaks_setting = cursor.fetchone()
-            # Default to True: exclude breaks from billing if setting not found or '1'
-            exclude_breaks_from_billing_applies = True 
-            if exclude_breaks_setting: # If the setting exists
-                exclude_breaks_from_billing_applies = exclude_breaks_setting[0] == '1'
+            # Fetch user settings for break automation from user_settings table
+            cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
+                          FROM user_settings WHERE user_id = 0''')
+            settings = cursor.fetchone()
+            
+            # Default values if settings not found
+            auto_break_detection_enabled = False
+            auto_break_threshold = 30
+            exclude_breaks_from_billing_applies = False
+            
+            if settings:
+                auto_break_detection_enabled = bool(settings[0])
+                auto_break_threshold = int(settings[1])
+                exclude_breaks_from_billing_applies = bool(settings[2])
 
 
             has_auto_breaks_flag = False # Initialize flag

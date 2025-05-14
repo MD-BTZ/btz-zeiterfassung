@@ -24,30 +24,38 @@
         <div class="break-settings-container">
             <h2>Automatische Pausenerkennung</h2>
             
-            <form action="/break_settings" method="post" class="settings-form">
+            <form action="/update_user_settings" method="post" class="settings-form">
                 <div class="setting-group">
                     <label for="auto-break-detection" class="switch-label">
-                        <input type="checkbox" id="auto-break-detection" name="auto_break_detection" value="1" {% if settings and settings[0] %}checked{% endif %}>
+                        <input type="checkbox" id="auto-break-detection" name="auto_break_detection" value="1" {% if settings and settings.auto_break_detection %}checked{% endif %}>
                         <span>Automatische Pausenerkennung aktivieren</span>
                     </label>
                     
-                    <div id="threshold-container" {% if not settings or not settings[0] %}style="display: none;"{% endif %}>
+                    <div id="threshold-container" {% if not settings or not settings.auto_break_detection %}style="display: none;"{% endif %}>
                         <p>
                             Pausen automatisch erkennen, wenn Mitarbeiter länger als
-                            <span id="threshold-value">{{ settings[1] if settings else 30 }}</span>
+                            <span id="threshold-value">{{ settings.auto_break_threshold if settings else 30 }}</span>
                             Minuten inaktiv sind.
                         </p>
                         
                         <div class="range-container">
-                            <input type="range" id="threshold-slider" name="threshold_slider" min="10" max="120" step="5" value="{{ settings[1] if settings else 30 }}" class="range-slider">
+                            <input type="range" id="threshold-slider" name="threshold_slider" min="10" max="120" step="5" value="{{ settings.auto_break_threshold if settings else 30 }}" class="range-slider">
                             <div class="range-labels">
                                 <span>10 Min.</span>
                                 <span>120 Min.</span>
                             </div>
                         </div>
                         
-                        <input type="hidden" id="auto-break-threshold" name="auto_break_threshold" value="{{ settings[1] if settings else 30 }}">
+                        <input type="hidden" id="auto-break-threshold" name="auto_break_threshold" value="{{ settings.auto_break_threshold if settings else 30 }}">
                     </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="exclude-breaks" class="switch-label">
+                        <input type="checkbox" id="exclude-breaks" name="exclude_breaks" value="1" {% if settings and settings.exclude_breaks %}checked{% endif %}>
+                        <span>Pausen von Abrechnung ausschließen</span>
+                    </label>
+                    <p>Wenn aktiviert, werden Pausen von der abrechenbaren Arbeitszeit abgezogen.</p>
                 </div>
                 
                 <button type="submit" class="settings-save-btn">Einstellungen speichern</button>
