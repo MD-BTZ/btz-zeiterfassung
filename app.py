@@ -161,6 +161,16 @@ def init_db():
         if cursor.fetchone() is None:
             hashed_password = bcrypt.generate_password_hash("admin").decode('utf-8')
             cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', ("admin", hashed_password))
+        
+        # Check if user_settings table has defaults for system-wide settings (user_id = 0)
+        cursor.execute('SELECT id FROM user_settings WHERE user_id = 0')
+        if cursor.fetchone() is None:
+            # Insert default system-wide settings
+            cursor.execute('''INSERT INTO user_settings 
+                          (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
+                          VALUES (0, 1, 30, 1)''')
+            print("Inserted default system-wide break settings")
+        
         db.commit()
 
 @app.route('/')
@@ -293,20 +303,36 @@ def checkout():
 
             total_work_duration_minutes = int((checkout_dt - checkin_dt).total_seconds() / 60)
             
-            # Fetch user settings for break automation from user_settings table
-            cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                          FROM user_settings WHERE user_id = 0''')
-            settings = cursor.fetchone()
-            
-            # Default values if settings not found
-            auto_break_detection_enabled = False
-            auto_break_threshold = 30
-            exclude_breaks_from_billing_applies = False
-            
-            if settings:
-                auto_break_detection_enabled = bool(settings[0])
-                auto_break_threshold = int(settings[1])
-                exclude_breaks_from_billing_applies = bool(settings[2])
+            # Check if we should use user_settings or system_settings table
+            try:
+                # First try user_settings table
+                cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
+                              FROM user_settings WHERE user_id = 0''')
+                settings = cursor.fetchone()
+                
+                # Default values if settings not found
+                auto_break_detection_enabled = False
+                auto_break_threshold = 30
+                exclude_breaks_from_billing_applies = False
+                
+                if settings:
+                    auto_break_detection_enabled = bool(settings[0])
+                    auto_break_threshold = int(settings[1])
+                    exclude_breaks_from_billing_applies = bool(settings[2])
+                else:
+                    # Try system_settings table as fallback
+                    cursor.execute("SELECT value FROM system_settings WHERE key = 'auto_break_detection'")
+                    auto_break_setting = cursor.fetchone()
+                    auto_break_detection_enabled = auto_break_setting[0] == '1' if auto_break_setting else False
+    
+                    cursor.execute("SELECT value FROM system_settings WHERE key = 'exclude_breaks_from_billing'")
+                    exclude_breaks_setting = cursor.fetchone()
+                    exclude_breaks_from_billing_applies = exclude_breaks_setting[0] == '1' if exclude_breaks_setting else False
+            except Exception as e:
+                app.logger.error(f"Error fetching break settings: {e}")
+                # Fallback to defaults if there's any error
+                auto_break_detection_enabled = False
+                exclude_breaks_from_billing_applies = False
 
 
             has_auto_breaks_flag = False # Initialize flag
@@ -421,25 +447,61 @@ def break_settings():
     db = get_db()
     cursor = db.cursor()
     
-    # Get global (system-wide) settings - use a default user_id for system settings
-    # We'll use 0 as a special ID for system-wide settings
-    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                    FROM user_settings WHERE user_id = 0''')
-    settings = cursor.fetchone()
+    # Get global (system-wide) settings
+    user_settings = {
+        'auto_break_detection': False,
+        'auto_break_threshold': 30,
+        'exclude_breaks': False
+    }
     
-    if settings:
-        user_settings = {
-            'auto_break_detection': settings[0],
-            'auto_break_threshold': settings[1],
-            'exclude_breaks': settings[2]
-        }
-    else:
-        # Default settings
-        user_settings = {
-            'auto_break_detection': False,
-            'auto_break_threshold': 30,
-            'exclude_breaks': False
-        }
+    try:
+        # First try to get settings from user_settings table
+        cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
+                        FROM user_settings WHERE user_id = 0''')
+        settings = cursor.fetchone()
+        
+        if settings:
+            user_settings = {
+                'auto_break_detection': settings[0],
+                'auto_break_threshold': settings[1],
+                'exclude_breaks': settings[2]
+            }
+        else:
+            # If not found, try to get from system_settings table
+            try:
+                # Get auto_break_detection setting
+                cursor.execute("SELECT value FROM system_settings WHERE key = 'auto_break_detection'")
+                auto_break_detection = cursor.fetchone()
+                if auto_break_detection:
+                    user_settings['auto_break_detection'] = auto_break_detection[0] == '1'
+                
+                # Get threshold setting (not directly available in system_settings)
+                cursor.execute("SELECT value FROM system_settings WHERE key = 'statutory_break_6h_work_threshold'")
+                threshold = cursor.fetchone()
+                if threshold:
+                    # Convert to minutes, use a reasonable value
+                    user_settings['auto_break_threshold'] = int(int(threshold[0]) / 60)
+                
+                # Get exclude_breaks setting
+                cursor.execute("SELECT value FROM system_settings WHERE key = 'exclude_breaks_from_billing'")
+                exclude_breaks = cursor.fetchone()
+                if exclude_breaks:
+                    user_settings['exclude_breaks'] = exclude_breaks[0] == '1'
+                
+                # If found in system_settings, migrate to user_settings for future use
+                cursor.execute('''INSERT OR REPLACE INTO user_settings 
+                               (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
+                               VALUES (?, ?, ?, ?)''', 
+                               (0, user_settings['auto_break_detection'], 
+                                user_settings['auto_break_threshold'], 
+                                user_settings['exclude_breaks']))
+                db.commit()
+                
+            except sqlite3.Error as e:
+                app.logger.error(f"Error accessing system_settings: {e}")
+    except Exception as e:
+        app.logger.error(f"Error accessing break settings: {e}")
+        # We'll use the default values initialized above
     
     # Get recent break history for all users
     cursor.execute('''
@@ -475,24 +537,43 @@ def update_user_settings():
     else:
         user_id = session.get('user_id')
     
-    # Check if settings exist for this user or system-wide settings
-    cursor.execute('SELECT id FROM user_settings WHERE user_id = ?', (user_id,))
-    settings = cursor.fetchone()
-    
-    if settings:
-        # Update existing settings
-        cursor.execute('''UPDATE user_settings 
-                        SET auto_break_detection_enabled = ?, 
-                            auto_break_threshold_minutes = ?, 
-                            exclude_breaks_from_billing = ?
-                        WHERE user_id = ?''', 
-                        (auto_break_detection, auto_break_threshold, exclude_breaks, user_id))
-    else:
-        # Create new settings
-        cursor.execute('''INSERT INTO user_settings 
-                       (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
-                       VALUES (?, ?, ?, ?)''', 
-                       (user_id, auto_break_detection, auto_break_threshold, exclude_breaks))
+    try:
+        # First check if user_settings table exists and has entries
+        cursor.execute('SELECT id FROM user_settings WHERE user_id = ?', (user_id,))
+        settings = cursor.fetchone()
+        
+        if settings:
+            # Update existing settings in user_settings
+            cursor.execute('''UPDATE user_settings 
+                            SET auto_break_detection_enabled = ?, 
+                                auto_break_threshold_minutes = ?, 
+                                exclude_breaks_from_billing = ?
+                            WHERE user_id = ?''', 
+                            (auto_break_detection, auto_break_threshold, exclude_breaks, user_id))
+        else:
+            try:
+                # Create new settings in user_settings
+                cursor.execute('''INSERT INTO user_settings 
+                              (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
+                              VALUES (?, ?, ?, ?)''', 
+                              (user_id, auto_break_detection, auto_break_threshold, exclude_breaks))
+            except sqlite3.Error:
+                # If user_settings table doesn't exist, try to use system_settings table
+                try:
+                    # Update system_settings (key-value store)
+                    cursor.execute("INSERT OR REPLACE INTO system_settings (key, value) VALUES (?, ?)", 
+                                ('auto_break_detection', '1' if auto_break_detection else '0'))
+                    cursor.execute("INSERT OR REPLACE INTO system_settings (key, value) VALUES (?, ?)", 
+                                ('exclude_breaks_from_billing', '1' if exclude_breaks else '0'))
+                    app.logger.info("Updated settings in system_settings table")
+                except sqlite3.Error as e:
+                    app.logger.error(f"Error updating settings: {e}")
+                    flash('Fehler beim Aktualisieren der Einstellungen.', 'error')
+                    return redirect(url_for('break_settings'))
+    except Exception as e:
+        app.logger.error(f"Error updating user settings: {e}")
+        flash('Fehler beim Aktualisieren der Einstellungen.', 'error')
+        return redirect(url_for('break_settings'))
     
     db.commit()
     flash('Pauseneinstellungen wurden aktualisiert', 'success')
