@@ -871,6 +871,108 @@ def rectify_attendance():
 @app.route('/data_access', methods=['GET'])
 def data_access():
     """Handle data access requests (DSGVO/GDPR right to access)"""
+    # Check if user is already logged in
+    username = session.get('username')
+    if username:
+        # Get user data without requiring re-authentication
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Fetch user details
+        cursor.execute('SELECT id, username FROM users WHERE username = ?', (username,))
+        user = cursor.fetchone()
+        
+        if user:
+            user_id = user[0]
+            
+            # Get attendance records and other user data (similar to request_data_access)
+            cursor.execute('''
+                SELECT id, check_in, check_out FROM attendance 
+                WHERE user_id = ? 
+                ORDER BY check_in DESC
+            ''', (user_id,))
+            
+            attendance_records = cursor.fetchall()
+            records = []
+            total_seconds = 0
+            
+            # Process attendance records
+            for rec in attendance_records:
+                record_id = rec[0]
+                check_in = rec[1]
+                check_out = rec[2]
+                
+                # Format date and time for display
+                check_in_date = None
+                check_in_time = None
+                check_out_time = None
+                duration = None
+                
+                if check_in:
+                    dt_in = try_parse(check_in)
+                    if dt_in:
+                        check_in_date = dt_in.strftime('%d.%m.%Y')
+                        check_in_time = dt_in.strftime('%H:%M:%S')
+                
+                if check_out:
+                    dt_out = try_parse(check_out)
+                    if dt_out and 'dt_in' in locals() and dt_in:
+                        check_out_time = dt_out.strftime('%H:%M:%S')
+                        
+                        # Make both naive for calculation
+                        if hasattr(dt_in, 'tzinfo') and dt_in.tzinfo is not None:
+                            dt_in = dt_in.replace(tzinfo=None)
+                        if hasattr(dt_out, 'tzinfo') and dt_out.tzinfo is not None:
+                            dt_out = dt_out.replace(tzinfo=None)
+                        
+                        diff = (dt_out - dt_in).total_seconds()
+                        if diff > 0:
+                            total_seconds += int(diff)
+                            hours = int(diff) // 3600
+                            minutes = (int(diff) % 3600) // 60
+                            seconds = int(diff) % 60
+                            duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                
+                records.append({
+                    'id': record_id,
+                    'date': check_in_date,
+                    'check_in': check_in_time,
+                    'check_out': check_out_time,
+                    'duration': duration
+                })
+                
+            # Calculate total time
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+            total_time = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            
+            # Get consent information
+            cursor.execute('''
+                SELECT consent_status, consent_date FROM user_consents 
+                WHERE user_id = ? 
+                ORDER BY consent_date DESC LIMIT 1
+            ''', (user_id,))
+            
+            consent = cursor.fetchone()
+            consent_status = consent[0] if consent else 'Not provided'
+            consent_date = consent[1] if consent else None
+            
+            user_data = {
+                'username': username,
+                'user_id': user_id,
+                'total_time': total_time,
+                'records': records,
+                'consent_status': consent_status,
+                'consent_date': consent_date
+            }
+            
+            # Store temporary password in session for data export
+            session['temp_password'] = 'authenticated_via_session'
+            
+            return render_template('data_access.html', user_data=user_data, password_placeholder='authenticated_via_session')
+    
+    # If not logged in, show the form
     return render_template('data_access.html', user_data=None)
 
 @app.route('/request_data_access', methods=['POST'])
@@ -985,10 +1087,19 @@ def request_data_access():
 def export_data():
     """Export user data in various formats (CSV, PDF, JSON)"""
     username = request.form.get('username')
-    password = session.get('temp_password')  # Get stored password from session
     export_format = request.form.get('format', 'csv')
+    password = session.get('temp_password')  # Get stored password from session
     
-    if not username or not password:
+    # Check if the user is logged in via session
+    session_username = session.get('username')
+    is_authenticated_by_session = False
+    
+    # If username matches the logged-in user's name, they're already authenticated
+    if session_username and username == session_username:
+        is_authenticated_by_session = True
+    
+    # If not authenticated by session, we need password
+    if not is_authenticated_by_session and (not username or not password):
         flash('Benutzername und Passwort werden benötigt.', 'error')
         return redirect(url_for('data_access'))
     
@@ -999,7 +1110,8 @@ def export_data():
     cursor.execute('SELECT id, username, password FROM users WHERE username = ?', (username,))
     user = cursor.fetchone()
     
-    if not user or not bcrypt.check_password_hash(user[2], password):
+    # Skip password check if authenticated via session
+    if not user or (not is_authenticated_by_session and not bcrypt.check_password_hash(user[2], password)):
         flash('Ungültiger Benutzername oder Passwort.', 'error')
         return redirect(url_for('data_access'))
     
@@ -1254,6 +1366,8 @@ def user_report(username):
     date = request.args.get('date') or request.form.get('date', '')
     week = request.args.get('week') or request.form.get('week', '')
     month = request.args.get('month') or request.form.get('month', '')
+    entire_period_str = request.args.get('entire_period') or request.form.get('entire_period', '0')
+    entire_period = entire_period_str == '1'
     
     # Connect to database
     db = get_db()
@@ -1305,7 +1419,7 @@ def user_report(username):
                     
                     # Show password form for own report
                     return render_template('report_auth.html', username=username, 
-                                         date=date, week=week, month=month)
+                                         date=date, week=week, month=month, entire_period=entire_period_str)
     
     # Handle form parameters from POST requests
     if request.method == 'POST':
@@ -1377,7 +1491,12 @@ def user_report(username):
         minutes = (total_seconds % 3600) // 60
         seconds = total_seconds % 60
         total_time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        return render_template('user_report.html', username='All Users', records=records_with_durations, total_time=total_time_str, all_users=True)
+        return render_template('user_report.html', 
+                              username='All Users', 
+                              records=records_with_durations, 
+                              total_time=total_time_str, 
+                              all_users=True,
+                              entire_period=entire_period)
     # If a user is selected, filter by user and any date/week/month
     cursor.execute('''SELECT id FROM users WHERE username = ?''', (username,))
     user = cursor.fetchone()
@@ -1386,24 +1505,27 @@ def user_report(username):
     user_id = user[0]
     query = 'SELECT check_in, check_out FROM attendance WHERE user_id = ?'
     params = [user_id]
-    if week:
-        y, w = week.split('-W')
-        week_start = datetime.strptime(f'{y}-W{w}-1', "%G-W%V-%u")
-        week_end = week_start + timedelta(days=6)
-        query += ' AND date(check_in) >= ? AND date(check_in) <= ?'
-        params.extend([week_start.date(), week_end.date()])
-    if month:
-        y, m = month.split('-')
-        month_start = datetime(int(y), int(m), 1)
-        if int(m) == 12:
-            month_end = datetime(int(y)+1, 1, 1) - timedelta(days=1)
-        else:
-            month_end = datetime(int(y), int(m)+1, 1) - timedelta(days=1)
-        query += ' AND date(check_in) >= ? AND date(check_in) <= ?'
-        params.extend([month_start.date(), month_end.date()])
-    if date:
-        query += ' AND date(check_in) = ?'
-        params.append(date)
+    
+    # Skip date/week/month filters if entire_period is selected
+    if not entire_period:
+        if week:
+            y, w = week.split('-W')
+            week_start = datetime.strptime(f'{y}-W{w}-1', "%G-W%V-%u")
+            week_end = week_start + timedelta(days=6)
+            query += ' AND date(check_in) >= ? AND date(check_in) <= ?'
+            params.extend([week_start.date(), week_end.date()])
+        if month:
+            y, m = month.split('-')
+            month_start = datetime(int(y), int(m), 1)
+            if int(m) == 12:
+                month_end = datetime(int(y)+1, 1, 1) - timedelta(days=1)
+            else:
+                month_end = datetime(int(y), int(m)+1, 1) - timedelta(days=1)
+            query += ' AND date(check_in) >= ? AND date(check_in) <= ?'
+            params.extend([month_start.date(), month_end.date()])
+        if date:
+            query += ' AND date(check_in) = ?'
+            params.append(date)
     query += ' ORDER BY check_in DESC'
     cursor.execute(query, params)
     records = cursor.fetchall()
@@ -1444,7 +1566,14 @@ def user_report(username):
     seconds = total_seconds % 60
     total_time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     records_with_durations = list(zip(records, durations))
-    return render_template('user_report.html', username=username, records=records_with_durations, total_time=total_time_str, all_users=False)
+    
+    # Pass the entire_period flag to the template
+    return render_template('user_report.html', 
+                          username=username, 
+                          records=records_with_durations, 
+                          total_time=total_time_str, 
+                          all_users=False,
+                          entire_period=entire_period)
 
 @app.route('/update_consent', methods=['POST'])
 def update_consent():
@@ -1507,6 +1636,162 @@ def log_consent():
         
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/manual_attendance', methods=['GET'])
+def manual_attendance():
+    """Display form for manually adding attendance records"""
+    # Check if user is logged in
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Admin can see all users
+    if session.get('admin_logged_in'):
+        cursor.execute('SELECT id, username FROM users ORDER BY username')
+        users = cursor.fetchall()
+    else:
+        # Regular users can only see themselves
+        cursor.execute('SELECT id, username FROM users WHERE id = ?', (session.get('user_id'),))
+        users = cursor.fetchall()
+    
+    return render_template('manual_attendance.html', users=users)
+
+@app.route('/add_manual_attendance', methods=['POST'])
+def add_manual_attendance():
+    """Process manual attendance record submission"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = request.form.get('user_id')
+    date = request.form.get('date')  # Format: YYYY-MM-DD
+    check_in = request.form.get('check_in')  # Format: HH:MM
+    check_out = request.form.get('check_out')  # Format: HH:MM (optional)
+    current_password = request.form.get('current_password')
+    
+    # Validate required fields
+    if not user_id or not date or not check_in or not current_password:
+        flash('Alle erforderlichen Felder müssen ausgefüllt werden.', 'error')
+        return redirect(url_for('manual_attendance'))
+    
+    # Ensure user has permission to add this record
+    current_user_id = session.get('user_id')
+    is_admin = session.get('admin_logged_in', False)
+    
+    if not is_admin and int(user_id) != current_user_id:
+        flash('Sie können nur Aufzeichnungen für sich selbst hinzufügen.', 'error')
+        return redirect(url_for('manual_attendance'))
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    # Verify user exists and password is correct
+    cursor.execute('SELECT password FROM users WHERE id = ?', (current_user_id,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user[0], current_password):
+        flash('Authentifizierung fehlgeschlagen.', 'error')
+        return redirect(url_for('manual_attendance'))
+    
+    try:
+        # Get username for feedback message
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        username = cursor.fetchone()[0]
+        
+        # Format datetime strings
+        check_in_datetime = f"{date}T{check_in}:00"  # Format: YYYY-MM-DDTHH:MM:SS
+        
+        # Check if the date is in the future
+        now = get_local_time()
+        check_in_dt = datetime.strptime(check_in_datetime, '%Y-%m-%dT%H:%M:%S')
+        
+        # Make check_in_dt timezone aware for comparison with now
+        check_in_dt_tz = pytz.timezone(TIMEZONE).localize(check_in_dt)
+        
+        if check_in_dt_tz > now:
+            flash('Anwesenheitsaufzeichnungen können nicht für die Zukunft erstellt werden.', 'error')
+            return redirect(url_for('manual_attendance'))
+        
+        # Check for conflicting records on the same day
+        check_date = datetime.strptime(date, '%Y-%m-%d').date()
+        cursor.execute('''
+            SELECT id, check_in, check_out FROM attendance 
+            WHERE user_id = ? AND date(check_in) = ?
+            ORDER BY check_in
+        ''', (user_id, check_date))
+        existing_records = cursor.fetchall()
+        
+        # If check_out is provided, validate and format it
+        check_out_datetime = None
+        if check_out:
+            check_out_datetime = f"{date}T{check_out}:00"  # Format: YYYY-MM-DDTHH:MM:SS
+            check_out_dt = datetime.strptime(check_out_datetime, '%Y-%m-%dT%H:%M:%S')
+            
+            # Ensure check_out is after check_in
+            if check_out_dt <= check_in_dt:
+                flash('Die Check-Out Zeit muss nach der Check-In Zeit liegen.', 'error')
+                return redirect(url_for('manual_attendance'))
+            
+            # Make check_out_dt timezone aware for comparison with now
+            check_out_dt_tz = pytz.timezone(TIMEZONE).localize(check_out_dt)
+            
+            # Ensure check_out is not in the future
+            if check_out_dt_tz > now:
+                flash('Anwesenheitsaufzeichnungen können nicht für die Zukunft erstellt werden.', 'error')
+                return redirect(url_for('manual_attendance'))
+                
+            # Calculate billable minutes
+            billable_minutes = int((check_out_dt - check_in_dt).total_seconds() / 60)
+        
+        # Check for time conflicts with existing records
+        for record in existing_records:
+            record_id = record[0]
+            record_in = datetime.strptime(record[1], '%Y-%m-%dT%H:%M:%S') if record[1] else None
+            record_out = datetime.strptime(record[2], '%Y-%m-%dT%H:%M:%S') if record[2] else None
+            
+            # All datetimes are kept as naive for comparisons among themselves
+            # This works because they are all in the same timezone
+            
+            # Check for overlap
+            if record_in and record_out:  # Complete record with in and out
+                if (check_in_dt >= record_in and check_in_dt <= record_out) or \
+                   (check_out_datetime and check_out_dt >= record_in and check_out_dt <= record_out) or \
+                   (check_in_dt <= record_in and (check_out_datetime and check_out_dt >= record_out)):
+                    flash(f'Zeitkonflikt mit existierendem Eintrag vom {record_in.strftime("%d.%m.%Y %H:%M")} bis {record_out.strftime("%H:%M")}', 'error')
+                    return redirect(url_for('manual_attendance'))
+            elif record_in and not record_out:  # Only check-in, no check-out
+                if check_in_dt >= record_in or (check_out_datetime and check_out_dt >= record_in):
+                    flash(f'Zeitkonflikt mit existierendem Eintrag vom {record_in.strftime("%d.%m.%Y %H:%M")} (ohne Check-Out)', 'error')
+                    return redirect(url_for('manual_attendance'))
+        
+        # Insert the new record
+        if check_out_datetime:
+            cursor.execute('''
+                INSERT INTO attendance (user_id, check_in, check_out, billable_minutes)
+                VALUES (?, ?, ?, ?)
+            ''', (user_id, check_in_datetime, check_out_datetime, billable_minutes))
+        else:
+            cursor.execute('''
+                INSERT INTO attendance (user_id, check_in)
+                VALUES (?, ?)
+            ''', (user_id, check_in_datetime))
+        
+        db.commit()
+        
+        # Success message
+        if check_out:
+            flash(f'Anwesenheitsaufzeichnung für {username} von {check_in} bis {check_out} am {date} erfolgreich hinzugefügt.', 'success')
+        else:
+            flash(f'Check-In für {username} um {check_in} am {date} erfolgreich hinzugefügt.', 'success')
+        
+        return redirect(url_for('manual_attendance'))
+        
+    except Exception as e:
+        db.rollback()
+        app.logger.error(f"Error adding manual attendance: {str(e)}")
+        flash(f'Fehler beim Hinzufügen der Anwesenheitsaufzeichnung: {str(e)}', 'error')
+        return redirect(url_for('manual_attendance'))
 
 @app.route('/request_data_deletion', methods=['POST'])
 def request_data_deletion():

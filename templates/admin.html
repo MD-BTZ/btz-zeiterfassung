@@ -5,60 +5,9 @@
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <style>
-        /* Fix Week Picker alignment issues */
-        .ui-datepicker-trigger {
-            vertical-align: middle;
-        }
-        #week-picker {
-            vertical-align: middle;
-            line-height: normal;
-            height: 2.5em !important;
-            box-sizing: border-box;
-        }
-        /* Ensure consistent form field heights */
-        select, input[type="date"], input[type="text"] {
-            height: 2.5em;
-            box-sizing: border-box;
-        }
-        /* Fix label alignment */
-        #report-form label {
-            display: block;
-            margin-bottom: 0.3em;
-            line-height: 1.2;
-        }
-        /* Ensure consistent form elements */
-        .form-field-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-start;
-            min-height: 5em;
-            position: relative;
-        }
-        /* Fix jQuery UI datepicker issues */
-        .ui-datepicker {
-            font-size: 0.9em;
-        }
-        .hasDatepicker {
-            position: relative;
-        }
-        /* Break indicator styling */
-        .break-indicator {
-            margin-right: 5px;
-            cursor: help;
-        }
-        .show-breaks-btn {
-            text-decoration: none;
-            color: #1976d2;
-            font-size: 0.9em;
-        }
-        .show-breaks-btn:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
     {% include 'menu.html' %}
@@ -67,27 +16,94 @@
     </div> -->
     <div class="container">
         <h1>Admin Panel</h1>
-        <!--<form id="summary-form" method="get" action="/admin_summary" style="margin-bottom:2em;text-align:left;">
-            <fieldset style="border:1px solid #b0bec5;padding:1em 1.5em;border-radius:8px;">
-                <legend><b>Generate Summary</b></legend>
-                <label for="user_id">User:</label>
-                <select name="user_id" id="user_id">
-                    <option value="">All Users</option>
-                    {% for user in users %}
-                    <option value="{{ user[0] }}">{{ user[1] }}</option>
+        <!-- <h2>User Management</h2>
+        <a href="/user_management" target="_blank" class="user-management-link">Open User Management in New Tab</a> -->
+        <h2 class="section-title">Bericht generieren</h2>
+        <form id="report-form" class="report-form">
+            <!-- User Selection -->
+            <div style="display: flex; flex-direction: column; white-space: nowrap; min-width: 130px;">
+                <label for="report-user-id" style="margin-bottom: 0.4em; font-size: 0.9em; color: #444; font-weight: 500;">
+                    <i class="fas fa-user" style="margin-right: 5px; color: #1976d2;"></i>User
+                </label>
+                <select id="report-user-id" name="user_id" style="padding:0.6em; background: #fff; border: 1px solid #b0bec5; border-radius: 6px; font-size: 0.95em; box-sizing: border-box; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); transition: border-color 0.2s, box-shadow 0.2s;" title="Wählen Sie einen Benutzer oder 'Alle Benutzer'">
+                    <option value="" selected>Alle Benutzer</option>
+                    {% set seen = [] %}
+                    {% for rec in records %}
+                        {% if rec[1] not in seen %}
+                            <option value="{{ rec[1] }}">{{ rec[1] }}</option>
+                            {% set _ = seen.append(rec[1]) %}
+                        {% endif %}
                     {% endfor %}
                 </select>
-                <label for="date_from">From:</label>
-                <input type="date" name="date_from" id="date_from">
-                <label for="date_to">To:</label>
-                <input type="date" name="date_to" id="date_to">
-                <label for="week">Week:</label>
-                <input type="week" name="week" id="week">
-                <label for="month">Month:</label>
-                <input type="month" name="month" id="month">
-                <button type="submit">Generate</button>
-            </fieldset>
-        </form> -->
+            </div>
+            
+            <!-- Entire Timeframe Checkbox -->
+            <div style="display: flex; flex-direction: column; white-space: nowrap; min-width: 140px;">
+                <label style="visibility: hidden; margin-bottom: 0.4em; font-size: 0.9em;">_</label>
+                <label style="display: flex; align-items: center; cursor: pointer; height: 40px; padding: 0.15em 0.5em; border-radius: 6px; background: #f0f4f7; border: 1px solid #d3d9e0; transition: background-color 0.2s;" title="Zeigt alle Daten für den ausgewählten Benutzer an (nur bei Benutzerauswahl)">
+                    <input type="checkbox" id="entire-timeframe" style="margin-right: 0.7em; transform: scale(1.2);">
+                    <span style="font-size: 0.95em; color: #444; white-space: nowrap; user-select: none;">Gesamter Zeitraum</span>
+                </label>
+            </div>
+            
+            <!-- Date Input -->
+            <div style="display: flex; flex-direction: column; white-space: nowrap; min-width: 130px;">
+                <label for="report-date" class="form-label">
+                    <i class="far fa-calendar-alt form-icon"></i>Datum
+                </label>
+                <input type="date" id="report-date" name="date" class="form-input" title="Wählen Sie ein bestimmtes Datum für den Bericht">
+            </div>
+            
+            <!-- Week Picker -->
+            <div class="form-field">
+                <label for="week-picker" class="form-label">
+                    <i class="fas fa-calendar-week form-icon"></i>Woche
+                </label>
+                <div class="date-picker-container">
+                    <input type="text" id="week-picker" name="week" class="form-input" style="width: 100%; cursor: pointer;" placeholder="Woche wählen" readonly title="Wählen Sie eine Woche">
+                    <span id="selected-week-display" style="display:none;"></span>
+                    <input type="hidden" id="report-week" name="week">
+                </div>
+            </div>
+            
+            <!-- Month Selection -->
+            <div class="form-field-month">
+                <label for="report-month-select" class="form-label">
+                    <i class="far fa-calendar form-icon"></i>Monat
+                </label>
+                <div class="multi-select-container">
+                    <select id="report-month-select" class="form-input" style="flex: 1; min-width: 95px;" title="Wählen Sie einen Monat">
+                        <option value="" selected disabled>Monat</option>
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">Mär</option>
+                        <option value="4">Apr</option>
+                        <option value="5">Mai</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sep</option>
+                        <option value="10">Okt</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dez</option>
+                    </select>
+                    <select id="report-month-year" class="form-input" style="flex: 1; min-width: 75px;" title="Wählen Sie ein Jahr">
+                        {% for year in range(2023, 2026) %}
+                        <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" id="report-month" name="month">
+                </div>
+            </div>
+            
+            <!-- Generate Button -->
+            <div class="form-field">
+                <label class="hidden-label">_</label>
+                <button type="button" id="generate-report-btn" class="generate-btn" title="Bericht generieren">
+                    <i class="fas fa-file-alt btn-icon"></i><span>Bericht generieren</span>
+                </button>
+            </div>
+        </form>
         <div id="summary-result">
             {% if summary %}
                 <h3>Summary</h3>
@@ -95,17 +111,17 @@
             {% endif %}
         </div>
         <h2>Anwesenheitsübersicht</h2>
-        <div style="overflow-x:auto;">
+        <div class="table-responsive">
         <table class="attendance-table">
             <thead>
                 <tr>
-                    <th>User</th>
-                    <th>Datum</th>
-                    <th>Check In</th>
-                    <th>Check Out</th>
-                    <th>Gesamtzeit</th>
-                    <th>Abrechenbar</th>
-                    <th>Pausen</th>
+                    <th><i class="fas fa-user table-icon"></i>User</th>
+                    <th><i class="far fa-calendar table-icon"></i>Datum</th>
+                    <th><i class="far fa-clock table-icon"></i>Check In</th>
+                    <th><i class="far fa-clock table-icon"></i>Check Out</th>
+                    <th><i class="far fa-hourglass table-icon"></i>Gesamtzeit</th>
+                    <th><i class="far fa-chart-bar table-icon"></i>Abrechenbar</th>
+                    <th><i class="fas fa-coffee table-icon"></i>Pausen</th>
                 </tr>
             </thead>
             <tbody>
@@ -120,9 +136,9 @@
                     <td>
                         {% if rec[4] %}
                         <span class="break-indicator" title="Automatische Pausen erkannt">⏱️</span>
-                        <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec[0] }}">Anzeigen</a>
+                        <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec[0] }}"><i class="far fa-eye btn-icon"></i>Anzeigen</a>
                         {% else %}
-                        -
+                        <span class="no-breaks">Keine</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -132,75 +148,19 @@
         </div>
         
         <!-- Modal for displaying breaks -->
-        <div id="breaks-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-            <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                <span id="close-modal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-                <h3>Pausendetails</h3>
-                <div id="breaks-content">
-                    <p>Keine Pausendaten gefunden.</p>
+        <div id="breaks-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title"><i class="fas fa-coffee modal-title-icon"></i>Pausendetails</h3>
+                    <span id="close-modal" class="modal-close">&times;</span>
+                </div>
+                <div id="breaks-content" class="modal-body">
+                    <p class="no-data-message">Keine Pausendaten gefunden.</p>
                 </div>
             </div>
         </div>
         
-       <!-- <h2>User Management</h2>
-        <a href="/user_management" target="_blank" class="user-management-link">Open User Management in New Tab</a> -->
-        <h2 style="margin-top:2em;">Bericht generieren</h2>
-        <form id="report-form" style="margin-bottom:2em; display: flex; flex-wrap: wrap; gap: 1.5em; align-items: flex-end; background: #f4f6f8; padding: 1.5em 1em; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-            <div class="form-field-container" style="flex:1; min-width:180px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
-                <label for="report-user-id" style="margin-bottom: 0.3em; display: block;">User</label>
-                <select id="report-user-id" name="user_id" style="width:100%;padding:0.5em; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
-                    <option value="" selected>All users</option>
-                    {% set seen = [] %}
-                    {% for rec in records %}
-                        {% if rec[1] not in seen %}
-                            <option value="{{ rec[1] }}">{{ rec[1] }}</option>
-                            {% set _ = seen.append(rec[1]) %}
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-field-container" style="flex:1; min-width:140px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
-                <label for="report-date" style="margin-bottom: 0.3em; display: block;">Datum</label>
-                <input type="date" id="report-date" name="date" style="width:100%;padding:0.5em; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
-            </div>
-            <div class="form-field-container" style="flex:1; min-width:180px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
-                <label for="week-picker" style="margin-bottom: 0.3em; display: block;">Woche</label>
-                <div style="position: relative; width: 100%; display: flex; align-items: center;">
-                    <input type="text" id="week-picker" name="week" style="width:100%; padding:0.5em; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;" placeholder="Woche wählen" readonly>
-                    <span id="selected-week-display" style="display:none;"></span>
-                    <input type="hidden" id="report-week" name="week">
-                </div>
-            </div>
-            <div class="form-field-container" style="flex:1; min-width:180px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
-                <label for="report-month-select" style="margin-bottom: 0.3em; display: block;">Monat</label>
-                <div style="display: flex; gap: 5px; align-items: center; width: 100%;">
-                    <select id="report-month-select" style="padding: 0.5em; flex: 1; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
-                        <option value="" selected disabled>Monat</option>
-                        <option value="1">Januar</option>
-                        <option value="2">Februar</option>
-                        <option value="3">März</option>
-                        <option value="4">April</option>
-                        <option value="5">Mai</option>
-                        <option value="6">Juni</option>
-                        <option value="7">Juli</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">Oktober</option>
-                        <option value="11">November</option>
-                        <option value="12">Dezember</option>
-                    </select>
-                    <select id="report-month-year" style="padding: 0.5em; flex: 1; background: #f8fafc; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; box-sizing: border-box;">
-                        {% for year in range(2023, 2026) %}
-                        <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="hidden" id="report-month" name="month">
-                </div>
-            </div>
-            <div class="form-field-container" style="flex:1; min-width:120px; display: flex; flex-direction: column; justify-content: flex-end; min-height: 5em;">
-                <button type="button" id="generate-report-btn" style="width:100%;padding:0.7em 0; background:#1976d2; color:#fff; border:none; border-radius:6px; font-size:1em; cursor:pointer; margin-top: auto;">Bericht generieren</button>
-            </div>
-        </form>
+    
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Get all form elements
@@ -208,12 +168,79 @@
             var dateInput = document.getElementById('report-date');
             var reportWeekInput = document.getElementById('report-week');
             var reportMonthInput = document.getElementById('report-month');
+            var entireTimeframeCheckbox = document.getElementById('entire-timeframe');
             
             // New selector elements
             var weekPicker = document.getElementById('week-picker');
             var selectedWeekDisplay = document.getElementById('selected-week-display');
             var reportMonthSelect = document.getElementById('report-month-select');
             var reportMonthYear = document.getElementById('report-month-year');
+            
+            // Initialize button state
+            updateButtonState();
+            
+            // Function to toggle date input fields based on entire timeframe checkbox
+            function toggleDateInputs() {
+                const disabled = entireTimeframeCheckbox.checked && userSelect.value !== "";
+                dateInput.disabled = disabled;
+                weekPicker.disabled = disabled;
+                reportMonthSelect.disabled = disabled;
+                reportMonthYear.disabled = disabled;
+                
+                // Update visual feedback
+                const opacity = disabled ? "0.5" : "1";
+                dateInput.style.opacity = opacity;
+                weekPicker.style.opacity = opacity;
+                reportMonthSelect.style.opacity = opacity;
+                reportMonthYear.style.opacity = opacity;
+                
+                // Update button appearance based on selection state
+                updateButtonState();
+            }
+            
+            // Function to update button appearance based on selection state
+            function updateButtonState() {
+                const button = document.getElementById('generate-report-btn');
+                const hasUser = userSelect.value !== "";
+                const hasEntireTimeframe = entireTimeframeCheckbox.checked;
+                const hasDate = dateInput.value !== "";
+                const hasWeek = document.getElementById('week-picker').value !== "";
+                const hasMonth = reportMonthSelect.value !== "";
+                
+                const isValid = (hasEntireTimeframe && hasUser) || (!hasEntireTimeframe && (hasDate || hasWeek || hasMonth));
+                
+                if (isValid) {
+                    button.style.opacity = "1";
+                    button.style.cursor = "pointer";
+                    button.classList.add('ready');
+                    button.title = "Bericht generieren";
+                } else {
+                    button.style.opacity = "0.7";
+                    button.style.cursor = "not-allowed";
+                    button.classList.remove('ready');
+                    button.title = "Bitte wählen Sie ein Datum, eine Woche oder einen Monat aus";
+                    if (hasUser && hasEntireTimeframe) {
+                        button.title = "Bericht für gesamten Zeitraum generieren";
+                    }
+                }
+            }
+            
+            // Add event listener for the entire timeframe checkbox
+            entireTimeframeCheckbox.addEventListener('change', function() {
+                toggleDateInputs();
+                if (this.checked && userSelect.value === "") {
+                    alert("Bitte wählen Sie zuerst einen User aus.");
+                    this.checked = false;
+                }
+            });
+            
+            // Add event listener for user select to ensure entire timeframe only works with a user selected
+            userSelect.addEventListener('change', function() {
+                if (entireTimeframeCheckbox.checked && this.value === "") {
+                    entireTimeframeCheckbox.checked = false;
+                }
+                toggleDateInputs();
+            });
             
             // Function to clear all date inputs
             function clearDateInputs(except) {
@@ -232,11 +259,14 @@
             // Make inputs mutually exclusive
             dateInput.addEventListener('input', function() {
                 if (this.value) clearDateInputs('date');
+                updateButtonState();
             });
             
             // Week selection is handled by the datepicker in week-picker.js
             
-            // Handle month selection
+            // Add input listeners to all form fields
+            userSelect.addEventListener('input', updateButtonState);
+            weekPicker.addEventListener('input', updateButtonState);
             reportMonthSelect.addEventListener('change', function() {
                 if (this.value) {
                     clearDateInputs('month');
@@ -246,6 +276,7 @@
                     const year = reportMonthYear.value;
                     reportMonthInput.value = `${year}-${month}`;
                 }
+                updateButtonState();
             });
             
             reportMonthYear.addEventListener('change', function() {
@@ -258,6 +289,18 @@
             
             // Generate report button
             document.getElementById('generate-report-btn').onclick = function() {
+                // Show loading state
+                const button = this;
+                const buttonText = button.querySelector('span');
+                const buttonIcon = button.querySelector('i');
+                const originalText = buttonText.textContent;
+                const originalIcon = buttonIcon.className;
+                
+                buttonText.textContent = 'Bericht wird generiert...';
+                buttonIcon.className = 'fas fa-spinner fa-spin';
+                button.disabled = true;
+                button.style.opacity = '0.8';
+                
                 // Week is already updated by datepicker, just need to update month
                 
                 if (reportMonthSelect.value && reportMonthYear.value) {
@@ -270,17 +313,30 @@
                 var date = dateInput.value;
                 var week = reportWeekInput.value;
                 var month = reportMonthInput.value;
+                var entireTimeframe = entireTimeframeCheckbox.checked;
                 
-                // Verify at least one filter is selected
-                if (!date && !week && !month) {
+                // Verify user is selected for entire timeframe option
+                if (entireTimeframe && !username) {
+                    alert('Für den gesamten Zeitraum muss ein User ausgewählt werden.');
+                    return;
+                }
+                
+                // Verify at least one filter is selected when not using entire timeframe
+                if (!entireTimeframe && !date && !week && !month) {
                     alert('Bitte wählen Sie ein Datum, eine Woche oder einen Monat aus.');
                     return;
                 }
                 
+                // If entire timeframe is selected and a user is specified, we don't need any date parameters
                 var params = [];
-                if (date) params.push('date=' + encodeURIComponent(date));
-                if (week) params.push('week=' + encodeURIComponent(week));
-                if (month) params.push('month=' + encodeURIComponent(month));
+                if (!entireTimeframe) {
+                    if (date) params.push('date=' + encodeURIComponent(date));
+                    if (week) params.push('week=' + encodeURIComponent(week));
+                    if (month) params.push('month=' + encodeURIComponent(month));
+                } else {
+                    // Add a parameter to indicate entire timeframe
+                    params.push('entire_period=1');
+                }
                 
                 var url = '/user_report/';
                 if (username) {
@@ -290,7 +346,20 @@
                 }
                 
                 if (params.length > 0) url += '?' + params.join('&');
-                window.open(url, '_blank', 'width=900,height=700');
+                
+                // The button variable is already defined above with "const button = this;"
+                // No need to redefine it which would cause an error
+                
+                // Open the report in a new window
+                const reportWindow = window.open(url, '_blank', 'width=900,height=700');
+                
+                // Reset button state after a short delay (even if window was blocked)
+                setTimeout(function() {
+                    buttonText.textContent = originalText;
+                    buttonIcon.className = originalIcon;
+                    button.disabled = false;
+                    button.style.opacity = '1';
+                }, 2000);
             };
         });
         </script>
@@ -326,8 +395,8 @@
                     e.preventDefault();
                     const attendanceId = this.getAttribute('data-attendance-id');
                     
-                    // Show loading state
-                    breaksContent.innerHTML = '<p>Pausendaten werden geladen...</p>';
+                    // Show loading state with animation
+                    breaksContent.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;"><i class="fas fa-circle-notch fa-spin" style="font-size: 2em; color: #1976d2; margin-bottom: 15px;"></i><p style="color: #666;">Pausendaten werden geladen...</p></div>';
                     modal.style.display = 'block';
                     
                     // Fetch break details
@@ -335,43 +404,58 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.breaks && data.breaks.length > 0) {
-                                // Create table for breaks
-                                let html = `<table style="width:100%; border-collapse: collapse; margin-top: 10px;">
+                                // Create table for breaks with enhanced styling
+                                let html = `<table style="width:100%; border-collapse: separate; border-spacing: 0; margin-top: 5px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px #e0e4e8;">
                                     <thead>
-                                        <tr>
-                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Start</th>
-                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Ende</th>
-                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Dauer (Min)</th>
-                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Typ</th>
-                                            <th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Abrechnung</th>
+                                        <tr style="background: linear-gradient(to bottom, #f8fafc, #eef1f5);">
+                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Start</th>
+                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Ende</th>
+                                            <th style="padding: 12px 15px; text-align: center; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Dauer (Min)</th>
+                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Typ</th>
+                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Abrechnung</th>
                                         </tr>
                                     </thead>
                                     <tbody>`;
                                 
-                                data.breaks.forEach(function(breakItem) {
+                                data.breaks.forEach(function(breakItem, index) {
                                     const startTime = breakItem.start_time ? breakItem.start_time.substring(11, 19) : '-';
                                     const endTime = breakItem.end_time ? breakItem.end_time.substring(11, 19) : '-';
                                     const breakType = breakItem.is_auto ? 'Automatisch' : 'Manuell';
                                     const billingStatus = breakItem.is_excluded ? 'Nicht abrechenbar' : 'Abrechenbar';
+                                    const rowStyle = index % 2 === 0 ? '' : 'background-color: #f8fafc;';
+                                    const typeIcon = breakItem.is_auto ? '<i class="fas fa-robot" style="margin-right: 6px; color: #607d8b;"></i>' : '<i class="fas fa-user" style="margin-right: 6px; color: #607d8b;"></i>';
+                                    const billingIcon = breakItem.is_excluded ? '<i class="fas fa-minus-circle" style="margin-right: 6px; color: #e57373;"></i>' : '<i class="fas fa-check-circle" style="margin-right: 6px; color: #4caf50;"></i>';
                                     
-                                    html += `<tr>
-                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${startTime}</td>
-                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${endTime}</td>
-                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${breakItem.duration}</td>
-                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${breakType}</td>
-                                        <td style="border-bottom: 1px solid #ddd; padding: 8px;">${billingStatus}</td>
+                                    html += `<tr style="${rowStyle} transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f1f4f7'" onmouseout="this.style.backgroundColor=index % 2 === 0 ? '' : '#f8fafc'">
+                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${startTime}</td>
+                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${endTime}</td>
+                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8; text-align: center; font-weight: 500;">${breakItem.duration}</td>
+                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${typeIcon}${breakType}</td>
+                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${billingIcon}${billingStatus}</td>
                                     </tr>`;
                                 });
                                 
-                                html += `</tbody></table>`;
+                                // Add a summary row
+                                const totalMinutes = data.breaks.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
+                                const excludedMinutes = data.breaks.filter(item => item.is_excluded).reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
+                                
+                                html += `</tbody>
+                                <tfoot>
+                                    <tr style="background-color: #f1f4f7;">
+                                        <td colspan="2" style="padding: 12px 15px; font-weight: 500; color: #37474f;">Gesamt</td>
+                                        <td style="padding: 12px 15px; font-weight: 500; color: #37474f; text-align: center;">${totalMinutes} Min</td>
+                                        <td colspan="2" style="padding: 12px 15px; font-weight: 500; color: #37474f;">Nicht abrechenbar: ${excludedMinutes} Min</td>
+                                    </tr>
+                                </tfoot>
+                                </table>`;
                                 breaksContent.innerHTML = html;
                             } else {
-                                breaksContent.innerHTML = '<p>Keine Pausendaten gefunden.</p>';
+                                breaksContent.innerHTML = '<div style="text-align: center; padding: 30px 0;"><i class="fas fa-coffee" style="font-size: 3em; color: #b0bec5; margin-bottom: 15px;"></i><p style="color: #666;">Keine Pausendaten gefunden.</p></div>';
                             }
                         })
                         .catch(error => {
                             console.error('Error fetching breaks:', error);
-                            breaksContent.innerHTML = '<p>Fehler beim Laden der Pausendaten.</p>';
+                            breaksContent.innerHTML = '<div style="text-align: center; padding: 30px 0;"><i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #e57373; margin-bottom: 15px;"></i><p style="color: #666;">Fehler beim Laden der Pausendaten.</p></div>';
                         });
                 });
             });

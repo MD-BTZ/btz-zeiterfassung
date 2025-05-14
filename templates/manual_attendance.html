@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anwesenheitsaufzeichnungen manuell hinzufügen</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    <div class="container" style="max-width: 800px; text-align: left; padding: 2em 3em;">
+        <div style="text-align: center; margin-bottom: 2em;">
+            <h1 style="margin-bottom: 0.2em;">
+                <i class="fas fa-plus-circle" style="color: #1976d2; margin-right: 0.3em;"></i>
+                Anwesenheitsaufzeichnung hinzufügen
+            </h1>
+            {% if session.get('username') %}
+            <p style="color: #666; font-size: 1.1em; margin-top: 0.5em;">
+                Angemeldet als <strong>{{ session.get('username') }}</strong>
+            </p>
+            {% endif %}
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="section">
+            <h2>Neue Anwesenheitsaufzeichnung hinzufügen</h2>
+            <p>Verwenden Sie dieses Formular, um eine neue Anwesenheitsaufzeichnung manuell hinzuzufügen.</p>
+            
+            {% if session.get('username') %}
+            <form id="add-attendance-form" method="post" action="/add_manual_attendance" style="background: #f4f6f8; padding: 1.5em; border-radius: 10px; margin: 1.5em 0;">
+                {% if session.get('admin_logged_in') %}
+                <div style="margin-bottom: 1em;">
+                    <label for="user-select" style="display: block; text-align: left; margin-bottom: 0.5em;">Benutzer:</label>
+                    <select id="user-select" name="user_id" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                        <option value="">Benutzer auswählen...</option>
+                        {% for user in users %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% else %}
+                <input type="hidden" name="user_id" value="{{ session.get('user_id') }}">
+                {% endif %}
+                
+                <div style="margin-bottom: 1em;">
+                    <label for="attendance-date" style="display: block; text-align: left; margin-bottom: 0.5em;">Datum:</label>
+                    <input type="date" id="attendance-date" name="date" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                </div>
+                
+                <div style="margin-bottom: 1em;">
+                    <label for="attendance-checkin" style="display: block; text-align: left; margin-bottom: 0.5em;">Check-In Zeit:</label>
+                    <input type="time" id="attendance-checkin" name="check_in" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                </div>
+                
+                <div style="margin-bottom: 1.5em;">
+                    <label for="attendance-checkout" style="display: block; text-align: left; margin-bottom: 0.5em;">Check-Out Zeit:</label>
+                    <input type="time" id="attendance-checkout" name="check_out" style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                    <small style="color: #666; display: block; margin-top: 0.3em;">Optional - leer lassen, wenn nur Check-In hinzugefügt werden soll.</small>
+                </div>
+                
+                <div style="margin-bottom: 1.5em;">
+                    <label for="current-password" style="display: block; text-align: left; margin-bottom: 0.5em;">Passwort (zur Bestätigung):</label>
+                    <input type="password" id="current-password" name="current_password" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                </div>
+                
+                <div>
+                    <button type="submit" style="background: #1976d2; padding: 0.8em 1.5em; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-save" style="margin-right: 0.5em;"></i>Aufzeichnung speichern
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div style="background: #ffeaea; color: #b71c1c; padding: 1em; border-radius: 6px; margin-top: 1em;">
+                <p>Sie müssen angemeldet sein, um Anwesenheitsaufzeichnungen hinzuzufügen.</p>
+                <p><a href="/login" style="color: #1976d2; font-weight: bold;">Zum Login</a></p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div style="margin-top: 2em;">
+            <h3>Hinweise</h3>
+            <ul style="margin-left: 1.5em; line-height: 1.6;">
+                <li>Verwenden Sie diese Funktion nur, wenn Sie vergessen haben, sich ein- oder auszuchecken.</li>
+                <li>Bitte achten Sie auf die Richtigkeit der eingegebenen Daten.</li>
+                <li>Das Datum und die Uhrzeiten müssen in der Vergangenheit liegen.</li>
+                <li>Manuelle Einträge können von Administratoren überprüft werden.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Standardmäßig das heutige Datum vorausfüllen
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateField = document.getElementById('attendance-date');
+            if (dateField) {
+                const today = new Date();
+                const year = today.getFullYear();
+                // Monate sind 0-basiert, deshalb +1, und mit führender Null für einstellige Monate
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                dateField.value = `${year}-${month}-${day}`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,22 +1,27 @@
-<nav class="menu-panel" style="background:#1976d2;padding:1em 0;margin-bottom:2em;display:flex;justify-content:space-between;">
+<nav class="menu-panel">
     <div>
-        <a href="/" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Home</a>
+        <a href="/">Home</a>
         
         {% if session.get('admin_logged_in') %}
-            <a href="/admin" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Admin</a>
-            <a href="/user_management" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Benutzerverwaltung</a>
-            <a href="/break_settings" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Pauseneinstellungen</a>
+            <a href="/admin">Admin</a>
+            <a href="/user_management">Benutzerverwaltung</a>
+            <a href="/break_settings">Pauseneinstellungen</a>
         {% endif %}
         
-        <a href="/data_access" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Datenzugriff</a>
-        <a href="/privacy_policy" style="color:#fff;margin:0 1.5em;text-decoration:none;font-weight:bold;">Datenschutzerklärung</a>
-    </div>
-    <div style="margin-right:2em;">
         {% if session.get('username') %}
-            <span style="color:#fff;margin-right:1.5em;font-weight:bold;">{{ session.get('username') }}</span>
-            <a href="/logout" style="color:#fff;text-decoration:none;font-weight:bold;">Logout</a>
+            <a href="/data_access" title="Zugriff auf Ihre persönlichen Daten"><i class="fas fa-user-shield"></i> Meine Daten</a>
+            <a href="/manual_attendance" title="Anwesenheitsaufzeichnungen manuell hinzufügen"><i class="fas fa-plus-circle"></i> Zeiterfassung hinzufügen</a>
         {% else %}
-            <a href="/login" style="color:#fff;text-decoration:none;font-weight:bold;">Login</a>
+            <a href="/data_access">Datenzugriff</a>
+        {% endif %}
+        <a href="/privacy_policy">Datenschutzerklärung</a>
+    </div>
+    <div class="menu-right">
+        {% if session.get('username') %}
+            <span class="username-display">{{ session.get('username') }}</span>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
         {% endif %}
     </div>
 </nav>

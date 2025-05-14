@@ -23,6 +23,7 @@
 - Check-in and check-out tracking
 - Automatic break detection
 - Manual break entry
+- Manual attendance record creation for past dates
 - Exclusion of breaks from billable hours
 - User management
 - Reporting features
@@ -39,6 +40,13 @@ Administrators can configure system-wide break preferences:
 1. Enable/disable automatic break detection
 2. Set inactivity threshold (minutes)
 3. Choose whether to exclude breaks from billable hours for all users
+
+### Manual Attendance Entry
+Users can manually add attendance records for past dates:
+1. Navigate to "Zeiterfassung hinzufügen" in the menu
+2. Select the date and enter check-in/check-out times
+3. Confirm with password
+4. System validates to prevent time conflicts with existing records
 
 ## Notes
 - The database (`attendance.db`) is created automatically.

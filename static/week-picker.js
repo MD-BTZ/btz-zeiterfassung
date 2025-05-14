@@ -58,7 +58,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         const reportMonthSelect = document.getElementById('report-month-select');
                         if (reportMonthSelect) reportMonthSelect.selectedIndex = 0;
+                        
+                        // Uncheck entire period checkbox if it exists
+                        const entirePeriodCheckbox = document.getElementById('entire-period');
+                        const reportEntirePeriodInput = document.getElementById('report-entire-period');
+                        if (entirePeriodCheckbox) entirePeriodCheckbox.checked = false;
+                        if (reportEntirePeriodInput) reportEntirePeriodInput.value = '0';
                     }
+                    
+                    // Create a custom event to notify other scripts that week was changed
+                    const weekChangedEvent = new Event('weekPickerChanged');
+                    document.dispatchEvent(weekChangedEvent);
                     
                     // Close the datepicker
                     $(this).datepicker('hide');

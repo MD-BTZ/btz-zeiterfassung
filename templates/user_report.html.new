@@ -64,9 +64,7 @@
             const username = "{{ username|replace(' ', '_')|lower }}";
             const urlParams = new URLSearchParams(window.location.search);
             let suffix = '';
-            if (urlParams.get('entire_period') === '1') {
-                suffix = 'gesamter_zeitraum';
-            } else if (urlParams.get('date')) {
+            if (urlParams.get('date')) {
                 suffix = urlParams.get('date');
             } else if (urlParams.get('week')) {
                 suffix = urlParams.get('week');
@@ -109,9 +107,7 @@
             // Add date info
             const urlParams = new URLSearchParams(window.location.search);
             let dateInfo = "";
-            if (urlParams.get('entire_period') === '1') {
-                dateInfo = "Gesamter Zeitraum";
-            } else if (urlParams.get('date')) {
+            if (urlParams.get('date')) {
                 dateInfo = "Datum: " + urlParams.get('date');
             } else if (urlParams.get('week')) {
                 dateInfo = "Woche: " + urlParams.get('week');
@@ -172,7 +168,6 @@
             setTimeout(() => {
                 const urlParams = new URLSearchParams(window.location.search);
                 console.log("Benutzerbericht bereit für " + "{{ username }}" + 
-                    (urlParams.get('entire_period') === '1' ? " für gesamten Zeitraum" : "") +
                     (urlParams.get('date') ? " am Datum " + urlParams.get('date') : "") +
                     (urlParams.get('week') ? " für Woche " + urlParams.get('week') : "") +
                     (urlParams.get('month') ? " für Monat " + urlParams.get('month') : ""));

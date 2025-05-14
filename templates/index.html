@@ -34,7 +34,7 @@
         
         <!-- Form starts after flash messages -->
         <div id="attendance-forms">
-            <div style="margin-bottom: 15px;">
+            <div class="user-selector-wrapper">
                 {% if session.get('admin_logged_in') %}
                     <!-- Admin sees dropdown with all users -->
                     <select id="user-selector" required>
@@ -45,13 +45,13 @@
                     </select>
                 {% else %}
                     <!-- Regular users only see themselves -->
-                    <div style="font-size: 1.2em; margin-bottom: 10px;">
+                    <div class="user-info">
                         Angemeldet als: <strong>{{ session.get('username') }}</strong>
                         <input type="hidden" id="user-selector" value="{{ users[0][0] }}">
                     </div>
                 {% endif %}
             </div>
-            <div style="display:flex; gap:1em; justify-content:center; margin-top: 10px;">
+            <div class="button-group">
                 <form action="/checkin" method="post" class="inline-form">
                     <input type="hidden" name="user_id" id="checkin-user-id">
                     <button type="submit" id="checkin-btn">Check In</button>
@@ -62,55 +62,42 @@
                 </form>
             </div>
             
-            <!-- Check-in Status Display -->
-            <div id="checkin-status" style="margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; display: none;">
-                <div id="status-active" style="display: none; background-color: #e8f5e9; border: 1px solid #a5d6a7; padding: 10px;">
-                    <span style="font-weight: bold; color: #2e7d32;">✓ Aktiver Check-in</span>
-                    <div id="checkin-time" style="margin-top: 5px; font-size: 0.9em;">Check-in Zeit: <span id="checkin-time-value"></span></div>
-                    <div id="checkin-duration" style="margin-top: 5px; font-size: 0.9em;">Aktuelle Dauer: <span id="duration-value">00:00:00</span></div>
-                </div>
-                <div id="status-inactive" style="display: none; background-color: #ffebee; border: 1px solid #ffcdd2; padding: 10px;">
-                    <span style="font-weight: bold; color: #c62828;">✗ Kein aktiver Check-in</span>
-                    <div style="margin-top: 5px; font-size: 0.9em;">Bitte führen Sie einen Check-in durch, um die Zeiterfassung zu starten.</div>
-                </div>
-            </div>
-            
             <!-- Info about system-wide break detection -->
-            <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 5px; border: 1px solid #b3e0ff;">
-                <h4 style="margin-top: 0; margin-bottom: 10px;">Automatische Pausenerkennung</h4>
-                <p style="font-size: 0.9em; color: #333; margin-bottom: 0;">
+            <div class="info-box">
+                <h4>Automatische Pausenerkennung</h4>
+                <p>
                     Die Pausenerkennung wird systemweit vom Administrator konfiguriert.
                     Längere Inaktivitätsperioden können automatisch als Pausen markiert werden.
                 </p>
             </div>
             
             <!-- Manual break entry -->
-            <div id="manual-break-entry" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px; display: none;">
-                <h4 style="margin-top: 0;">Pause manuell eintragen</h4>
-                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Tragen Sie manuell eine Pause für den aktuellen Tag ein:</p>
-                <form id="add-break-form" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 10px;">
+            <div id="manual-break-entry" class="break-entry-section" style="display: none;">
+                <h4>Pause manuell eintragen</h4>
+                <p>Tragen Sie manuell eine Pause für den aktuellen Tag ein:</p>
+                <form id="add-break-form" class="break-form">
                     <input type="hidden" id="break-attendance-id" name="attendance_id">
                     
-                    <div style="flex: 1;">
-                        <label for="break-start" style="display: block; margin-bottom: 5px; font-size: 0.9em;">Start:</label>
-                        <input type="time" id="break-start" name="break_start" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="break-form-field">
+                        <label for="break-start">Start:</label>
+                        <input type="time" id="break-start" name="break_start" required>
                     </div>
                     
-                    <div style="flex: 1;">
-                        <label for="break-end" style="display: block; margin-bottom: 5px; font-size: 0.9em;">Ende:</label>
-                        <input type="time" id="break-end" name="break_end" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="break-form-field">
+                        <label for="break-end">Ende:</label>
+                        <input type="time" id="break-end" name="break_end" required>
                     </div>
                     
-                    <div style="flex: 1;">
-                        <label style="display: block; margin-bottom: 5px; font-size: 0.9em;">Abrechnung:</label>
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="break-excluded" name="break_excluded" value="1" style="margin-right: 5px;">
-                            <span style="font-size: 0.9em;">Nicht abrechenbar</span>
+                    <div class="break-form-field">
+                        <label>Abrechnung:</label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="break-excluded" name="break_excluded" value="1">
+                            <span>Nicht abrechenbar</span>
                         </label>
                     </div>
                     
-                    <div style="flex: 1;">
-                        <button type="button" id="add-break-btn" style="width: 100%; padding: 8px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Pause hinzufügen</button>
+                    <div class="break-form-field">
+                        <button type="button" id="add-break-btn" class="break-add-button">Pause hinzufügen</button>
                     </div>
                 </form>
             </div>
@@ -163,6 +150,16 @@
                             <input type="hidden" id="report-month" name="month">
                         </div>
                     </div>
+                    
+                    <!-- Entire period option -->
+                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="entire-period" style="margin-right: 5px;">
+                            <span>Gesamter Zeitraum</span>
+                        </label>
+                        <p style="font-size: 0.8em; color: #666; margin-top: 5px;">Alle verfügbaren Daten anzeigen</p>
+                        <input type="hidden" id="report-entire-period" name="entire_period" value="0">
+                    </div>
                 </div>
                 <div style="margin-top: 15px;">
                     <button type="button" id="generate-report-btn" style="padding: 8px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Bericht generieren</button>
@@ -182,11 +179,6 @@
         const checkoutUserIdField = document.getElementById('checkout-user-id');
         const checkinBtn = document.getElementById('checkin-btn');
         const checkoutBtn = document.getElementById('checkout-btn');
-        const checkinStatusDiv = document.getElementById('checkin-status');
-        const statusActiveDiv = document.getElementById('status-active');
-        const statusInactiveDiv = document.getElementById('status-inactive');
-        const checkinTimeValue = document.getElementById('checkin-time-value');
-        const durationValue = document.getElementById('duration-value');
         
         // Initialize user ID for forms
         function updateUserIds() {
@@ -271,6 +263,48 @@
             }
         });
         
+        // Add event listener for the entire period checkbox
+        const entirePeriodCheckbox = document.getElementById('entire-period');
+        const reportEntirePeriodInput = document.getElementById('report-entire-period');
+        
+        entirePeriodCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Clear all other date/week/month selections when entire period is checked
+                reportDateInput.value = '';
+                reportWeekInput.value = '';
+                reportMonthInput.value = '';
+                weekPicker.value = '';
+                selectedWeekDisplay.textContent = '';
+                reportMonthSelect.selectedIndex = 0;
+                
+                // Set hidden field value
+                reportEntirePeriodInput.value = '1';
+            } else {
+                reportEntirePeriodInput.value = '0';
+            }
+        });
+        
+        // Make sure checking a date/week/month option unchecks the entire period checkbox
+        reportDateInput.addEventListener('change', function() {
+            if (this.value) {
+                entirePeriodCheckbox.checked = false;
+                reportEntirePeriodInput.value = '0';
+            }
+        });
+        
+        // Week picker is handled in week-picker.js, so let's add a handler here
+        document.addEventListener('weekPickerChanged', function() {
+            entirePeriodCheckbox.checked = false;
+            reportEntirePeriodInput.value = '0';
+        });
+        
+        reportMonthSelect.addEventListener('change', function() {
+            if (this.value) {
+                entirePeriodCheckbox.checked = false;
+                reportEntirePeriodInput.value = '0';
+            }
+        });
+        
         // Generate report
         generateReportBtn.addEventListener('click', function() {
             let username;
@@ -297,13 +331,17 @@
                 reportMonthInput.value = `${year}-${month}`;
             }
             
+            // Update entire period hidden field
+            reportEntirePeriodInput.value = entirePeriodCheckbox.checked ? "1" : "0";
+            
             const date = reportDateInput.value;
             const week = reportWeekInput.value;
             const month = reportMonthInput.value;
+            const entirePeriod = entirePeriodCheckbox.checked;
             
-            // Verify at least one filter is selected
-            if (!date && !week && !month) {
-                alert('Bitte wählen Sie ein Datum, eine Woche oder einen Monat aus.');
+            // Verify at least one filter is selected or entire period is checked
+            if (!date && !week && !month && !entirePeriod) {
+                alert('Bitte wählen Sie ein Datum, eine Woche, einen Monat oder den gesamten Zeitraum aus.');
                 return;
             }
             
@@ -312,6 +350,7 @@
             if (date) params.push('date=' + encodeURIComponent(date));
             if (week) params.push('week=' + encodeURIComponent(week));
             if (month) params.push('month=' + encodeURIComponent(month));
+            if (entirePeriod) params.push('entire_period=1');
             
             let url = '/user_report/' + encodeURIComponent(username);
             if (params.length > 0) {
@@ -328,45 +367,6 @@
                 // For users, navigate directly which may prompt for authentication
                 window.location.href = url;
             }
-        });
-        
-        // Check-in status handling
-        function updateCheckinStatus() {
-            const userId = userSelector.value;
-            if (!userId) return;
-            
-            $.ajax({
-                url: '/get_checkin_status/' + encodeURIComponent(userId),
-                method: 'GET',
-                success: function(data) {
-                    if (data && data.status) {
-                        checkinStatusDiv.style.display = 'block';
-                        if (data.status === 'active') {
-                            statusActiveDiv.style.display = 'block';
-                            statusInactiveDiv.style.display = 'none';
-                            checkinTimeValue.textContent = data.checkin_time || '';
-                            durationValue.textContent = data.duration || '00:00:00';
-                        } else {
-                            statusActiveDiv.style.display = 'none';
-                            statusInactiveDiv.style.display = 'block';
-                        }
-                    } else {
-                        checkinStatusDiv.style.display = 'none';
-                    }
-                },
-                error: function() {
-                    checkinStatusDiv.style.display = 'none';
-                }
-            });
-        }
-        
-        // Initial check-in status update
-        updateCheckinStatus();
-        
-        // Update check-in status on user change
-        userSelector.addEventListener('change', function() {
-            updateUserIds();
-            updateCheckinStatus();
         });
     });
     </script>
