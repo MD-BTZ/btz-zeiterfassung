@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 </head>
@@ -69,7 +70,32 @@
                     Die Pausenerkennung wird systemweit vom Administrator konfiguriert.
                     Längere Inaktivitätsperioden können automatisch als Pausen markiert werden.
                 </p>
+                <h4>Gesetzliche Pausen (ArbZG)</h4>
+                <p>
+                    Gemäß Arbeitszeitgesetz werden automatisch Pausen eingetragen:
+                </p>
+                <ul>
+                    <li>Bei > 6 Stunden Arbeitszeit: mind. 30 Minuten Pause</li>
+                    <li>Bei > 9 Stunden Arbeitszeit: mind. 45 Minuten Pause</li>
+                </ul>
+                <p>
+                    Wenn keine ausreichenden Pausen gemacht wurden, werden diese beim Auschecken automatisch hinzugefügt.
+                </p>
+                <div class="arbzg-info-block">
+                    <p><strong><i class="fas fa-lightbulb" style="margin-right: 5px;"></i>Intelligente Pausenplatzierung:</strong> Das System platziert gesetzliche Pausen bevorzugt während der Mittagszeit (11:30-14:00) oder fügt sie am Ende des Arbeitstages ein, wenn keine Mittagszeit verfügbar ist.</p>
+                    <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
+                        <span class="arbzg-badge lunch-badge" style="display: inline-flex; align-items: center;">
+                            <i class="fas fa-utensils" style="margin-right: 5px;"></i>Mittagspause
+                        </span>
+                        <span class="arbzg-badge" style="display: inline-flex; align-items: center;">
+                            <i class="fas fa-clock" style="margin-right: 5px;"></i>Ende des Arbeitstages
+                        </span>
+                    </div>
+                </div>
             </div>
+            
+            <!-- Break Tracker UI placeholder -->
+            <div id="break-tracker"></div>
             
             <!-- Manual break entry -->
             <div id="manual-break-entry" class="break-entry-section" style="display: none;">
@@ -89,9 +115,23 @@
                     </div>
                     
                     <div class="break-form-field">
+                        <label for="break-type-select">Pausentyp:</label>
+                        <select id="break-type-select" name="break_type">
+                            <option value="regular">Reguläre Pause</option>
+                            <option value="lunch">Mittagspause</option>
+                            <option value="arbzg">ArbZG Pflichtpause</option>
+                        </select>
+                    </div>
+                    
+                    <div class="break-form-field">
+                        <label for="break-description">Beschreibung:</label>
+                        <input type="text" id="break-description" name="break_description" placeholder="Optional">
+                    </div>
+                    
+                    <div class="break-form-field">
                         <label>Abrechnung:</label>
                         <label class="checkbox-label">
-                            <input type="checkbox" id="break-excluded" name="break_excluded" value="1">
+                            <input type="checkbox" id="break-excluded" name="break_excluded" value="1" checked>
                             <span>Nicht abrechenbar</span>
                         </label>
                     </div>
@@ -371,5 +411,7 @@
     });
     </script>
     <script src="/static/week-picker.js"></script>
+    <!-- Load break tracker script -->
+    <script src="/static/script.js"></script>
 </body>
 </html>

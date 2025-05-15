@@ -8,6 +8,171 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        /* Filtering styles */
+        .filtering-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #f7f9fb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e4e8;
+        }
+        
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            flex: 1;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+        
+        .filter-label, .sort-label {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #444;
+            font-weight: 500;
+        }
+        
+        .invisible {
+            visibility: hidden;
+        }
+        
+        .date-range-inputs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .date-separator {
+            font-size: 0.9em;
+            color: #444;
+        }
+        
+        .filter-button {
+            padding: 0.6em 1em;
+            background: #f0f4f7;
+            border: 1px solid #d3d9e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .filter-button:hover {
+            background: #e0e4e8;
+        }
+        
+        .filter-button.ready {
+            background: linear-gradient(to bottom, #42a5f5, #1976d2);
+            border-color: #1565c0;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        
+        .filter-button.ready:hover {
+            background: linear-gradient(to bottom, #2196f3, #0d47a1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .clear-btn {
+            background: #f5f5f5;
+            color: #555;
+        }
+        
+        .clear-btn:hover {
+            background: #eaeaea;
+            border-color: #ccc;
+        }
+        
+        .sort-options {
+            display: flex;
+            flex-direction: column;
+            min-width: 220px;
+        }
+        
+        .filter-results-info {
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            background: #e8f0fe;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #333;
+        }
+        
+        .form-input {
+            padding: 0.6em;
+            background: #fff;
+            border: 1px solid #b0bec5;
+            border-radius: 6px;
+            font-size: 0.95em;
+            box-sizing: border-box;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-input:focus {
+            border-color: #64b5f6;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 0 0 3px rgba(33, 150, 243, 0.15);
+            outline: none;
+        }
+        
+        .form-icon {
+            margin-right: 5px;
+            color: #1976d2;
+        }
+        
+        .timeframe-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            height: 40px;
+            padding: 0.15em 0.5em;
+            border-radius: 6px;
+            background: #f0f4f7;
+            border: 1px solid #d3d9e0;
+            transition: background-color 0.2s;
+        }
+        
+        .timeframe-label input {
+            margin-right: 0.7em;
+            transform: scale(1.2);
+        }
+        
+        .timeframe-label span {
+            font-size: 0.95em;
+            color: #444;
+            white-space: nowrap;
+            user-select: none;
+        }
+        
+        .multi-select-container {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .date-picker-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .filtering-options {
+                flex-direction: column;
+            }
+            
+            .filter-group, .sort-options {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     {% include 'menu.html' %}
@@ -19,89 +184,91 @@
         <!-- <h2>User Management</h2>
         <a href="/user_management" target="_blank" class="user-management-link">Open User Management in New Tab</a> -->
         <h2 class="section-title">Bericht generieren</h2>
-        <form id="report-form" class="report-form">
-            <!-- User Selection -->
-            <div style="display: flex; flex-direction: column; white-space: nowrap; min-width: 130px;">
-                <label for="report-user-id" style="margin-bottom: 0.4em; font-size: 0.9em; color: #444; font-weight: 500;">
-                    <i class="fas fa-user" style="margin-right: 5px; color: #1976d2;"></i>User
-                </label>
-                <select id="report-user-id" name="user_id" style="padding:0.6em; background: #fff; border: 1px solid #b0bec5; border-radius: 6px; font-size: 0.95em; box-sizing: border-box; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); transition: border-color 0.2s, box-shadow 0.2s;" title="Wählen Sie einen Benutzer oder 'Alle Benutzer'">
-                    <option value="" selected>Alle Benutzer</option>
-                    {% set seen = [] %}
-                    {% for rec in records %}
-                        {% if rec[1] not in seen %}
-                            <option value="{{ rec[1] }}">{{ rec[1] }}</option>
-                            {% set _ = seen.append(rec[1]) %}
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Entire Timeframe Checkbox -->
-            <div style="display: flex; flex-direction: column; white-space: nowrap; min-width: 140px;">
-                <label style="visibility: hidden; margin-bottom: 0.4em; font-size: 0.9em;">_</label>
-                <label style="display: flex; align-items: center; cursor: pointer; height: 40px; padding: 0.15em 0.5em; border-radius: 6px; background: #f0f4f7; border: 1px solid #d3d9e0; transition: background-color 0.2s;" title="Zeigt alle Daten für den ausgewählten Benutzer an (nur bei Benutzerauswahl)">
-                    <input type="checkbox" id="entire-timeframe" style="margin-right: 0.7em; transform: scale(1.2);">
-                    <span style="font-size: 0.95em; color: #444; white-space: nowrap; user-select: none;">Gesamter Zeitraum</span>
-                </label>
-            </div>
-            
-            <!-- Date Input -->
-            <div style="display: flex; flex-direction: column; white-space: nowrap; min-width: 130px;">
-                <label for="report-date" class="form-label">
-                    <i class="far fa-calendar-alt form-icon"></i>Datum
-                </label>
-                <input type="date" id="report-date" name="date" class="form-input" title="Wählen Sie ein bestimmtes Datum für den Bericht">
-            </div>
-            
-            <!-- Week Picker -->
-            <div class="form-field">
-                <label for="week-picker" class="form-label">
-                    <i class="fas fa-calendar-week form-icon"></i>Woche
-                </label>
-                <div class="date-picker-container">
-                    <input type="text" id="week-picker" name="week" class="form-input" style="width: 100%; cursor: pointer;" placeholder="Woche wählen" readonly title="Wählen Sie eine Woche">
-                    <span id="selected-week-display" style="display:none;"></span>
-                    <input type="hidden" id="report-week" name="week">
-                </div>
-            </div>
-            
-            <!-- Month Selection -->
-            <div class="form-field-month">
-                <label for="report-month-select" class="form-label">
-                    <i class="far fa-calendar form-icon"></i>Monat
-                </label>
-                <div class="multi-select-container">
-                    <select id="report-month-select" class="form-input" style="flex: 1; min-width: 95px;" title="Wählen Sie einen Monat">
-                        <option value="" selected disabled>Monat</option>
-                        <option value="1">Jan</option>
-                        <option value="2">Feb</option>
-                        <option value="3">Mär</option>
-                        <option value="4">Apr</option>
-                        <option value="5">Mai</option>
-                        <option value="6">Jun</option>
-                        <option value="7">Jul</option>
-                        <option value="8">Aug</option>
-                        <option value="9">Sep</option>
-                        <option value="10">Okt</option>
-                        <option value="11">Nov</option>
-                        <option value="12">Dez</option>
-                    </select>
-                    <select id="report-month-year" class="form-input" style="flex: 1; min-width: 75px;" title="Wählen Sie ein Jahr">
-                        {% for year in range(2023, 2026) %}
-                        <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
+        <form id="report-form" class="filtering-options">
+            <div class="filter-form">
+                <!-- User Selection -->
+                <div class="filter-group">
+                    <label for="report-user-id" class="filter-label">
+                        <i class="fas fa-user form-icon"></i>User
+                    </label>
+                    <select id="report-user-id" name="user_id" class="form-input" title="Wählen Sie einen Benutzer oder 'Alle Benutzer'">
+                        <option value="" selected>Alle Benutzer</option>
+                        {% set seen = [] %}
+                        {% for rec in records %}
+                            {% if rec[1] not in seen %}
+                                <option value="{{ rec[1] }}">{{ rec[1] }}</option>
+                                {% set _ = seen.append(rec[1]) %}
+                            {% endif %}
                         {% endfor %}
                     </select>
-                    <input type="hidden" id="report-month" name="month">
                 </div>
-            </div>
-            
-            <!-- Generate Button -->
-            <div class="form-field">
-                <label class="hidden-label">_</label>
-                <button type="button" id="generate-report-btn" class="generate-btn" title="Bericht generieren">
-                    <i class="fas fa-file-alt btn-icon"></i><span>Bericht generieren</span>
-                </button>
+                
+                <!-- Entire Timeframe Checkbox -->
+                <div class="filter-group">
+                    <label class="filter-label invisible">_</label>
+                    <label class="timeframe-label" title="Zeigt alle Daten für den ausgewählten Benutzer an (nur bei Benutzerauswahl)">
+                        <input type="checkbox" id="entire-timeframe">
+                        <span>Gesamter Zeitraum</span>
+                    </label>
+                </div>
+                
+                <!-- Date Input -->
+                <div class="filter-group">
+                    <label for="report-date" class="filter-label">
+                        <i class="far fa-calendar-alt form-icon"></i>Datum
+                    </label>
+                    <input type="date" id="report-date" name="date" class="form-input" title="Wählen Sie ein bestimmtes Datum für den Bericht">
+                </div>
+                
+                <!-- Week Picker -->
+                <div class="filter-group">
+                    <label for="week-picker" class="filter-label">
+                        <i class="fas fa-calendar-week form-icon"></i>Woche
+                    </label>
+                    <div class="date-picker-container">
+                        <input type="text" id="week-picker" name="week" class="form-input" style="cursor: pointer;" placeholder="Woche wählen" readonly title="Wählen Sie eine Woche">
+                        <span id="selected-week-display" style="display:none;"></span>
+                        <input type="hidden" id="report-week" name="week">
+                    </div>
+                </div>
+                
+                <!-- Month Selection -->
+                <div class="filter-group">
+                    <label for="report-month-select" class="filter-label">
+                        <i class="far fa-calendar form-icon"></i>Monat
+                    </label>
+                    <div class="multi-select-container">
+                        <select id="report-month-select" class="form-input" style="min-width: 95px;" title="Wählen Sie einen Monat">
+                            <option value="" selected disabled>Monat</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mär</option>
+                            <option value="4">Apr</option>
+                            <option value="5">Mai</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Aug</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Okt</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dez</option>
+                        </select>
+                        <select id="report-month-year" class="form-input" style="min-width: 75px;" title="Wählen Sie ein Jahr">
+                            {% for year in range(2023, 2026) %}
+                            <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="report-month" name="month">
+                    </div>
+                </div>
+                
+                <!-- Generate Button -->
+                <div class="filter-group">
+                    <label class="filter-label invisible">_</label>
+                    <button type="button" id="generate-report-btn" class="filter-button" title="Bericht generieren">
+                        <i class="fas fa-file-alt btn-icon"></i><span>Bericht generieren</span>
+                    </button>
+                </div>
             </div>
         </form>
         <div id="summary-result">
@@ -111,8 +278,82 @@
             {% endif %}
         </div>
         <h2>Anwesenheitsübersicht</h2>
+        
+        <!-- Filtering options -->
+        <div class="filtering-options">
+            <div class="filter-form">
+                <!-- Date range filter -->
+                <div class="filter-group">
+                    <label for="filter-start-date" class="filter-label">
+                        <i class="far fa-calendar-alt form-icon"></i>Zeitraum
+                    </label>
+                    <div class="date-range-inputs">
+                        <input type="date" id="filter-start-date" class="form-input" placeholder="Von" title="Startdatum">
+                        <span class="date-separator">bis</span>
+                        <input type="date" id="filter-end-date" class="form-input" placeholder="Bis" title="Enddatum">
+                    </div>
+                </div>
+                
+                <!-- User filter -->
+                <div class="filter-group">
+                    <label for="filter-user" class="filter-label">
+                        <i class="fas fa-user form-icon"></i>User
+                    </label>
+                    <select id="filter-user" class="form-input">
+                        <option value="">Alle Benutzer</option>
+                        {% set seen = [] %}
+                        {% for rec in records %}
+                            {% if rec[1] not in seen %}
+                                <option value="{{ rec[1] }}">{{ rec[1] }}</option>
+                                {% set _ = seen.append(rec[1]) %}
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Status filter -->
+                <div class="filter-group">
+                    <label for="filter-status" class="filter-label">
+                        <i class="fas fa-stream form-icon"></i>Status
+                    </label>
+                    <select id="filter-status" class="form-input">
+                        <option value="">Alle</option>
+                        <option value="checked-in">Eingecheckt</option>
+                        <option value="checked-out">Ausgecheckt</option>
+                    </select>
+                </div>
+                
+                <!-- Clear filters button -->
+                <div class="filter-group">
+                    <label class="filter-label invisible">_</label>
+                    <button type="button" id="clear-filters" class="filter-button clear-btn">
+                        <i class="fas fa-times-circle"></i><span>Filter zurücksetzen</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Sort controls -->
+            <div class="sort-options">
+                <label for="sort-by" class="sort-label">
+                    <i class="fas fa-sort-amount-down form-icon"></i>Sortieren nach
+                </label>
+                <select id="sort-by" class="form-input">
+                    <option value="date-desc">Datum (neueste zuerst)</option>
+                    <option value="date-asc">Datum (älteste zuerst)</option>
+                    <option value="user-asc">User (A-Z)</option>
+                    <option value="user-desc">User (Z-A)</option>
+                    <option value="time-desc">Gesamtzeit (längste zuerst)</option>
+                    <option value="time-asc">Gesamtzeit (kürzeste zuerst)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="filter-results-info" class="filter-results-info" style="display: none;">
+            <span id="filter-count">0</span> Einträge gefunden
+        </div>
+        
         <div class="table-responsive">
-        <table class="attendance-table">
+        <table class="attendance-table" id="attendance-table">
             <thead>
                 <tr>
                     <th><i class="fas fa-user table-icon"></i>User</th>
@@ -300,6 +541,7 @@
                 buttonIcon.className = 'fas fa-spinner fa-spin';
                 button.disabled = true;
                 button.style.opacity = '0.8';
+                button.classList.remove('ready');
                 
                 // Week is already updated by datepicker, just need to update month
                 
@@ -359,6 +601,8 @@
                     buttonIcon.className = originalIcon;
                     button.disabled = false;
                     button.style.opacity = '1';
+                    // Re-add ready class if needed
+                    updateButtonState();
                 }, 2000);
             };
         });
@@ -411,7 +655,7 @@
                                             <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Start</th>
                                             <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Ende</th>
                                             <th style="padding: 12px 15px; text-align: center; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Dauer (Min)</th>
-                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Typ</th>
+                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Typ & Beschreibung</th>
                                             <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Abrechnung</th>
                                         </tr>
                                     </thead>
@@ -420,17 +664,46 @@
                                 data.breaks.forEach(function(breakItem, index) {
                                     const startTime = breakItem.start_time ? breakItem.start_time.substring(11, 19) : '-';
                                     const endTime = breakItem.end_time ? breakItem.end_time.substring(11, 19) : '-';
-                                    const breakType = breakItem.is_auto ? 'Automatisch' : 'Manuell';
                                     const billingStatus = breakItem.is_excluded ? 'Nicht abrechenbar' : 'Abrechenbar';
                                     const rowStyle = index % 2 === 0 ? '' : 'background-color: #f8fafc;';
-                                    const typeIcon = breakItem.is_auto ? '<i class="fas fa-robot" style="margin-right: 6px; color: #607d8b;"></i>' : '<i class="fas fa-user" style="margin-right: 6px; color: #607d8b;"></i>';
                                     const billingIcon = breakItem.is_excluded ? '<i class="fas fa-minus-circle" style="margin-right: 6px; color: #e57373;"></i>' : '<i class="fas fa-check-circle" style="margin-right: 6px; color: #4caf50;"></i>';
+                                    
+                                    // Determine break type display
+                                    let breakTypeDisplay = '';
+                                    let typeIcon = '';
+                                    
+                                    if (breakItem.is_auto) {
+                                        if (breakItem.description && breakItem.description.includes('ArbZG')) {
+                                            if (breakItem.description.includes('Mittagspause')) {
+                                                typeIcon = '<i class="fas fa-utensils" style="margin-right: 6px; color: #e65100;"></i>';
+                                                breakTypeDisplay = '<span style="background: #ffe0b2; color: #e65100; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; border: 1px solid #ffcc80;">ArbZG Mittagspause</span>';
+                                            } else {
+                                                typeIcon = '<i class="fas fa-clock" style="margin-right: 6px; color: #2e7d32;"></i>';
+                                                breakTypeDisplay = '<span style="background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; border: 1px solid #a5d6a7;">ArbZG</span>';
+                                            }
+                                        } else {
+                                            typeIcon = '<i class="fas fa-robot" style="margin-right: 6px; color: #1976d2;"></i>';
+                                            breakTypeDisplay = '<span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 12px; font-size: 0.8em;">Automatisch</span>';
+                                        }
+                                    } else {
+                                        typeIcon = '<i class="fas fa-user" style="margin-right: 6px; color: #607d8b;"></i>';
+                                        breakTypeDisplay = '<span style="background: #eee; color: #333; padding: 3px 8px; border-radius: 12px; font-size: 0.8em;">Manuell</span>';
+                                    }
+                                    
+                                    // Add description if available
+                                    const description = breakItem.description ? 
+                                        `<div style="margin-top: 4px; font-size: 0.85em; color: #666;">${breakItem.description}</div>` : '';
                                     
                                     html += `<tr style="${rowStyle} transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f1f4f7'" onmouseout="this.style.backgroundColor=index % 2 === 0 ? '' : '#f8fafc'">
                                         <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${startTime}</td>
                                         <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${endTime}</td>
                                         <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8; text-align: center; font-weight: 500;">${breakItem.duration}</td>
-                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${typeIcon}${breakType}</td>
+                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">
+                                            ${typeIcon}${breakTypeDisplay}
+                                            ${description}
+                                            ${breakItem.break_type === 'lunch' ? 
+                                              '<span style="display: block; margin-top: 3px; font-size: 0.8em; color: #e65100;"><i class="fas fa-utensils" style="margin-right: 3px;"></i>Mittagszeit</span>' : ''}
+                                        </td>
                                         <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${billingIcon}${billingStatus}</td>
                                     </tr>`;
                                 });
@@ -459,6 +732,202 @@
                         });
                 });
             });
+        });
+    </script>
+
+    <script>
+        // Attendance filtering and sorting functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterStartDate = document.getElementById('filter-start-date');
+            const filterEndDate = document.getElementById('filter-end-date');
+            const filterUser = document.getElementById('filter-user');
+            const filterStatus = document.getElementById('filter-status');
+            const sortBy = document.getElementById('sort-by');
+            const clearFilters = document.getElementById('clear-filters');
+            const filterResultsInfo = document.getElementById('filter-results-info');
+            const filterCount = document.getElementById('filter-count');
+            const table = document.getElementById('attendance-table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Store original rows for easy filtering
+            const originalRows = [...rows];
+            
+            // Initialize filter change event
+            [filterStartDate, filterEndDate, filterUser, filterStatus, sortBy].forEach(element => {
+                element.addEventListener('change', applyFiltersAndSort);
+            });
+            
+            // Clear filters button
+            clearFilters.addEventListener('click', function() {
+                filterStartDate.value = '';
+                filterEndDate.value = '';
+                filterUser.value = '';
+                filterStatus.value = '';
+                sortBy.value = 'date-desc';
+                
+                applyFiltersAndSort();
+            });
+            
+            // Main filter and sort function
+            function applyFiltersAndSort() {
+                let filteredRows = [...originalRows];
+                
+                // Filter by user
+                if (filterUser.value) {
+                    filteredRows = filteredRows.filter(row => {
+                        const username = row.cells[0].textContent.trim();
+                        return username === filterUser.value;
+                    });
+                }
+                
+                // Filter by date range
+                if (filterStartDate.value || filterEndDate.value) {
+                    filteredRows = filteredRows.filter(row => {
+                        const dateCell = row.cells[1].textContent.trim();
+                        if (dateCell === '-') return false;
+                        
+                        // Convert date format from DD.MM.YYYY to YYYY-MM-DD for comparison
+                        const dateParts = dateCell.split('.');
+                        if (dateParts.length === 3) {
+                            const rowDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                            
+                            // Apply start date filter
+                            if (filterStartDate.value) {
+                                const startDate = new Date(filterStartDate.value);
+                                if (rowDate < startDate) return false;
+                            }
+                            
+                            // Apply end date filter
+                            if (filterEndDate.value) {
+                                const endDate = new Date(filterEndDate.value);
+                                if (rowDate > endDate) return false;
+                            }
+                            
+                            return true;
+                        }
+                        
+                        // If date format doesn't match, check if it's already in YYYY-MM-DD format
+                        try {
+                            const rowDate = new Date(dateCell);
+                            
+                            // Apply start date filter
+                            if (filterStartDate.value) {
+                                const startDate = new Date(filterStartDate.value);
+                                if (rowDate < startDate) return false;
+                            }
+                            
+                            // Apply end date filter
+                            if (filterEndDate.value) {
+                                const endDate = new Date(filterEndDate.value);
+                                if (rowDate > endDate) return false;
+                            }
+                            
+                            return true;
+                        } catch (e) {
+                            return false; // Date is invalid
+                        }
+                    });
+                }
+                
+                // Filter by check-in/check-out status
+                if (filterStatus.value) {
+                    filteredRows = filteredRows.filter(row => {
+                        const checkIn = row.cells[2].textContent.trim();
+                        const checkOut = row.cells[3].textContent.trim();
+                        
+                        if (filterStatus.value === 'checked-in') {
+                            return checkIn !== '-';
+                        } else if (filterStatus.value === 'checked-out') {
+                            return checkOut !== '-';
+                        }
+                        
+                        return true;
+                    });
+                }
+                
+                // Sort rows
+                filteredRows.sort((a, b) => {
+                    switch (sortBy.value) {
+                        case 'date-desc':
+                            return compareDates(a.cells[1].textContent.trim(), b.cells[1].textContent.trim(), true);
+                        case 'date-asc':
+                            return compareDates(a.cells[1].textContent.trim(), b.cells[1].textContent.trim(), false);
+                        case 'user-asc':
+                            return a.cells[0].textContent.localeCompare(b.cells[0].textContent);
+                        case 'user-desc':
+                            return b.cells[0].textContent.localeCompare(a.cells[0].textContent);
+                        case 'time-desc':
+                            return compareTimeValues(b.cells[4].textContent.trim(), a.cells[4].textContent.trim());
+                        case 'time-asc':
+                            return compareTimeValues(a.cells[4].textContent.trim(), b.cells[4].textContent.trim());
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Update results count and info
+                filterCount.textContent = filteredRows.length;
+                filterResultsInfo.style.display = filteredRows.length === originalRows.length ? 'none' : 'block';
+                
+                // Apply filtered and sorted rows to the table
+                tbody.innerHTML = '';
+                filteredRows.forEach(row => {
+                    tbody.appendChild(row);
+                });
+            }
+            
+            // Helper function to compare dates
+            function compareDates(dateA, dateB, descending) {
+                if (dateA === '-') return descending ? 1 : -1;
+                if (dateB === '-') return descending ? -1 : 1;
+                
+                try {
+                    // Try to parse in DD.MM.YYYY format
+                    const parseDate = (dateStr) => {
+                        // Handle YYYY-MM-DD format
+                        if (dateStr.includes('-')) {
+                            const parts = dateStr.split('-');
+                            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                        }
+                        // Handle DD.MM.YYYY format
+                        const parts = dateStr.split('.');
+                        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                    };
+                    
+                    const dateObjA = parseDate(dateA);
+                    const dateObjB = parseDate(dateB);
+                    
+                    if (descending) {
+                        return dateObjB - dateObjA;
+                    } else {
+                        return dateObjA - dateObjB;
+                    }
+                } catch (e) {
+                    return 0; // Invalid date format
+                }
+            }
+            
+            // Helper function to compare time values in HH:MM format
+            function compareTimeValues(timeA, timeB) {
+                if (timeA === '-') return -1;
+                if (timeB === '-') return 1;
+                
+                try {
+                    const [hoursA, minutesA] = timeA.split(':').map(Number);
+                    const [hoursB, minutesB] = timeB.split(':').map(Number);
+                    
+                    const totalMinutesA = hoursA * 60 + minutesA;
+                    const totalMinutesB = hoursB * 60 + minutesB;
+                    
+                    return totalMinutesA - totalMinutesB;
+                } catch (e) {
+                    return 0; // Invalid time format
+                }
+            }
+            
+            // Initial sorting
+            applyFiltersAndSort();
         });
     </script>
 </body>

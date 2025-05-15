@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, g
 from markupsafe import Markup
 import sqlite3
 import os
+import logging
 from datetime import datetime, timedelta
 import pytz
 from flask_bcrypt import Bcrypt
@@ -12,6 +13,16 @@ import io
 import datetime as dt
 from werkzeug.utils import secure_filename
 import traceback # Added for more detailed error logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()
+    ]
+)
 
 # For PDF export
 try:
@@ -103,6 +114,62 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+def check_and_fix_db_schema():
+    """Check and fix database schema issues."""
+    print("Checking and fixing database schema...")
+    
+    with app.app_context():
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Check if the arbzg_breaks_enabled column exists in user_settings
+        cursor.execute("PRAGMA table_info(user_settings)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'arbzg_breaks_enabled' not in columns:
+            print("Adding arbzg_breaks_enabled column to user_settings...")
+            try:
+                cursor.execute("ALTER TABLE user_settings ADD COLUMN arbzg_breaks_enabled BOOLEAN DEFAULT 1")
+                cursor.execute("UPDATE user_settings SET arbzg_breaks_enabled = 1")
+                db.commit()
+                print("Added arbzg_breaks_enabled column successfully")
+            except sqlite3.Error as e:
+                print(f"Error adding column: {e}")
+        
+        # Add lunch period preference columns
+        lunch_period_columns = [
+            ('lunch_period_start_hour', 'INTEGER DEFAULT 11'),
+            ('lunch_period_start_minute', 'INTEGER DEFAULT 30'),
+            ('lunch_period_end_hour', 'INTEGER DEFAULT 14'),
+            ('lunch_period_end_minute', 'INTEGER DEFAULT 0')
+        ]
+        
+        for column_name, column_def in lunch_period_columns:
+            if column_name not in columns:
+                print(f"Adding {column_name} column to user_settings...")
+                try:
+                    cursor.execute(f"ALTER TABLE user_settings ADD COLUMN {column_name} {column_def}")
+                    db.commit()
+                    print(f"Added {column_name} column successfully")
+                except sqlite3.Error as e:
+                    print(f"Error adding column {column_name}: {e}")
+        
+        # Check if the description column exists in breaks table
+        cursor.execute("PRAGMA table_info(breaks)")
+        break_columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'description' not in break_columns:
+            print("Adding description column to breaks table...")
+            try:
+                cursor.execute("ALTER TABLE breaks ADD COLUMN description TEXT")
+                db.commit()
+                print("Added description column successfully")
+            except sqlite3.Error as e:
+                print(f"Error adding column: {e}")
+        
+        print("Database schema check and fix completed")
+
+
 def init_db():
     with app.app_context():
         db = get_db()
@@ -130,6 +197,7 @@ def init_db():
             duration_minutes INTEGER,
             is_excluded_from_billing BOOLEAN DEFAULT 0,
             is_auto_detected BOOLEAN DEFAULT 0,
+            description TEXT,
             FOREIGN KEY(attendance_id) REFERENCES attendance(id)
         )''')
         # Create user settings table
@@ -139,6 +207,7 @@ def init_db():
             auto_break_detection_enabled BOOLEAN DEFAULT 0,
             auto_break_threshold_minutes INTEGER DEFAULT 30,
             exclude_breaks_from_billing BOOLEAN DEFAULT 0,
+            arbzg_breaks_enabled BOOLEAN DEFAULT 1,
             FOREIGN KEY(user_id) REFERENCES users(id)
         )''')
         # Create consent table for GDPR compliance
@@ -167,11 +236,14 @@ def init_db():
         if cursor.fetchone() is None:
             # Insert default system-wide settings
             cursor.execute('''INSERT INTO user_settings 
-                          (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
-                          VALUES (0, 1, 30, 1)''')
+                          (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing, arbzg_breaks_enabled)
+                          VALUES (0, 1, 30, 1, 1)''')
             print("Inserted default system-wide break settings")
         
         db.commit()
+        
+        # Run the database schema checker and fixer
+        check_and_fix_db_schema()
 
 @app.route('/')
 def index():
@@ -192,6 +264,206 @@ def index():
         users = cursor.fetchall()
     
     return render_template('index.html', users=users)
+
+@app.route('/user_break_preferences')
+def user_break_preferences():
+    """User-specific break preferences page"""
+    if not session.get('logged_in') and not session.get('username'):
+        return redirect(url_for('login'))
+    
+    # Get the current user's ID
+    user_id = session.get('user_id')
+    
+    # Get the user's current preferences
+    db = get_db()
+    cursor = db.cursor()
+    
+    try:
+        cursor.execute("""SELECT 
+                        lunch_period_start_hour, lunch_period_start_minute,
+                        lunch_period_end_hour, lunch_period_end_minute,
+                        prefer_consolidated_breaks, break_timing_strategy,
+                        min_break_duration, max_breaks_per_day, preferred_break_spacing
+                      FROM user_settings 
+                      WHERE user_id = ?""", (user_id,))
+        preferences_row = cursor.fetchone()
+        
+        # Create a preferences dictionary
+        preferences = {}
+        if preferences_row:
+            preferences = {
+                'lunch_period_start_hour': preferences_row[0],
+                'lunch_period_start_minute': preferences_row[1],
+                'lunch_period_end_hour': preferences_row[2],
+                'lunch_period_end_minute': preferences_row[3]
+            }
+            
+            # Add the enhanced preferences if they exist
+            if len(preferences_row) > 4:
+                preferences.update({
+                    'prefer_consolidated_breaks': bool(preferences_row[4]),
+                    'break_timing_strategy': preferences_row[5] or 'lunch_priority',
+                    'min_break_duration': preferences_row[6] or 15,
+                    'max_breaks_per_day': preferences_row[7] or 3,
+                    'preferred_break_spacing': preferences_row[8] or 120
+                })
+    except sqlite3.OperationalError as e:
+        app.logger.warning(f"Error fetching user break preferences: {e}")
+        preferences = {
+            'lunch_period_start_hour': 11,
+            'lunch_period_start_minute': 30,
+            'lunch_period_end_hour': 14,
+            'lunch_period_end_minute': 0,
+            'prefer_consolidated_breaks': False,
+            'break_timing_strategy': 'lunch_priority',
+            'min_break_duration': 15,
+            'max_breaks_per_day': 3,
+            'preferred_break_spacing': 120
+        }
+    
+    message = request.args.get('message')
+    message_type = request.args.get('message_type')
+    
+    return render_template('user_break_preferences.html', 
+                          preferences=preferences, 
+                          message=message,
+                          message_type=message_type)
+
+@app.route('/update_user_break_preferences', methods=['POST'])
+def update_user_break_preferences():
+    """Handle submission of user break preferences form"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    
+    # Get form data
+    lunch_period_start_hour = int(request.form.get('lunch_period_start_hour', 11))
+    lunch_period_start_minute = int(request.form.get('lunch_period_start_minute', 30))
+    lunch_period_end_hour = int(request.form.get('lunch_period_end_hour', 14))
+    lunch_period_end_minute = int(request.form.get('lunch_period_end_minute', 0))
+    prefer_consolidated_breaks = request.form.get('prefer_consolidated_breaks', '0') == '1'
+    break_timing_strategy = request.form.get('break_timing_strategy', 'lunch_priority')
+    min_break_duration = int(request.form.get('min_break_duration', 15))
+    max_breaks_per_day = int(request.form.get('max_breaks_per_day', 3))
+    preferred_break_spacing = int(request.form.get('preferred_break_spacing', 120))
+    
+    # Validate inputs
+    if not (0 <= lunch_period_start_hour <= 23 and 0 <= lunch_period_start_minute <= 59 and
+            0 <= lunch_period_end_hour <= 23 and 0 <= lunch_period_end_minute <= 59):
+        return redirect(url_for('user_break_preferences', 
+                        message='Ungültige Zeitangaben für den Mittagszeitraum', 
+                        message_type='danger'))
+    
+    # Ensure end time is after start time
+    lunch_start_minutes = lunch_period_start_hour * 60 + lunch_period_start_minute
+    lunch_end_minutes = lunch_period_end_hour * 60 + lunch_period_end_minute
+    
+    if lunch_end_minutes <= lunch_start_minutes:
+        return redirect(url_for('user_break_preferences', 
+                        message='Mittagszeitraum-Endzeit muss nach der Startzeit liegen', 
+                        message_type='danger'))
+    
+    # Validate other fields
+    if min_break_duration < 5 or min_break_duration > 60:
+        return redirect(url_for('user_break_preferences', 
+                        message='Minimale Pausendauer muss zwischen 5 und 60 Minuten liegen', 
+                        message_type='danger'))
+    
+    if max_breaks_per_day < 1 or max_breaks_per_day > 5:
+        return redirect(url_for('user_break_preferences', 
+                        message='Maximale Pausenanzahl muss zwischen 1 und 5 liegen', 
+                        message_type='danger'))
+    
+    if preferred_break_spacing < 60 or preferred_break_spacing > 240:
+        return redirect(url_for('user_break_preferences', 
+                        message='Bevorzugter Pausenabstand muss zwischen 60 und 240 Minuten liegen', 
+                        message_type='danger'))
+    
+    # Check if break timing strategy is valid
+    valid_strategies = ['lunch_priority', 'distributed', 'end_of_day']
+    if break_timing_strategy not in valid_strategies:
+        break_timing_strategy = 'lunch_priority'
+    
+    db = get_db()
+    cursor = db.cursor()
+    
+    try:
+        # Check if user already has preferences
+        cursor.execute("SELECT id FROM user_settings WHERE user_id = ?", (user_id,))
+        existing_user_settings = cursor.fetchone()
+        
+        if existing_user_settings:
+            # Update existing settings
+            try:
+                cursor.execute("""UPDATE user_settings SET 
+                                lunch_period_start_hour = ?,
+                                lunch_period_start_minute = ?,
+                                lunch_period_end_hour = ?,
+                                lunch_period_end_minute = ?,
+                                prefer_consolidated_breaks = ?,
+                                break_timing_strategy = ?,
+                                min_break_duration = ?,
+                                max_breaks_per_day = ?,
+                                preferred_break_spacing = ?
+                                WHERE user_id = ?""", 
+                                (lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute,
+                                prefer_consolidated_breaks, break_timing_strategy,
+                                min_break_duration, max_breaks_per_day, preferred_break_spacing,
+                                user_id))
+            except sqlite3.OperationalError as e:
+                # Columns might not exist yet
+                app.logger.info(f"Updating only lunch period settings due to schema: {e}")
+                cursor.execute("""UPDATE user_settings SET 
+                                lunch_period_start_hour = ?,
+                                lunch_period_start_minute = ?,
+                                lunch_period_end_hour = ?,
+                                lunch_period_end_minute = ?
+                                WHERE user_id = ?""", 
+                                (lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute,
+                                user_id))
+        else:
+            # Insert new user settings
+            try:
+                cursor.execute("""INSERT INTO user_settings 
+                                (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, 
+                                exclude_breaks_from_billing, arbzg_breaks_enabled,
+                                lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute,
+                                prefer_consolidated_breaks, break_timing_strategy,
+                                min_break_duration, max_breaks_per_day, preferred_break_spacing)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                (user_id, True, 30, True, True,
+                                lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute,
+                                prefer_consolidated_breaks, break_timing_strategy,
+                                min_break_duration, max_breaks_per_day, preferred_break_spacing))
+            except sqlite3.OperationalError as e:
+                # Columns might not exist yet
+                app.logger.info(f"Inserting only basic settings due to schema: {e}")
+                cursor.execute("""INSERT INTO user_settings 
+                                (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, 
+                                exclude_breaks_from_billing, arbzg_breaks_enabled,
+                                lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                (user_id, True, 30, True, True,
+                                lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute))
+        
+        db.commit()
+        return redirect(url_for('user_break_preferences', 
+                        message='Pauseneinstellungen wurden erfolgreich aktualisiert', 
+                        message_type='success'))
+    except Exception as e:
+        db.rollback()
+        app.logger.error(f"Error updating user break preferences: {e}")
+        app.logger.error(traceback.format_exc())
+        return redirect(url_for('user_break_preferences', 
+                        message=f'Fehler beim Aktualisieren der Einstellungen: {str(e)}', 
+                        message_type='danger'))
 
 @app.route('/checkin', methods=['POST'])
 def checkin():
@@ -224,6 +496,23 @@ def checkin():
 
 @app.route('/checkout', methods=['POST'])
 def checkout():
+    """
+    Handle user checkout and process break time calculations.
+    
+    This function handles:
+    1. Recording checkout time
+    2. Calculating total work duration
+    3. Processing breaks including ArbZG compliance
+       - For work periods > 6 hours: at least 30 minutes break
+       - For work periods > 9 hours: at least 45 minutes break
+    4. Calculating billable time
+    
+    If ArbZG compliance is enabled, the system will ensure legally required 
+    break times are met by intelligently placing breaks according to user preferences:
+    - Different break placement strategies (lunch priority, distributed, end of day)
+    - Break consolidation preferences (single longer break vs multiple shorter breaks)
+    - Customizable break duration and spacing
+    """
     db = get_db()
     cursor = db.cursor()
     user_id = request.form.get('user_id')
@@ -254,8 +543,6 @@ def checkout():
         auto_break_detection = bool(system_settings[0])
         auto_break_threshold = int(system_settings[1])
         exclude_breaks = bool(system_settings[2])
-    
-    # User-specific settings are no longer checked - we're using system-wide settings only
     
     # First check if there's an active check-in
     cursor.execute('''SELECT id, check_in FROM attendance 
@@ -305,75 +592,405 @@ def checkout():
             
             # Check if we should use user_settings or system_settings table
             try:
-                # First try user_settings table
-                cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                              FROM user_settings WHERE user_id = 0''')
-                settings = cursor.fetchone()
+                # Check if the arbzg_breaks_enabled column exists
+                cursor.execute("PRAGMA table_info(user_settings)")
+                columns = [column[1] for column in cursor.fetchall()]
                 
                 # Default values if settings not found
                 auto_break_detection_enabled = False
                 auto_break_threshold = 30
                 exclude_breaks_from_billing_applies = False
+                arbzg_breaks_enabled = True  # Default to enabled for compatibility
                 
-                if settings:
-                    auto_break_detection_enabled = bool(settings[0])
-                    auto_break_threshold = int(settings[1])
-                    exclude_breaks_from_billing_applies = bool(settings[2])
+                if 'arbzg_breaks_enabled' in columns:
+                    # The column exists, use it in the query
+                    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing, arbzg_breaks_enabled
+                                  FROM user_settings WHERE user_id = 0''')
+                    settings = cursor.fetchone()
+                    
+                    if settings:
+                        auto_break_detection_enabled = bool(settings[0])
+                        auto_break_threshold = int(settings[1])
+                        exclude_breaks_from_billing_applies = bool(settings[2])
+                        arbzg_breaks_enabled = bool(settings[3])
                 else:
-                    # Try system_settings table as fallback
-                    cursor.execute("SELECT value FROM system_settings WHERE key = 'auto_break_detection'")
-                    auto_break_setting = cursor.fetchone()
-                    auto_break_detection_enabled = auto_break_setting[0] == '1' if auto_break_setting else False
+                    # The column doesn't exist, query without it
+                    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing
+                                  FROM user_settings WHERE user_id = 0''')
+                    settings = cursor.fetchone()
+                    
+                    if settings:
+                        auto_break_detection_enabled = bool(settings[0])
+                        auto_break_threshold = int(settings[1])
+                        exclude_breaks_from_billing_applies = bool(settings[2])
+                    
+                    # Add the column for future use
+                    try:
+                        cursor.execute("ALTER TABLE user_settings ADD COLUMN arbzg_breaks_enabled BOOLEAN DEFAULT 1")
+                        cursor.execute("UPDATE user_settings SET arbzg_breaks_enabled = 1")
+                        db.commit()
+                        app.logger.info("Added arbzg_breaks_enabled column to user_settings table")
+                    except sqlite3.Error as e:
+                        app.logger.warning(f"Error adding column: {e}")
+            except Exception:
+                # Try system_settings table as fallback
+                cursor.execute("SELECT value FROM system_settings WHERE key = 'auto_break_detection'")
+                auto_break_setting = cursor.fetchone()
+                auto_break_detection_enabled = auto_break_setting[0] == '1' if auto_break_setting else False
     
-                    cursor.execute("SELECT value FROM system_settings WHERE key = 'exclude_breaks_from_billing'")
-                    exclude_breaks_setting = cursor.fetchone()
-                    exclude_breaks_from_billing_applies = exclude_breaks_setting[0] == '1' if exclude_breaks_setting else False
+                cursor.execute("SELECT value FROM system_settings WHERE key = 'exclude_breaks_from_billing'")
+                exclude_breaks_setting = cursor.fetchone()
+                exclude_breaks_from_billing_applies = exclude_breaks_setting[0] == '1' if exclude_breaks_setting else False
             except Exception as e:
                 app.logger.error(f"Error fetching break settings: {e}")
                 # Fallback to defaults if there's any error
                 auto_break_detection_enabled = False
                 exclude_breaks_from_billing_applies = False
 
-
             has_auto_breaks_flag = False # Initialize flag
-
-            if auto_break_detection_enabled and total_work_duration_minutes > 0 : 
+            
+            # Automatic break management according to labor laws (ArbZG)
+            if auto_break_detection_enabled and total_work_duration_minutes > 0 and arbzg_breaks_enabled: 
+                app.logger.info(f"Processing ArbZG break requirements for user {username}, attendance_id {checkin_id}")
+                app.logger.info(f"Total work duration: {total_work_duration_minutes} minutes ({total_work_duration_minutes/60:.2f} hours)")
+                
+                # Calculate statutory break requirements based on German labor law
+                # ArbZG § 4 mandates breaks as follows:
+                # - For work periods > 6 hours: at least 30 minutes break
+                # - For work periods > 9 hours: at least 45 minutes break
                 statutory_break_due_minutes = 0
                 if total_work_duration_minutes > 9 * 60:  # More than 9 hours
                     statutory_break_due_minutes = 45
+                    app.logger.info(f"Work period > 9 hours: 45 minutes break required")
                 elif total_work_duration_minutes > 6 * 60:  # More than 6 hours
                     statutory_break_due_minutes = 30
+                    app.logger.info(f"Work period > 6 hours: 30 minutes break required")
+                else:
+                    app.logger.info(f"Work period <= 6 hours: No statutory break required")
 
                 if statutory_break_due_minutes > 0:
-                    cursor.execute("SELECT SUM(duration_minutes) FROM breaks WHERE attendance_id = ?", (checkin_id,))
-                    sum_existing_breaks_row = cursor.fetchone()
-                    existing_break_minutes_taken = sum_existing_breaks_row[0] if sum_existing_breaks_row and sum_existing_breaks_row[0] is not None else 0
+                    cursor.execute("SELECT id, start_time, end_time, duration_minutes, description FROM breaks WHERE attendance_id = ?", (checkin_id,))
+                    existing_breaks = cursor.fetchall()
+                    
+                    if existing_breaks:
+                        app.logger.info(f"Found {len(existing_breaks)} existing breaks:")
+                        existing_break_minutes_taken = 0
+                        for i, break_record in enumerate(existing_breaks):
+                            br_id, br_start, br_end, br_duration, br_desc = break_record
+                            app.logger.info(f"  Break {i+1}: {br_start} to {br_end}, {br_duration} min, description: {br_desc or 'none'}")
+                            existing_break_minutes_taken += br_duration
+                        app.logger.info(f"Total existing break time: {existing_break_minutes_taken} minutes")
+                    else:
+                        app.logger.info("No existing breaks found")
+                        existing_break_minutes_taken = 0
                     
                     break_to_add_minutes = statutory_break_due_minutes - existing_break_minutes_taken
+                    app.logger.info(f"Additional break minutes needed: {break_to_add_minutes} min")
                     
                     if break_to_add_minutes > 0:
-                        auto_break_end_dt = checkout_dt
-                        auto_break_start_dt = checkout_dt - timedelta(minutes=break_to_add_minutes)
+                        # Get user's preferences for breaks
+                        user_break_preferences = {
+                            'lunch_period_start_hour': 11,
+                            'lunch_period_start_minute': 30,
+                            'lunch_period_end_hour': 14,
+                            'lunch_period_end_minute': 0,
+                            'prefer_consolidated_breaks': False,
+                            'break_timing_strategy': 'lunch_priority',
+                            'min_break_duration': 15,
+                            'max_breaks_per_day': 3,
+                            'preferred_break_spacing': 120
+                        }
+                        
+                        # Try to fetch user-specific break preferences
+                        try:
+                            cursor.execute("""SELECT 
+                                lunch_period_start_hour, lunch_period_start_minute,
+                                lunch_period_end_hour, lunch_period_end_minute,
+                                prefer_consolidated_breaks, break_timing_strategy,
+                                min_break_duration, max_breaks_per_day, preferred_break_spacing
+                                FROM user_settings WHERE user_id = ?""", (user_id,))
+                            preferences_row = cursor.fetchone()
+                            
+                            if preferences_row:
+                                # Update with user preferences if available
+                                user_break_preferences['lunch_period_start_hour'] = preferences_row[0] or user_break_preferences['lunch_period_start_hour']
+                                user_break_preferences['lunch_period_start_minute'] = preferences_row[1] or user_break_preferences['lunch_period_start_minute']
+                                user_break_preferences['lunch_period_end_hour'] = preferences_row[2] or user_break_preferences['lunch_period_end_hour']
+                                user_break_preferences['lunch_period_end_minute'] = preferences_row[3] or user_break_preferences['lunch_period_end_minute']
+                                
+                                # Check if enhanced preferences exist
+                                if len(preferences_row) > 4:
+                                    user_break_preferences['prefer_consolidated_breaks'] = bool(preferences_row[4])
+                                    user_break_preferences['break_timing_strategy'] = preferences_row[5] or user_break_preferences['break_timing_strategy']
+                                    user_break_preferences['min_break_duration'] = preferences_row[6] or user_break_preferences['min_break_duration']
+                                    user_break_preferences['max_breaks_per_day'] = preferences_row[7] or user_break_preferences['max_breaks_per_day']
+                                    user_break_preferences['preferred_break_spacing'] = preferences_row[8] or user_break_preferences['preferred_break_spacing']
+                                
+                                app.logger.info(f"Using user-specific break preferences: {user_break_preferences}")
+                        except sqlite3.OperationalError as e:
+                            app.logger.warning(f"Error fetching user break preferences: {e}. Using defaults.")
+                        
+                        # Define lunch period based on preferences
+                        lunch_start_hour = user_break_preferences['lunch_period_start_hour']
+                        lunch_start_minute = user_break_preferences['lunch_period_start_minute']
+                        lunch_end_hour = user_break_preferences['lunch_period_end_hour']
+                        lunch_end_minute = user_break_preferences['lunch_period_end_minute']
+                        
+                        # Get other preferences
+                        prefer_consolidated = user_break_preferences['prefer_consolidated_breaks']
+                        break_timing_strategy = user_break_preferences['break_timing_strategy']
+                        min_break_duration = user_break_preferences['min_break_duration']
+                        max_breaks = user_break_preferences['max_breaks_per_day']
+                        preferred_break_spacing = user_break_preferences['preferred_break_spacing']
+                        
+                        # Log the break strategy being used
+                        app.logger.info(f"Break timing strategy: {break_timing_strategy}")
+                        
+                        # Determine how to distribute breaks
+                        breaks_to_add = []
+                        
+                        # Define lunch period
+                        lunch_start_time = checkin_dt.replace(hour=lunch_start_hour, minute=lunch_start_minute, second=0)
+                        lunch_end_time = checkin_dt.replace(hour=lunch_end_hour, minute=lunch_end_minute, second=0)
+                        
+                        # Calculate available lunch period
+                        lunch_period_available = checkin_dt <= lunch_end_time and checkout_dt >= lunch_start_time
+                        
+                        # Choose break placement based on strategy
+                        if break_timing_strategy == 'end_of_day':
+                            # End of day strategy - always place breaks at the end
+                            # Not affected by break consolidation preference
+                            app.logger.info(f"Using end_of_day strategy for break placement")
+                            
+                            auto_break_end_dt = checkout_dt
+                            auto_break_start_dt = checkout_dt - timedelta(minutes=break_to_add_minutes)
+                            
+                            # Ensure break doesn't start before check-in
+                            if auto_break_start_dt < checkin_dt:
+                                auto_break_start_dt = checkin_dt
+                                actual_break_minutes = int((auto_break_end_dt - auto_break_start_dt).total_seconds() / 60)
+                                if actual_break_minutes < break_to_add_minutes:
+                                    break_to_add_minutes = actual_break_minutes
+                                    app.logger.warning(f"Break adjusted to {break_to_add_minutes} min due to work period constraints")
+                            
+                            if break_to_add_minutes > 0:
+                                breaks_to_add.append({
+                                    'start': auto_break_start_dt,
+                                    'end': auto_break_end_dt,
+                                    'minutes': break_to_add_minutes,
+                                    'description': "ArbZG §4 Pflichtpause (Ende des Arbeitstages)"
+                                })
+                        
+                        elif break_timing_strategy == 'distributed':
+                            # Distributed strategy - evenly distribute breaks throughout the day
+                            app.logger.info(f"Using distributed strategy for break placement")
+                            
+                            # Work period boundaries
+                            work_start = checkin_dt
+                            work_end = checkout_dt
+                            work_duration_minutes = total_work_duration_minutes
+                            
+                            if prefer_consolidated:
+                                # Prefer one break if possible (still using distributed strategy for placement)
+                                app.logger.info("Consolidating breaks as per user preference")
+                                
+                                # Place single break in the middle of the work day
+                                ideal_break_time = work_start + (work_end - work_start) / 2
+                                
+                                auto_break_start_dt = ideal_break_time - timedelta(minutes=break_to_add_minutes/2)
+                                auto_break_end_dt = auto_break_start_dt + timedelta(minutes=break_to_add_minutes)
+                                
+                                # Ensure break times are within work period
+                                if auto_break_start_dt < work_start:
+                                    auto_break_start_dt = work_start
+                                    auto_break_end_dt = auto_break_start_dt + timedelta(minutes=break_to_add_minutes)
+                                
+                                if auto_break_end_dt > work_end:
+                                    auto_break_end_dt = work_end
+                                    auto_break_start_dt = auto_break_end_dt - timedelta(minutes=break_to_add_minutes)
+                                    if auto_break_start_dt < work_start:
+                                        auto_break_start_dt = work_start
+                                        # This will make the break shorter than required
+                                        actual_break_minutes = int((auto_break_end_dt - auto_break_start_dt).total_seconds() / 60)
+                                        if actual_break_minutes < break_to_add_minutes:
+                                            break_to_add_minutes = actual_break_minutes
+                                            app.logger.warning(f"Break adjusted to {break_to_add_minutes} min due to work period constraints")
+                                
+                                if break_to_add_minutes > 0:
+                                    breaks_to_add.append({
+                                        'start': auto_break_start_dt,
+                                        'end': auto_break_end_dt,
+                                        'minutes': break_to_add_minutes,
+                                        'description': "ArbZG §4 Pflichtpause (Mitte des Arbeitstages)"
+                                    })
+                            else:
+                                # Use multiple breaks with max_breaks limit and min_break_duration
+                                app.logger.info(f"Using multiple breaks (up to {max_breaks})")
+                                
+                                # Calculate how many breaks to add
+                                num_breaks = min(max_breaks, max(1, break_to_add_minutes // min_break_duration))
+                                if num_breaks == 0:
+                                    num_breaks = 1  # Ensure at least one break
+                                
+                                # Calculate break duration for each break
+                                break_duration = break_to_add_minutes // num_breaks
+                                if break_duration < min_break_duration:
+                                    # If individual breaks would be too short, reduce number of breaks
+                                    num_breaks = max(1, break_to_add_minutes // min_break_duration)
+                                    break_duration = break_to_add_minutes // num_breaks
+                                
+                                app.logger.info(f"Distributing {break_to_add_minutes} min into {num_breaks} breaks of ~{break_duration} min each")
+                                
+                                # Calculate total usable work period for break placement
+                                usable_period_minutes = work_duration_minutes - (break_duration * num_breaks)
+                                
+                                # Ensure we have a valid period
+                                if usable_period_minutes <= 0:
+                                    # Not enough time to distribute breaks - fall back to end of day
+                                    app.logger.warning("Insufficient time for distributed breaks, falling back to end-of-day")
+                                    auto_break_end_dt = checkout_dt
+                                    auto_break_start_dt = checkout_dt - timedelta(minutes=break_to_add_minutes)
+                                    
+                                    breaks_to_add.append({
+                                        'start': auto_break_start_dt,
+                                        'end': auto_break_end_dt,
+                                        'minutes': break_to_add_minutes,
+                                        'description': "ArbZG §4 Pflichtpause (Ende des Arbeitstages)"
+                                    })
+                                else:
+                                    # Calculate intervals between breaks
+                                    interval_minutes = usable_period_minutes // (num_breaks + 1)
+                                    
+                                    # Distribute breaks
+                                    for i in range(num_breaks):
+                                        # Calculate position for this break
+                                        position_minutes = interval_minutes * (i + 1) + (break_duration * i)
+                                        break_start = work_start + timedelta(minutes=position_minutes)
+                                        break_end = break_start + timedelta(minutes=break_duration)
+                                        
+                                        # Ensure the break doesn't go beyond the work period
+                                        if break_end > work_end:
+                                            break_end = work_end
+                                            break_start = break_end - timedelta(minutes=break_duration)
+                                            if break_start < work_start:
+                                                break_start = work_start
+                                                actual_break_minutes = int((break_end - break_start).total_seconds() / 60)
+                                                if actual_break_minutes < break_duration:
+                                                    break_duration = actual_break_minutes
+                                        
+                                        if break_duration > 0:
+                                            breaks_to_add.append({
+                                                'start': break_start,
+                                                'end': break_end,
+                                                'minutes': break_duration,
+                                                'description': f"ArbZG §4 Pflichtpause ({i+1}/{num_breaks})"
+                                            })
+                        
+                        else:  # Default: lunch_priority strategy
+                            app.logger.info(f"Using lunch_priority strategy for break placement")
+                            
+                            lunch_break_added = False
+                            
+                            # Check if work period spans lunch time
+                            if lunch_period_available:
+                                # The work period includes the lunch period
+                                actual_lunch_start = max(checkin_dt, lunch_start_time)
+                                actual_lunch_end = min(checkout_dt, lunch_end_time)
+                                
+                                # Calculate available lunch period in minutes
+                                lunch_period_minutes = int((actual_lunch_end - actual_lunch_start).total_seconds() / 60)
+                                
+                                if lunch_period_minutes >= break_to_add_minutes:
+                                    # We have enough time in the lunch period to add the break
+                                    lunch_midpoint = actual_lunch_start + (actual_lunch_end - actual_lunch_start) / 2
+                                    auto_break_start_dt = lunch_midpoint - timedelta(minutes=break_to_add_minutes/2)
+                                    auto_break_end_dt = auto_break_start_dt + timedelta(minutes=break_to_add_minutes)
+                                    
+                                    # Ensure break times remain within the actual lunch period
+                                    if auto_break_start_dt < actual_lunch_start:
+                                        auto_break_start_dt = actual_lunch_start
+                                        auto_break_end_dt = auto_break_start_dt + timedelta(minutes=break_to_add_minutes)
+                                    
+                                    if auto_break_end_dt > actual_lunch_end:
+                                        auto_break_end_dt = actual_lunch_end
+                                        auto_break_start_dt = auto_break_end_dt - timedelta(minutes=break_to_add_minutes)
+                                        # Final check to ensure we're not going before lunch start
+                                        if auto_break_start_dt < actual_lunch_start:
+                                            auto_break_start_dt = actual_lunch_start
+                                            actual_break_minutes = int((auto_break_end_dt - auto_break_start_dt).total_seconds() / 60)
+                                            if actual_break_minutes < break_to_add_minutes:
+                                                app.logger.warning(f"Lunch period too short: Required {break_to_add_minutes} minutes, but only {actual_break_minutes} available.")
+                                                
+                                                # If we prefer consolidated breaks, place the remaining at the end of the day
+                                                if prefer_consolidated:
+                                                    remainder_minutes = break_to_add_minutes - actual_break_minutes
+                                                    if remainder_minutes > 0:
+                                                        app.logger.info(f"Adding remaining {remainder_minutes} min at end of day")
+                                                        end_day_break_end_dt = checkout_dt
+                                                        end_day_break_start_dt = checkout_dt - timedelta(minutes=remainder_minutes)
+                                                        
+                                                        breaks_to_add.append({
+                                                            'start': end_day_break_start_dt,
+                                                            'end': end_day_break_end_dt,
+                                                            'minutes': remainder_minutes,
+                                                            'description': "ArbZG §4 Pflichtpause (Zusätzlich zum Ende des Arbeitstages)"
+                                                        })
+                                                
+                                                # Adjust the lunch break to what's available
+                                                break_to_add_minutes = actual_break_minutes
+                                    
+                                    if break_to_add_minutes > 0:
+                                        breaks_to_add.append({
+                                            'start': auto_break_start_dt,
+                                            'end': auto_break_end_dt,
+                                            'minutes': break_to_add_minutes,
+                                            'description': "Gesetzliche Mittagspause (ArbZG §4) - Intelligent platziert"
+                                        })
+                                        lunch_break_added = True
+                            
+                            # If we couldn't add a lunch break (or not all of the required break), add at the end of the day
+                            if not lunch_break_added:
+                                app.logger.info(f"No lunch break possible, adding {break_to_add_minutes} min break at end of day")
+                                
+                                auto_break_end_dt = checkout_dt
+                                auto_break_start_dt = checkout_dt - timedelta(minutes=break_to_add_minutes)
 
-                        # Ensure auto break start is not before check-in time
-                        if auto_break_start_dt < checkin_dt:
-                            auto_break_start_dt = checkin_dt
+                                # Ensure auto break start is not before check-in time
+                                if auto_break_start_dt < checkin_dt:
+                                    app.logger.warning(f"Break would start before check-in time. Adjusting to check-in time: {checkin_dt}")
+                                    auto_break_start_dt = checkin_dt
+                                    actual_break_minutes = int((auto_break_end_dt - auto_break_start_dt).total_seconds() / 60)
+                                    if actual_break_minutes < break_to_add_minutes:
+                                        app.logger.warning(f"Cannot add full {break_to_add_minutes} min break - workday too short. Adding {actual_break_minutes} min instead.")
+                                        break_to_add_minutes = actual_break_minutes
+                                
+                                if break_to_add_minutes > 0:
+                                    breaks_to_add.append({
+                                        'start': auto_break_start_dt,
+                                        'end': auto_break_end_dt,
+                                        'minutes': break_to_add_minutes,
+                                        'description': "ArbZG §4 Pflichtpause (Ende des Arbeitstages)"
+                                    })
                         
-                        auto_break_start_str = auto_break_start_dt.strftime('%Y-%m-%d %H:%M:%S')
-                        auto_break_end_str = auto_break_end_dt.strftime('%Y-%m-%d %H:%M:%S')
-                        
-                        actual_inserted_duration = break_to_add_minutes
-                        
-                        # Ensure the break slot is valid (start < end) before inserting
-                        if auto_break_start_dt < auto_break_end_dt:
-                            cursor.execute("""INSERT INTO breaks 
+                        # Now add all calculated breaks to the database
+                        for break_entry in breaks_to_add:
+                            auto_break_start_str = break_entry['start'].strftime('%Y-%m-%d %H:%M:%S')
+                            auto_break_end_str = break_entry['end'].strftime('%Y-%m-%d %H:%M:%S')
+                            break_minutes = break_entry['minutes']
+                            break_description = break_entry['description']
+                            
+                            app.logger.info(f"Adding break: {auto_break_start_str} to {auto_break_end_str} ({break_minutes} min) - {break_description}")
+                            
+                            # Ensure the break slot is valid (start < end) and at least 1 minute long before inserting
+                            if break_entry['start'] < break_entry['end'] and break_minutes > 0:
+                                cursor.execute("""INSERT INTO breaks 
                                               (attendance_id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected, description)
                                               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                                           (checkin_id, auto_break_start_str, auto_break_end_str, actual_inserted_duration, 
-                                            exclude_breaks_from_billing_applies, True, "Automatische Pause gem. ArbZG"))
-                            has_auto_breaks_flag = True
-                        else:
-                            app.logger.info(f"Skipped inserting auto-break for attendance_id {checkin_id} due to invalid time slot (start: {auto_break_start_str}, end: {auto_break_end_str}).")
+                                           (checkin_id, auto_break_start_str, auto_break_end_str, break_minutes, 
+                                            exclude_breaks_from_billing_applies, True, break_description))
+                                has_auto_breaks_flag = True
+                            else:
+                                app.logger.warning(f"Skipped inserting auto-break for attendance_id {checkin_id} due to invalid time slot.")
 
             # Recalculate total_excluded_break_minutes (includes any newly added auto-breaks if they are set to be excluded)
             cursor.execute("""
@@ -436,6 +1053,17 @@ def checkout():
 
 @app.route('/break_settings')
 def break_settings():
+    """
+    Handle the break settings page (admin only).
+    
+    This route displays and handles system-wide break settings including:
+    - Automatic break detection
+    - Break threshold time
+    - Whether breaks are excluded from billing
+    
+    The system supports both user_settings and system_settings tables for
+    backward compatibility after database schema migrations.
+    """
     if not session.get('username'):
         return redirect(url_for('login'))
     
@@ -451,21 +1079,58 @@ def break_settings():
     user_settings = {
         'auto_break_detection': False,
         'auto_break_threshold': 30,
-        'exclude_breaks': False
+        'exclude_breaks': False,
+        'arbzg_breaks_enabled': True  # Default to enabled for compatibility
     }
     
     try:
         # First try to get settings from user_settings table
-        cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                        FROM user_settings WHERE user_id = 0''')
-        settings = cursor.fetchone()
-        
-        if settings:
-            user_settings = {
-                'auto_break_detection': settings[0],
-                'auto_break_threshold': settings[1],
-                'exclude_breaks': settings[2]
-            }
+        try:
+            cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, 
+                            exclude_breaks_from_billing, arbzg_breaks_enabled,
+                            lunch_period_start_hour, lunch_period_start_minute,
+                            lunch_period_end_hour, lunch_period_end_minute 
+                            FROM user_settings WHERE user_id = 0''')
+            settings = cursor.fetchone()
+            
+            if settings:
+                user_settings = {
+                    'auto_break_detection': settings[0],
+                    'auto_break_threshold': settings[1],
+                    'exclude_breaks': settings[2],
+                    'arbzg_breaks_enabled': settings[3] if len(settings) > 3 else True
+                }
+                
+                # Add lunch period settings if available
+                if len(settings) > 7:
+                    user_settings.update({
+                        'lunch_period_start_hour': settings[4],
+                        'lunch_period_start_minute': settings[5],
+                        'lunch_period_end_hour': settings[6],
+                        'lunch_period_end_minute': settings[7]
+                    })
+        except sqlite3.OperationalError:
+            # The arbzg_breaks_enabled column might not exist yet, try without it
+            cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing
+                            FROM user_settings WHERE user_id = 0''')
+            settings = cursor.fetchone()
+            
+            if settings:
+                user_settings = {
+                    'auto_break_detection': settings[0],
+                    'auto_break_threshold': settings[1],
+                    'exclude_breaks': settings[2],
+                    'arbzg_breaks_enabled': True  # Default to enabled
+                }
+                
+                # Add the missing column
+                try:
+                    cursor.execute("ALTER TABLE user_settings ADD COLUMN arbzg_breaks_enabled BOOLEAN DEFAULT 1")
+                    cursor.execute("UPDATE user_settings SET arbzg_breaks_enabled = 1")
+                    db.commit()
+                    print("Added arbzg_breaks_enabled column to user_settings table")
+                except sqlite3.Error as e:
+                    print(f"Error adding column: {e}")
         else:
             # If not found, try to get from system_settings table
             try:
@@ -507,7 +1172,7 @@ def break_settings():
     cursor.execute('''
         SELECT b.id, b.start_time, b.end_time, b.duration_minutes, 
                b.is_excluded_from_billing, b.is_auto_detected, 
-               u.username
+               u.username, b.description
         FROM breaks b
         JOIN attendance a ON b.attendance_id = a.id
         JOIN users u ON a.user_id = u.id
@@ -520,12 +1185,52 @@ def break_settings():
 
 @app.route('/update_user_settings', methods=['POST'])
 def update_user_settings():
+    """
+    Handle the submission of break settings form.
+    
+    This route processes the form submission from the break settings page
+    and updates either the user_settings or system_settings table based on
+    what's available in the database.
+    
+    Settings include:
+    - auto_break_detection: Whether breaks should be automatically detected
+    - auto_break_threshold: Inactivity time threshold for auto breaks
+    - exclude_breaks: Whether breaks should be excluded from billable time
+    - arbzg_breaks_enabled: Whether to enforce ArbZG-compliant breaks
+    """
     if not session.get('username'):
         return redirect(url_for('login'))
     
     auto_break_detection = request.form.get('auto_break_detection', '0') == '1'
     auto_break_threshold = int(request.form.get('auto_break_threshold', '30'))
     exclude_breaks = request.form.get('exclude_breaks', '0') == '1'
+    arbzg_breaks_enabled = request.form.get('arbzg_breaks_enabled', '0') == '1'
+    
+    # Get lunch period settings
+    lunch_period_start_hour = int(request.form.get('lunch_period_start_hour', '11'))
+    lunch_period_start_minute = int(request.form.get('lunch_period_start_minute', '30'))
+    lunch_period_end_hour = int(request.form.get('lunch_period_end_hour', '14'))
+    lunch_period_end_minute = int(request.form.get('lunch_period_end_minute', '0'))
+    
+    # Validate lunch period times
+    if not (0 <= lunch_period_start_hour <= 23 and 0 <= lunch_period_start_minute <= 59 and
+            0 <= lunch_period_end_hour <= 23 and 0 <= lunch_period_end_minute <= 59):
+        flash('Ungültige Zeitangaben für den Mittagszeitraum. Werte wurden auf Standard zurückgesetzt.', 'error')
+        lunch_period_start_hour = 11
+        lunch_period_start_minute = 30
+        lunch_period_end_hour = 14
+        lunch_period_end_minute = 0
+    
+    # Ensure end time is after start time
+    lunch_start_minutes = lunch_period_start_hour * 60 + lunch_period_start_minute
+    lunch_end_minutes = lunch_period_end_hour * 60 + lunch_period_end_minute
+    
+    if lunch_end_minutes <= lunch_start_minutes:
+        flash('Mittagszeitraum-Endzeit muss nach der Startzeit liegen. Werte wurden auf Standard zurückgesetzt.', 'error')
+        lunch_period_start_hour = 11
+        lunch_period_start_minute = 30
+        lunch_period_end_hour = 14
+        lunch_period_end_minute = 0
     
     db = get_db()
     cursor = db.cursor()
@@ -547,16 +1252,27 @@ def update_user_settings():
             cursor.execute('''UPDATE user_settings 
                             SET auto_break_detection_enabled = ?, 
                                 auto_break_threshold_minutes = ?, 
-                                exclude_breaks_from_billing = ?
+                                exclude_breaks_from_billing = ?,
+                                arbzg_breaks_enabled = ?,
+                                lunch_period_start_hour = ?,
+                                lunch_period_start_minute = ?,
+                                lunch_period_end_hour = ?,
+                                lunch_period_end_minute = ?
                             WHERE user_id = ?''', 
-                            (auto_break_detection, auto_break_threshold, exclude_breaks, user_id))
+                            (auto_break_detection, auto_break_threshold, exclude_breaks, arbzg_breaks_enabled,
+                             lunch_period_start_hour, lunch_period_start_minute, lunch_period_end_hour, lunch_period_end_minute,
+                             user_id))
         else:
+                        # Create new settings in user_settings
             try:
-                # Create new settings in user_settings
                 cursor.execute('''INSERT INTO user_settings 
-                              (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing)
-                              VALUES (?, ?, ?, ?)''', 
-                              (user_id, auto_break_detection, auto_break_threshold, exclude_breaks))
+                          (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, 
+                           exclude_breaks_from_billing, arbzg_breaks_enabled,
+                           lunch_period_start_hour, lunch_period_start_minute,
+                           lunch_period_end_hour, lunch_period_end_minute)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
+                          (user_id, auto_break_detection, auto_break_threshold, exclude_breaks, arbzg_breaks_enabled,
+                           lunch_period_start_hour, lunch_period_start_minute, lunch_period_end_hour, lunch_period_end_minute))
             except sqlite3.Error:
                 # If user_settings table doesn't exist, try to use system_settings table
                 try:
@@ -587,6 +1303,18 @@ def update_user_settings():
 
 @app.route('/add_break', methods=['POST'])
 def add_break():
+    """
+    Handle adding a manual break to an attendance record.
+    
+    This route processes form submissions to add break periods to existing
+    attendance records. Breaks can be:
+    - Marked as excluded from billing or included in billable time
+    - Automatically detected or manually added
+    - Tracked with precise start and end times
+    - Categorized by type (regular, lunch, ArbZG) with descriptions
+    
+    Short breaks (≤ 5 minutes) are not excluded from billing by default.
+    """
     if not session.get('username'):
         return redirect(url_for('login'))
     
@@ -595,6 +1323,15 @@ def add_break():
     end_time = request.form.get('end_time')
     is_excluded = request.form.get('is_excluded', '0') == '1'
     is_auto = request.form.get('is_auto', '0') == '1'
+    break_type = request.form.get('break_type', 'regular')
+    description = request.form.get('description', '')
+    
+    # Generate description based on break type if not provided
+    if not description:
+        if break_type == 'lunch':
+            description = "Mittagspause (manuell eingetragen)"
+        elif break_type == 'arbzg':
+            description = "ArbZG Pflichtpause (manuell eingetragen)"
     
     # Calculate duration in minutes
     start_dt = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
@@ -607,10 +1344,26 @@ def add_break():
     
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('''INSERT INTO breaks 
-                   (attendance_id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected)
-                   VALUES (?, ?, ?, ?, ?, ?)''', 
-                   (attendance_id, start_time, end_time, duration, is_excluded, is_auto))
+    
+    # Check if the description column exists
+    cursor.execute("PRAGMA table_info(breaks)")
+    columns = [column[1] for column in cursor.fetchall()]
+    
+    if 'description' in columns:
+        cursor.execute('''INSERT INTO breaks 
+                       (attendance_id, start_time, end_time, duration_minutes, 
+                       is_excluded_from_billing, is_auto_detected, description)
+                       VALUES (?, ?, ?, ?, ?, ?, ?)''', 
+                       (attendance_id, start_time, end_time, duration, 
+                       is_excluded, is_auto, description))
+    else:
+        # Fallback if description column doesn't exist
+        cursor.execute('''INSERT INTO breaks 
+                       (attendance_id, start_time, end_time, duration_minutes, 
+                       is_excluded_from_billing, is_auto_detected)
+                       VALUES (?, ?, ?, ?, ?, ?)''', 
+                       (attendance_id, start_time, end_time, duration, 
+                       is_excluded, is_auto))
     db.commit()
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -626,24 +1379,71 @@ def get_user_settings():
     
     db = get_db()
     cursor = db.cursor()
-    # Use system-wide settings (user_id = 0)
-    cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing 
-                    FROM user_settings WHERE user_id = 0''')
-    settings = cursor.fetchone()
     
-    if settings:
-        return {
-            'auto_break_detection': settings[0],
-            'auto_break_threshold': settings[1],
-            'exclude_breaks': settings[2]
-        }
-    else:
-        # Return defaults if no settings exist
-        return {
-            'auto_break_detection': False,
-            'auto_break_threshold': 30,
-            'exclude_breaks': False
-        }
+    try:
+        # First check if the arbzg_breaks_enabled column exists
+        cursor.execute("PRAGMA table_info(user_settings)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'arbzg_breaks_enabled' in columns:
+            # Column exists, use it in the query
+            cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, 
+                            exclude_breaks_from_billing, arbzg_breaks_enabled,
+                            lunch_period_start_hour, lunch_period_start_minute,
+                            lunch_period_end_hour, lunch_period_end_minute
+                            FROM user_settings WHERE user_id = 0''')
+            settings = cursor.fetchone()
+            
+            if settings:
+                result = {
+                    'auto_break_detection': settings[0],
+                    'auto_break_threshold': settings[1],
+                    'exclude_breaks': settings[2],
+                    'arbzg_breaks_enabled': settings[3]
+                }
+                
+                # Add lunch period settings if they exist
+                if len(settings) > 4:
+                    result.update({
+                        'lunch_period_start_hour': settings[4],
+                        'lunch_period_start_minute': settings[5],
+                        'lunch_period_end_hour': settings[6],
+                        'lunch_period_end_minute': settings[7]
+                    })
+                
+                return result
+        else:
+            # Column doesn't exist, run the migration and use defaults for now
+            try:
+                cursor.execute("ALTER TABLE user_settings ADD COLUMN arbzg_breaks_enabled BOOLEAN DEFAULT 1")
+                cursor.execute("UPDATE user_settings SET arbzg_breaks_enabled = 1")
+                db.commit()
+                print("Added arbzg_breaks_enabled column to user_settings table")
+            except sqlite3.Error as e:
+                print(f"Error adding column: {e}")
+                
+            # Query without the new column
+            cursor.execute('''SELECT auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing
+                            FROM user_settings WHERE user_id = 0''')
+            settings = cursor.fetchone()
+            
+            if settings:
+                return {
+                    'auto_break_detection': settings[0],
+                    'auto_break_threshold': settings[1],
+                    'exclude_breaks': settings[2],
+                    'arbzg_breaks_enabled': True  # Default to enabled
+                }
+    except Exception as e:
+        print(f"Error in get_user_settings: {e}")
+    
+    # Return defaults if no settings exist or if there was an error
+    return {
+        'auto_break_detection': False,
+        'auto_break_threshold': 30,
+        'exclude_breaks': False,
+        'arbzg_breaks_enabled': True
+    }
 
 @app.route('/get_breaks/<int:attendance_id>')
 def get_breaks(attendance_id):
@@ -652,19 +1452,30 @@ def get_breaks(attendance_id):
     
     db = get_db()
     cursor = db.cursor()
-    cursor.execute('''SELECT id, start_time, end_time, duration_minutes, is_excluded_from_billing, is_auto_detected 
-                    FROM breaks WHERE attendance_id = ?''', (attendance_id,))
+    cursor.execute('''SELECT id, start_time, end_time, duration_minutes, 
+                    is_excluded_from_billing, is_auto_detected, description
+                    FROM breaks WHERE attendance_id = ? ORDER BY start_time''', (attendance_id,))
     break_records = cursor.fetchall()
     
     breaks = []
     for record in break_records:
+        # Determine break type based on description
+        break_type = 'regular'
+        if record[6]:
+            if 'Mittagspause' in record[6]:
+                break_type = 'lunch'
+            elif 'ArbZG' in record[6]:
+                break_type = 'arbzg'
+        
         breaks.append({
             'id': record[0],
             'start_time': record[1],
             'end_time': record[2],
             'duration': record[3],
             'is_excluded': bool(record[4]),
-            'is_auto': bool(record[5])
+            'is_auto': bool(record[5]),
+            'description': record[6] if len(record) > 6 and record[6] else None,
+            'break_type': break_type
         })
     
     return jsonify({'breaks': breaks})
@@ -1950,5 +2761,8 @@ def request_data_deletion():
         return redirect(url_for('data_access'))
 
 if __name__ == '__main__':
+    print("Initializing BTZ-Zeiterfassung application...")
     init_db()
+    print("Database initialization complete")
+    print("Starting web server...")
     app.run(host='0.0.0.0', port=5000, debug=True)

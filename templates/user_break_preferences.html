@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Persönliche Pauseneinstellungen</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/breaks.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        <h1>Persönliche Pauseneinstellungen</h1>
+        
+        <div class="break-settings-container">
+            <h2>Meine Pausenpräferenzen</h2>
+            
+            {% if message %}
+                <div class="alert {% if message_type %}alert-{{ message_type }}{% else %}alert-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endif %}
+            
+            <form action="/update_user_break_preferences" method="post" class="settings-form">
+                <!-- Lunch Period Settings -->
+                <div class="setting-group lunch">
+                    <h3><i class="fas fa-utensils"></i> Persönliche Mittagszeit</h3>
+                    <p>Legen Sie Ihre bevorzugte Mittagszeit fest. Das System wird versuchen, Ihre ArbZG-Pausen während dieser Zeit zu platzieren.</p>
+                    
+                    <div class="time-range-container">
+                        <div class="time-input-group">
+                            <label for="lunch-start-time">Mittagszeit von:</label>
+                            <input type="number" min="0" max="23" id="lunch-start-hour" name="lunch_period_start_hour" 
+                                   value="{{ preferences.lunch_period_start_hour if preferences and preferences.lunch_period_start_hour is defined else 11 }}" class="time-input"> :
+                            <input type="number" min="0" max="59" id="lunch-start-minute" name="lunch_period_start_minute" 
+                                   value="{{ preferences.lunch_period_start_minute if preferences and preferences.lunch_period_start_minute is defined else 30 }}" class="time-input">
+                        </div>
+                        <div class="time-input-group">
+                            <label for="lunch-end-time">bis:</label>
+                            <input type="number" min="0" max="23" id="lunch-end-hour" name="lunch_period_end_hour" 
+                                   value="{{ preferences.lunch_period_end_hour if preferences and preferences.lunch_period_end_hour is defined else 14 }}" class="time-input"> :
+                            <input type="number" min="0" max="59" id="lunch-end-minute" name="lunch_period_end_minute" 
+                                   value="{{ preferences.lunch_period_end_minute if preferences and preferences.lunch_period_end_minute is defined else 0 }}" class="time-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Break Timing Strategy -->
+                <div class="setting-group">
+                    <h3><i class="fas fa-clock"></i> Pausenplatzierungsstrategie</h3>
+                    <p>Wählen Sie, wie ArbZG-Pausen platziert werden sollen:</p>
+                    
+                    <div class="radio-options">
+                        <label class="radio-option">
+                            <input type="radio" name="break_timing_strategy" value="lunch_priority" 
+                                  {% if not preferences or preferences.break_timing_strategy == 'lunch_priority' %}checked{% endif %}>
+                            <span class="option-label">Mittagszeit bevorzugen</span>
+                            <span class="option-description">Pausen werden wenn möglich in der Mittagszeit platziert, ansonsten am Ende des Arbeitstages</span>
+                        </label>
+                        
+                        <label class="radio-option">
+                            <input type="radio" name="break_timing_strategy" value="distributed" 
+                                  {% if preferences and preferences.break_timing_strategy == 'distributed' %}checked{% endif %}>
+                            <span class="option-label">Gleichmäßig verteilen</span>
+                            <span class="option-description">Pausen werden gleichmäßig über den Arbeitstag verteilt</span>
+                        </label>
+                        
+                        <label class="radio-option">
+                            <input type="radio" name="break_timing_strategy" value="end_of_day" 
+                                  {% if preferences and preferences.break_timing_strategy == 'end_of_day' %}checked{% endif %}>
+                            <span class="option-label">Ende des Arbeitstages</span>
+                            <span class="option-description">Pausen werden bevorzugt am Ende des Arbeitstages platziert</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Break Consolidation Preference -->
+                <div class="setting-group">
+                    <h3><i class="fas fa-object-group"></i> Pausenkonsolidierung</h3>
+                    
+                    <label class="switch-label">
+                        <input type="checkbox" id="prefer-consolidated-breaks" name="prefer_consolidated_breaks" value="1" 
+                               {% if preferences and preferences.prefer_consolidated_breaks %}checked{% endif %}>
+                        <span>Konsolidierte Pausen bevorzugen</span>
+                    </label>
+                    <p>Wenn aktiviert, versucht das System, mehrere kleinere Pausen zu einer längeren Pause zusammenzufassen</p>
+                </div>
+                
+                <!-- Advanced Break Settings -->
+                <div class="setting-group advanced">
+                    <h3><i class="fas fa-sliders-h"></i> Erweiterte Pauseneinstellungen</h3>
+                    
+                    <div class="advanced-settings-grid">
+                        <div class="advanced-setting">
+                            <label for="min-break-duration">Minimale Pausendauer:</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="min-break-duration" name="min_break_duration" min="5" max="60" 
+                                       value="{{ preferences.min_break_duration if preferences and preferences.min_break_duration is defined else 15 }}">
+                                <span class="unit">Minuten</span>
+                            </div>
+                            <p class="setting-hint">Minimale Dauer einer einzelnen Pause</p>
+                        </div>
+                        
+                        <div class="advanced-setting">
+                            <label for="max-breaks-per-day">Maximale Pausenanzahl:</label>
+                            <input type="number" id="max-breaks-per-day" name="max_breaks_per_day" min="1" max="5" 
+                                   value="{{ preferences.max_breaks_per_day if preferences and preferences.max_breaks_per_day is defined else 3 }}">
+                            <p class="setting-hint">Maximale Anzahl automatischer Pausen pro Tag</p>
+                        </div>
+                        
+                        <div class="advanced-setting">
+                            <label for="preferred-break-spacing">Bevorzugter Pausenabstand:</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="preferred-break-spacing" name="preferred_break_spacing" min="60" max="240" step="15" 
+                                       value="{{ preferences.preferred_break_spacing if preferences and preferences.preferred_break_spacing is defined else 120 }}">
+                                <span class="unit">Minuten</span>
+                            </div>
+                            <p class="setting-hint">Bevorzugter Abstand zwischen einzelnen Pausen</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button type="submit" class="primary-button">Einstellungen speichern</button>
+                    <a href="/" class="secondary-button">Abbrechen</a>
+                </div>
+            </form>
+            
+            <div class="settings-info-panel">
+                <h3><i class="fas fa-info-circle"></i> Hinweise zu Pauseneinstellungen</h3>
+                <p>Diese Einstellungen beeinflussen, wie das System automatische ArbZG-Pausen für Sie platziert. Die gesetzliche Mindestpausendauer (30 Minuten bei über 6 Stunden Arbeit, 45 Minuten bei über 9 Stunden) wird dabei immer eingehalten.</p>
+                <p>Ihre persönlichen Einstellungen überschreiben die systemweiten Standardeinstellungen.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            // Form validation
+            $('form').on('submit', function(e) {
+                // Validate lunch period
+                const lunchStartHour = parseInt($('#lunch-start-hour').val());
+                const lunchStartMinute = parseInt($('#lunch-start-minute').val());
+                const lunchEndHour = parseInt($('#lunch-end-hour').val());
+                const lunchEndMinute = parseInt($('#lunch-end-minute').val());
+                
+                // Calculate total minutes for comparison
+                const lunchStartMinutes = lunchStartHour * 60 + lunchStartMinute;
+                const lunchEndMinutes = lunchEndHour * 60 + lunchEndMinute;
+                
+                if (lunchEndMinutes <= lunchStartMinutes) {
+                    alert('Die Endzeit der Mittagspause muss nach der Startzeit liegen.');
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Validate min break duration
+                const minBreakDuration = parseInt($('#min-break-duration').val());
+                if (minBreakDuration < 5) {
+                    alert('Die minimale Pausendauer muss mindestens 5 Minuten betragen.');
+                    e.preventDefault();
+                    return false;
+                }
+                
+                return true;
+            });
+        });
+    </script>
+</body>
+</html>

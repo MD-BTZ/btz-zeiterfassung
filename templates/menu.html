@@ -11,6 +11,7 @@
         {% if session.get('username') %}
             <a href="/data_access" title="Zugriff auf Ihre persönlichen Daten"><i class="fas fa-user-shield"></i> Meine Daten</a>
             <a href="/manual_attendance" title="Anwesenheitsaufzeichnungen manuell hinzufügen"><i class="fas fa-plus-circle"></i> Zeiterfassung hinzufügen</a>
+            <a href="/user_break_preferences" title="Persönliche Pauseneinstellungen anpassen"><i class="fas fa-coffee"></i> Pauseneinstellungen</a>
         {% else %}
             <a href="/data_access">Datenzugriff</a>
         {% endif %}

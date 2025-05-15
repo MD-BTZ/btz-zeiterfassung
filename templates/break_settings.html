@@ -58,6 +58,52 @@
                     <p>Wenn aktiviert, werden Pausen von der abrechenbaren Arbeitszeit abgezogen.</p>
                 </div>
                 
+                <div class="setting-group arbzg">
+                    <label for="arbzg-breaks-enabled" class="switch-label">
+                        <input type="checkbox" id="arbzg-breaks-enabled" name="arbzg_breaks_enabled" value="1" {% if settings and settings.arbzg_breaks_enabled %}checked{% endif %}>
+                        <span>Automatische Pausen nach Arbeitszeitgesetz (ArbZG)</span>
+                    </label>
+                    <p>Wenn aktiviert, werden automatisch gesetzliche Pausen gemäß Arbeitszeitgesetz (ArbZG §4) eingefügt:</p>
+                    <ul>
+                        <li>Bei Arbeitszeit > 6 Stunden: mindestens 30 Minuten Pause</li>
+                        <li>Bei Arbeitszeit > 9 Stunden: mindestens 45 Minuten Pause</li>
+                    </ul>
+                    <p>Fehlende Pausen werden beim Auschecken automatisch hinzugefügt.</p>
+                    
+                    <div class="arbzg-info-block">
+                        <h4>Intelligente Pausenplatzierung</h4>
+                        <p>Das System platziert gesetzliche Pausen nach folgenden Regeln:</p>
+                        <ul>
+                            <li><strong>Mittagspausen-Priorität:</strong> Wenn möglich, werden Pausen in der Mittagszeit eingetragen (siehe Einstellungen unten)</li>
+                            <li><strong>Ende des Arbeitstages:</strong> Wenn keine Mittagszeit verfügbar ist, werden Pausen am Ende des Arbeitstages hinzugefügt</li>
+                            <li><strong>Pausendauer:</strong> Entscheidend ist immer die Gesamtpausendauer gemäß ArbZG</li>
+                            <li><strong>Visuelle Unterscheidung:</strong> Mittagspausen und End-of-Day-Pausen werden unterschiedlich gekennzeichnet</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="lunch-period-settings">
+                        <h4>Mittagszeitraum einstellen</h4>
+                        <p>Legen Sie den Zeitraum fest, in dem das System bevorzugt Pausen platzieren soll:</p>
+                        <div class="time-range-container">
+                            <div class="time-input-group">
+                                <label for="lunch-start-time">Mittagszeit von:</label>
+                                <input type="number" min="0" max="23" id="lunch-start-hour" name="lunch_period_start_hour" 
+                                       value="{{ settings.lunch_period_start_hour if settings and settings.lunch_period_start_hour is defined else 11 }}" class="time-input"> :
+                                <input type="number" min="0" max="59" id="lunch-start-minute" name="lunch_period_start_minute" 
+                                       value="{{ settings.lunch_period_start_minute if settings and settings.lunch_period_start_minute is defined else 30 }}" class="time-input">
+                            </div>
+                            <div class="time-input-group">
+                                <label for="lunch-end-time">bis:</label>
+                                <input type="number" min="0" max="23" id="lunch-end-hour" name="lunch_period_end_hour" 
+                                       value="{{ settings.lunch_period_end_hour if settings and settings.lunch_period_end_hour is defined else 14 }}" class="time-input"> :
+                                <input type="number" min="0" max="59" id="lunch-end-minute" name="lunch_period_end_minute" 
+                                       value="{{ settings.lunch_period_end_minute if settings and settings.lunch_period_end_minute is defined else 0 }}" class="time-input">
+                            </div>
+                        </div>
+                        <p class="note">Hinweis: Die Standardeinstellung ist 11:30 Uhr bis 14:00 Uhr.</p>
+                    </div>
+                </div>
+                
                 <button type="submit" class="settings-save-btn">Einstellungen speichern</button>
             </form>
         </div>
@@ -78,6 +124,7 @@
                                 <th>Dauer</th>
                                 <th>Typ</th>
                                 <th>Abrechnung</th>
+                                <th>Beschreibung</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -89,7 +136,13 @@
                                     <td>{{ break_item[2][11:19] }}</td>
                                     <td>{{ break_item[3] }} Min</td>
                                     <td>
-                                        {% if break_item[5] %}
+                                        {% if break_item[5] and break_item[7] and 'ArbZG' in break_item[7] %}
+                                            {% if 'Mittagspause' in break_item[7] %}
+                                                <span class="arbzg-badge lunch-badge" title="Automatisch während der Mittagszeit eingefügt">ArbZG Mittagspause</span>
+                                            {% else %}
+                                                <span class="arbzg-badge" title="Automatisch hinzugefügt gemäß Arbeitszeitgesetz">ArbZG</span>
+                                            {% endif %}
+                                        {% elif break_item[5] %}
                                             <span class="auto-detected-badge">Automatisch</span>
                                         {% else %}
                                             <span class="manual-badge">Manuell</span>
@@ -100,6 +153,13 @@
                                             <span class="excluded-badge">Nicht abrechenbar</span>
                                         {% else %}
                                             <span class="included-badge">Abrechenbar</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if break_item[7] %}
+                                            {{ break_item[7] }}
+                                        {% else %}
+                                            -
                                         {% endif %}
                                     </td>
                                 </tr>

@@ -1,0 +1,14 @@
+2025-05-15 20:08:41,255 - migration - INFO - Starting user break preferences migration
+2025-05-15 20:08:41,256 - migration - INFO - Adding column prefer_consolidated_breaks to user_settings
+2025-05-15 20:08:41,259 - migration - INFO - Adding column break_timing_strategy to user_settings
+2025-05-15 20:08:41,261 - migration - INFO - Adding column min_break_duration to user_settings
+2025-05-15 20:08:41,264 - migration - INFO - Adding column max_breaks_per_day to user_settings
+2025-05-15 20:08:41,266 - migration - INFO - Adding column preferred_break_spacing to user_settings
+2025-05-15 20:08:41,268 - migration - INFO - User break preferences migration completed successfully
+2025-05-15 20:51:59,676 - migration - INFO - Starting user break preferences migration
+2025-05-15 20:51:59,677 - migration - INFO - Column prefer_consolidated_breaks already exists in user_settings
+2025-05-15 20:51:59,677 - migration - INFO - Column break_timing_strategy already exists in user_settings
+2025-05-15 20:51:59,677 - migration - INFO - Column min_break_duration already exists in user_settings
+2025-05-15 20:51:59,677 - migration - INFO - Column max_breaks_per_day already exists in user_settings
+2025-05-15 20:51:59,678 - migration - INFO - Column preferred_break_spacing already exists in user_settings
+2025-05-15 20:51:59,678 - migration - INFO - User break preferences migration completed successfully

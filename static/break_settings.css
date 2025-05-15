@@ -1,0 +1,20 @@
+/* CSS for the break settings page */
+.arbzg-rules {
+    background-color: #f0f7ff;
+    border-left: 4px solid #3498db;
+    padding: 10px 15px;
+    margin: 10px 0;
+    list-style-position: inside;
+}
+
+.arbzg-rules li {
+    margin: 6px 0;
+    color: #333;
+}
+
+.info-text {
+    font-style: italic;
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 10px;
+}

@@ -1,0 +1,166 @@
+2025-05-15 21:02:00,043 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.72:5000
+2025-05-15 21:02:00,044 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-15 21:02:00,045 - werkzeug - INFO -  * Restarting with stat
+2025-05-15 21:02:20,378 - werkzeug - WARNING -  * Debugger is active!
+2025-05-15 21:02:20,379 - werkzeug - INFO -  * Debugger PIN: 741-656-291
+2025-05-15 21:02:38,988 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:38] "GET / HTTP/1.1" 200 -
+2025-05-15 21:02:39,008 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /static/script.js HTTP/1.1" 200 -
+2025-05-15 21:02:39,009 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:02:39,011 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:02:39,013 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:02:39,013 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /static/script.js HTTP/1.1" 200 -
+2025-05-15 21:02:39,013 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /static/breaks.css HTTP/1.1" 200 -
+2025-05-15 21:02:39,038 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:02:39,042 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:02:39,042 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:02:39,055 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:39] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:02:56,217 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:56] "GET /break_settings HTTP/1.1" 200 -
+2025-05-15 21:02:56,223 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:56] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:02:56,225 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:02:56,229 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:02:56,231 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:02:56] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:03:34,470 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "GET /admin HTTP/1.1" 200 -
+2025-05-15 21:03:34,485 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:03:34,488 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:03:34,493 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:03:34,495 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:03:34,530 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:03:34,541 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:03:34] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:04:06,455 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:06] "[32mHEAD / HTTP/1.1[0m" 302 -
+2025-05-15 21:04:08,356 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "[32mGET / HTTP/1.1[0m" 302 -
+2025-05-15 21:04:08,444 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "GET /login HTTP/1.1" 200 -
+2025-05-15 21:04:08,513 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "GET /static/script.js HTTP/1.1" 200 -
+2025-05-15 21:04:08,516 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "GET /static/style.css HTTP/1.1" 200 -
+2025-05-15 21:04:08,585 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "[32mGET /get_user_settings HTTP/1.1[0m" 302 -
+2025-05-15 21:04:08,589 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-05-15 21:04:08,647 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "GET /login HTTP/1.1" 200 -
+2025-05-15 21:04:08,699 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:04:08] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-05-15 21:04:27,973 - app - WARNING - Error fetching user break preferences: no such column: lunch_period_start_hour
+2025-05-15 21:04:27,985 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:27] "GET /user_break_preferences HTTP/1.1" 200 -
+2025-05-15 21:04:27,999 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:27] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:04:28,002 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:28] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:04:52,044 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:52] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-05-15 21:04:52,052 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:52] "GET /login HTTP/1.1" 200 -
+2025-05-15 21:04:52,064 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:52] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:04:52,066 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:52] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:04:52,075 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:52] "[32mGET /get_user_settings HTTP/1.1[0m" 302 -
+2025-05-15 21:04:52,083 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:52] "GET /login HTTP/1.1" 200 -
+2025-05-15 21:04:57,989 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:57] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-05-15 21:04:58,103 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "GET / HTTP/1.1" 200 -
+2025-05-15 21:04:58,120 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:04:58,123 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:04:58,126 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:04:58,127 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:04:58,138 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:04:58,142 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:04:58,142 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:04:58,149 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:04:58] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:05:02,774 - app - WARNING - Error fetching user break preferences: no such column: lunch_period_start_hour
+2025-05-15 21:05:02,775 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:02] "GET /user_break_preferences HTTP/1.1" 200 -
+2025-05-15 21:05:02,789 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:02] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:02,792 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:02] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:34,880 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:34] "GET /data_access HTTP/1.1" 200 -
+2025-05-15 21:05:34,890 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:34] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:40,270 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:40] "GET /manual_attendance HTTP/1.1" 200 -
+2025-05-15 21:05:40,283 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:40] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,862 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "GET / HTTP/1.1" 200 -
+2025-05-15 21:05:51,867 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,868 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,872 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,876 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,881 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,882 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:05:51,897 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:05:51,902 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:05:51,902 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:05:51,912 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:05:51] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:06,286 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "[32mPOST /checkin HTTP/1.1[0m" 302 -
+2025-05-15 21:06:06,297 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET / HTTP/1.1" 200 -
+2025-05-15 21:06:06,314 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:06,315 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:06,316 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:06,317 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:06,330 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:06:06,335 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:06,335 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:06,342 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:06,346 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET /get_breaks/60 HTTP/1.1" 200 -
+2025-05-15 21:06:06,355 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:06] "GET /get_breaks/60 HTTP/1.1" 200 -
+2025-05-15 21:06:26,880 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:26] "[32mPOST /add_break HTTP/1.1[0m" 302 -
+2025-05-15 21:06:26,892 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:26] "GET / HTTP/1.1" 200 -
+2025-05-15 21:06:35,564 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET / HTTP/1.1" 200 -
+2025-05-15 21:06:35,571 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:35,572 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:35,575 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:35,578 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:35,580 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:35,582 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:35,593 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:06:35,599 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:35,599 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:35,611 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET /get_today_attendance/3 HTTP/1.1" 200 -
+2025-05-15 21:06:35,615 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET /get_breaks/60 HTTP/1.1" 200 -
+2025-05-15 21:06:35,622 - werkzeug - INFO - 192.168.178.52 - - [15/May/2025 21:06:35] "GET /get_breaks/60 HTTP/1.1" 200 -
+2025-05-15 21:06:47,957 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:47] "[32mGET /user_break_preferences HTTP/1.1[0m" 302 -
+2025-05-15 21:06:51,959 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:51] "[32mGET / HTTP/1.1[0m" 302 -
+2025-05-15 21:06:51,988 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:51] "GET /login HTTP/1.1" 200 -
+2025-05-15 21:06:51,994 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:51] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:52,016 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:52] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:52,067 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:52] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:06:52,068 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:52] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:06:52,132 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:52] "[32mGET /get_user_settings HTTP/1.1[0m" 302 -
+2025-05-15 21:06:52,193 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:52] "GET /login HTTP/1.1" 200 -
+2025-05-15 21:06:57,195 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:06:57] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-05-15 21:07:14,353 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:14] "[32mHEAD /user_break_preferences HTTP/1.1[0m" 302 -
+2025-05-15 21:07:20,227 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET / HTTP/1.1" 200 -
+2025-05-15 21:07:20,255 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:20,259 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:20,271 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET /static/week-picker.js HTTP/1.1" 200 -
+2025-05-15 21:07:20,274 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:20,275 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET /static/breaks.css HTTP/1.1" 200 -
+2025-05-15 21:07:20,276 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:20,352 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:07:20,358 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:20,363 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:20,407 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:20,414 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-05-15 21:07:20,417 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-15 21:07:20,419 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:20] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-05-15 21:07:23,486 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "GET / HTTP/1.1" 200 -
+2025-05-15 21:07:23,500 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:23,502 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:23,539 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:23,543 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:23,544 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:23,545 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:23,621 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:07:23,623 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:23,629 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-05-15 21:07:23,632 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-05-15 21:07:23,632 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:23,635 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-15 21:07:23,691 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:23] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:32,524 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:32] "[32mGET /user_break_preferences HTTP/1.1[0m" 302 -
+2025-05-15 21:07:36,922 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:36] "GET / HTTP/1.1" 200 -
+2025-05-15 21:07:36,999 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:36] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:37,001 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:37,006 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:07:37,006 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-15 21:07:37,076 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-15 21:07:37,087 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-05-15 21:07:37,090 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:37,092 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-05-15 21:07:37,094 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-15 21:07:37,095 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:07:37,143 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:07:37] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-15 21:08:46,879 - app - WARNING - Error fetching user break preferences: no such column: lunch_period_start_hour
+2025-05-15 21:08:46,880 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:08:46] "GET /user_break_preferences HTTP/1.1" 200 -
+2025-05-15 21:08:46,958 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:08:46] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-15 21:08:46,963 - werkzeug - INFO - 127.0.0.1 - - [15/May/2025 21:08:46] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-15 21:10:41,666 - werkzeug - INFO -  * Detected change in '/home/michalkopecki/btz-zeiterfassung/app.py', reloading
+2025-05-15 21:10:41,763 - werkzeug - INFO -  * Restarting with stat
+2025-05-15 21:11:02,110 - werkzeug - WARNING -  * Debugger is active!
+2025-05-15 21:11:02,111 - werkzeug - INFO -  * Debugger PIN: 741-656-291
