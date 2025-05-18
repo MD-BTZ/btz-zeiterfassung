@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Datenlöschungsanfragen</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/breaks.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        .request-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e4e8;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .request-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e4e8;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .request-id {
+            background-color: #e0e4e8;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 0.9em;
+            color: #37474f;
+        }
+        
+        .request-status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background-color: #fff8e1;
+            color: #f57f17;
+        }
+        
+        .status-processing {
+            background-color: #e1f5fe;
+            color: #0277bd;
+        }
+        
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status-rejected {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .request-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-group {
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-size: 0.8em;
+            color: #78909c;
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+        }
+        
+        .request-reason {
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e4e8;
+        }
+        
+        .admin-notes {
+            background-color: #f5f7f9;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e4e8;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+        
+        .process-button {
+            background-color: #1976d2;
+            color: #fff;
+        }
+        
+        .approve-button {
+            background-color: #4caf50;
+            color: #fff;
+        }
+        
+        .reject-button {
+            background-color: #f44336;
+            color: #fff;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e4e8;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #78909c;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e4e8;
+        }
+        
+        .cancel-button {
+            background-color: #e0e4e8;
+            color: #37474f;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #78909c;
+        }
+        
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        <h1>Datenlöschungsanfragen</h1>
+        
+        {% if message %}
+            <div class="message {{ message_type }}">{{ message }}</div>
+        {% endif %}
+        
+        <div class="section-container">
+            {% if requests and requests|length > 0 %}
+                <div class="request-list">
+                    {% for req in requests %}
+                        <div class="request-card" data-request-id="{{ req[0] }}">
+                            <div class="request-header">
+                                <span class="request-id">#{{ req[0] }}</span>
+                                <span class="request-status status-{{ req[5] }}">{{ req[5] }}</span>
+                            </div>
+                            
+                            <div class="request-details">
+                                <div>
+                                    <div class="detail-group">
+                                        <div class="detail-label">Benutzer</div>
+                                        <div class="detail-value">{{ req[2] }}</div>
+                                    </div>
+                                    
+                                    <div class="detail-group">
+                                        <div class="detail-label">Benutzer ID</div>
+                                        <div class="detail-value">{{ req[1] }}</div>
+                                    </div>
+                                    
+                                    <div class="detail-group">
+                                        <div class="detail-label">Anzahl der Datensätze</div>
+                                        <div class="detail-value">{{ req[9] }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="detail-group">
+                                        <div class="detail-label">Anfragedatum</div>
+                                        <div class="detail-value">{{ req[3][:10] }} {{ req[3][11:19] }}</div>
+                                    </div>
+                                    
+                                    {% if req[7] %}
+                                    <div class="detail-group">
+                                        <div class="detail-label">Bearbeitet von</div>
+                                        <div class="detail-value">{{ admin_usernames.get(req[7], 'Unbekannt') }}</div>
+                                    </div>
+                                    
+                                    <div class="detail-group">
+                                        <div class="detail-label">Bearbeitet am</div>
+                                        <div class="detail-value">{{ req[8][:10] }} {{ req[8][11:19] }}</div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if req[4] %}
+                            <div class="detail-group">
+                                <div class="detail-label">Grund</div>
+                                <div class="request-reason">{{ req[4] }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if req[6] %}
+                            <div class="detail-group">
+                                <div class="detail-label">Admin Notizen</div>
+                                <div class="admin-notes">{{ req[6] }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if req[5] == 'pending' or req[5] == 'processing' %}
+                            <div class="action-buttons">
+                                {% if req[5] == 'pending' %}
+                                <button class="action-button process-button" onclick="openProcessModal({{ req[0] }})">
+                                    <i class="fas fa-hourglass-half"></i> In Bearbeitung
+                                </button>
+                                {% endif %}
+                                <button class="action-button approve-button" onclick="openApproveModal({{ req[0] }})">
+                                    <i class="fas fa-check"></i> Genehmigen
+                                </button>
+                                <button class="action-button reject-button" onclick="openRejectModal({{ req[0] }})">
+                                    <i class="fas fa-times"></i> Ablehnen
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>Keine Datenlöschungsanfragen</h3>
+                    <p>Es liegen keine Datenlöschungsanfragen zur Bearbeitung vor.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Process Modal -->
+    <div id="processModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>In Bearbeitung setzen</h3>
+                <button class="close-modal" onclick="closeModal('processModal')">&times;</button>
+            </div>
+            <form id="processForm" action="" method="post">
+                <input type="hidden" name="action" value="mark_processing">
+                <div class="form-group">
+                    <label for="processNotes">Notizen (optional)</label>
+                    <textarea id="processNotes" name="admin_notes" rows="3" class="form-control"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="action-button cancel-button" onclick="closeModal('processModal')">Abbrechen</button>
+                    <button type="submit" class="action-button process-button">Bestätigen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Approve Modal -->
+    <div id="approveModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Datenlöschung genehmigen</h3>
+                <button class="close-modal" onclick="closeModal('approveModal')">&times;</button>
+            </div>
+            <form id="approveForm" action="" method="post">
+                <input type="hidden" name="action" value="approve">
+                <p><strong>Warnung:</strong> Die Daten des Benutzers werden unwiderruflich gelöscht.</p>
+                <div class="form-group">
+                    <label for="approveNotes">Notizen (optional)</label>
+                    <textarea id="approveNotes" name="admin_notes" rows="3" class="form-control"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="action-button cancel-button" onclick="closeModal('approveModal')">Abbrechen</button>
+                    <button type="submit" class="action-button approve-button">Löschen bestätigen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Datenlöschung ablehnen</h3>
+                <button class="close-modal" onclick="closeModal('rejectModal')">&times;</button>
+            </div>
+            <form id="rejectForm" action="" method="post">
+                <input type="hidden" name="action" value="reject">
+                <div class="form-group">
+                    <label for="rejectNotes">Grund für die Ablehnung</label>
+                    <textarea id="rejectNotes" name="admin_notes" rows="3" class="form-control" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="action-button cancel-button" onclick="closeModal('rejectModal')">Abbrechen</button>
+                    <button type="submit" class="action-button reject-button">Ablehnen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Function to open the processing modal
+        function openProcessModal(requestId) {
+            document.getElementById('processForm').action = '/process_deletion_request/' + requestId;
+            document.getElementById('processModal').style.display = 'block';
+        }
+        
+        // Function to open the approve modal
+        function openApproveModal(requestId) {
+            document.getElementById('approveForm').action = '/process_deletion_request/' + requestId;
+            document.getElementById('approveModal').style.display = 'block';
+        }
+        
+        // Function to open the reject modal
+        function openRejectModal(requestId) {
+            document.getElementById('rejectForm').action = '/process_deletion_request/' + requestId;
+            document.getElementById('rejectModal').style.display = 'block';
+        }
+        
+        // Function to close any modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal-overlay');
+                modals.forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

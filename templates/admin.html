@@ -9,6 +9,97 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <style>
+        /* Modal/Popup styles */
+        #breaks-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 10vh auto;
+            padding: 0;
+            width: 95%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-30px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            background: linear-gradient(to right, #1976d2, #2196f3);
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            margin: 0;
+            font-size: 1.3em;
+        }
+        
+        .modal-title-icon {
+            margin-right: 10px;
+        }
+        
+        .modal-close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .modal-close:hover {
+            color: #f0f0f0;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        /* Responsive styles for modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 98%;
+                margin: 5vh auto;
+            }
+            
+            .modal-body {
+                padding: 15px 10px;
+                max-height: 80vh;
+            }
+            
+            .modal-header {
+                padding: 12px 15px;
+            }
+            
+            .modal-title {
+                font-size: 1.1em;
+            }
+        }
+
         /* Filtering styles */
         .filtering-options {
             display: flex;
@@ -193,12 +284,8 @@
                     </label>
                     <select id="report-user-id" name="user_id" class="form-input" title="Wählen Sie einen Benutzer oder 'Alle Benutzer'">
                         <option value="" selected>Alle Benutzer</option>
-                        {% set seen = [] %}
-                        {% for rec in records %}
-                            {% if rec[1] not in seen %}
-                                <option value="{{ rec[1] }}">{{ rec[1] }}</option>
-                                {% set _ = seen.append(rec[1]) %}
-                            {% endif %}
+                        {% for user in users %}
+                            <option value="{{ user[1] }}">{{ user[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -301,12 +388,8 @@
                     </label>
                     <select id="filter-user" class="form-input">
                         <option value="">Alle Benutzer</option>
-                        {% set seen = [] %}
-                        {% for rec in records %}
-                            {% if rec[1] not in seen %}
-                                <option value="{{ rec[1] }}">{{ rec[1] }}</option>
-                                {% set _ = seen.append(rec[1]) %}
-                            {% endif %}
+                        {% for user in users %}
+                            <option value="{{ user[1] }}">{{ user[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -368,16 +451,16 @@
             <tbody>
                 {% for rec in records %}
                 <tr>
-                    <td>{{ rec[1] }}</td>
-                    <td>{% if rec[2] %}{{ rec[2][:10] }}{% elif rec[3] %}{{ rec[3][:10] }}{% else %}-{% endif %}</td>
-                    <td>{% if rec[2] %}{{ rec[2][11:19] }}{% else %}-{% endif %}</td>
-                    <td>{% if rec[3] %}{{ rec[3][11:19] }}{% else %}-{% endif %}</td>
-                    <td>{% if rec[2] and rec[3] %}{{ get_duration(rec[2], rec[3]) }}{% else %}-{% endif %}</td>
-                    <td>{% if rec[5] %}{{ format_minutes(rec[5]) }}{% else %}-{% endif %}</td>
+                    <td>{{ rec['username'] }}</td>
+                    <td>{% if rec['check_in'] %}{{ rec['check_in'][:10] }}{% elif rec['check_out'] %}{{ rec['check_out'][:10] }}{% else %}-{% endif %}</td>
+                    <td>{% if rec['check_in'] %}{{ rec['check_in'][11:19] }}{% else %}-{% endif %}</td>
+                    <td>{% if rec['check_out'] %}{{ rec['check_out'][11:19] }}{% else %}-{% endif %}</td>
+                    <td>{% if rec['check_in'] and rec['check_out'] %}{{ get_duration(rec['check_in'], rec['check_out']) }}{% else %}-{% endif %}</td>
+                    <td>{% if rec['billable_minutes'] %}{{ format_minutes(rec['billable_minutes']) }}{% else %}-{% endif %}</td>
                     <td>
-                        {% if rec[4] %}
+                        {% if rec['has_auto_breaks'] %}
                         <span class="break-indicator" title="Automatische Pausen erkannt">⏱️</span>
-                        <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec[0] }}"><i class="far fa-eye btn-icon"></i>Anzeigen</a>
+                        <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec['id'] }}"><i class="far fa-eye btn-icon"></i>Anzeigen</a>
                         {% else %}
                         <span class="no-breaks">Keine</span>
                         {% endif %}
@@ -606,7 +689,122 @@
                 }, 2000);
             };
         });
-        </script>
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize the week picker
+            $("#week-picker").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                showWeek: true,
+                firstDay: 1, // Monday as first day
+                onSelect: function(dateText, inst) {
+                    var date = $(this).datepicker('getDate');
+                    var weekNum = $.datepicker.iso8601Week(date);
+                    var year = date.getFullYear();
+                    var weekStartDate = new Date(date.setDate(date.getDate() - date.getDay() + 1));
+                    var weekEndDate = new Date(date.setDate(date.getDate() + 6));
+                    
+                    // Format dates for display
+                    var startFormat = $.datepicker.formatDate('dd.mm.', weekStartDate);
+                    var endFormat = $.datepicker.formatDate('dd.mm.yy', weekEndDate);
+                    
+                    // Display selected week
+                    var displayText = "KW " + weekNum + ": " + startFormat + " - " + endFormat;
+                    $("#week-picker").val(displayText);
+                    
+                    // Set the hidden field value in ISO format (YYYY-Www)
+                    var isoWeek = year + "-W" + (weekNum < 10 ? "0" + weekNum : weekNum);
+                    $("#report-week").val(isoWeek);
+                    
+                    // Clear other date inputs
+                    $("#report-date").val("");
+                    $("#report-month").val("");
+                    $("#report-month-select").val("");
+                }
+            });
+            
+            // Report generation button click handler
+            $("#generate-report-btn").click(function() {
+                // Get selected values
+                var userId = $("#report-user-id").val();
+                var date = $("#report-date").val();
+                var week = $("#report-week").val();
+                var month = $("#report-month").val();
+                var entireTimeframe = $("#entire-timeframe").is(":checked") ? "true" : "false";
+                
+                // Create and submit form dynamically
+                var form = $("<form>")
+                    .attr("method", "post")
+                    .attr("action", "/generate_report")
+                    .css("display", "none");
+                    
+                form.append($("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "user_id")
+                    .attr("value", userId || ""));
+                    
+                form.append($("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "date")
+                    .attr("value", date || ""));
+                    
+                form.append($("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "week")
+                    .attr("value", week || ""));
+                    
+                form.append($("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "month")
+                    .attr("value", month || ""));
+                    
+                form.append($("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "entire_period")
+                    .attr("value", entireTimeframe));
+                
+                $("body").append(form);
+                form.submit();
+            });
+
+            // Month selector handling
+            $("#report-month-select, #report-month-year").change(function() {
+                var month = $("#report-month-select").val();
+                var year = $("#report-month-year").val();
+                
+                if (month && year) {
+                    $("#report-month").val(year + "-" + month.padStart(2, "0"));
+                } else {
+                    $("#report-month").val("");
+                }
+            });
+            
+            // Clear other fields when date is selected
+            $("#report-date").change(function() {
+                if ($(this).val()) {
+                    $("#week-picker").val("");
+                    $("#report-week").val("");
+                    $("#report-month").val("");
+                    $("#report-month-select").val("");
+                }
+            });
+            
+            // Entire timeframe handling
+            $("#entire-timeframe").change(function() {
+                if ($(this).is(":checked")) {
+                    // Disable date, week, month inputs when entire timeframe is selected
+                    $("#report-date, #week-picker").prop("disabled", true);
+                    $("#report-month-select, #report-month-year").prop("disabled", true);
+                } else {
+                    // Enable inputs when unchecked
+                    $("#report-date, #week-picker").prop("disabled", false);
+                    $("#report-month-select, #report-month-year").prop("disabled", false);
+                }
+            });
+        });
+    </script>
     </div>
     <script src="/static/script.js"></script>
     <script src="/static/week-picker.js"></script>
@@ -648,15 +846,19 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.breaks && data.breaks.length > 0) {
-                                // Create table for breaks with enhanced styling
-                                let html = `<table style="width:100%; border-collapse: separate; border-spacing: 0; margin-top: 5px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px #e0e4e8;">
+                                // Check if we're on mobile
+                                const isMobile = window.innerWidth < 768;
+                                
+                                // Create table with responsive styles
+                                let html = `<div style="overflow-x: auto; margin-bottom: 10px;">
+                                <table style="width:100%; border-collapse: separate; border-spacing: 0; margin-top: 5px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px #e0e4e8;">
                                     <thead>
                                         <tr style="background: linear-gradient(to bottom, #f8fafc, #eef1f5);">
-                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Start</th>
-                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Ende</th>
-                                            <th style="padding: 12px 15px; text-align: center; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Dauer (Min)</th>
-                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Typ & Beschreibung</th>
-                                            <th style="padding: 12px 15px; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Abrechnung</th>
+                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Start</th>
+                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Ende</th>
+                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: center; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Dauer${isMobile ? '' : ' (Min)'}</th>
+                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Typ & Beschreibung</th>
+                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Abrechnung</th>
                                         </tr>
                                     </thead>
                                     <tbody>`;
@@ -694,17 +896,21 @@
                                     const description = breakItem.description ? 
                                         `<div style="margin-top: 4px; font-size: 0.85em; color: #666;">${breakItem.description}</div>` : '';
                                     
+                                    // Apply different cell padding based on screen size
+                                    const cellPadding = isMobile ? '8px 10px' : '10px 15px';
+                                    const fontSize = isMobile ? '0.95em' : '1em';
+                                    
                                     html += `<tr style="${rowStyle} transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f1f4f7'" onmouseout="this.style.backgroundColor=index % 2 === 0 ? '' : '#f8fafc'">
-                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${startTime}</td>
-                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${endTime}</td>
-                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8; text-align: center; font-weight: 500;">${breakItem.duration}</td>
-                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">
+                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">${startTime}</td>
+                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">${endTime}</td>
+                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; text-align: center; font-weight: 500; font-size: ${fontSize};">${breakItem.duration}</td>
+                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">
                                             ${typeIcon}${breakTypeDisplay}
                                             ${description}
                                             ${breakItem.break_type === 'lunch' ? 
                                               '<span style="display: block; margin-top: 3px; font-size: 0.8em; color: #e65100;"><i class="fas fa-utensils" style="margin-right: 3px;"></i>Mittagszeit</span>' : ''}
                                         </td>
-                                        <td style="padding: 10px 15px; border-bottom: 1px solid #e0e4e8;">${billingIcon}${billingStatus}</td>
+                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">${billingIcon}${billingStatus}</td>
                                     </tr>`;
                                 });
                                 
@@ -712,15 +918,19 @@
                                 const totalMinutes = data.breaks.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
                                 const excludedMinutes = data.breaks.filter(item => item.is_excluded).reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
                                 
+                                // Check if mobile for responsive styling
+                                const cellPadding = isMobile ? '8px 10px' : '12px 15px';
+                                
                                 html += `</tbody>
                                 <tfoot>
                                     <tr style="background-color: #f1f4f7;">
-                                        <td colspan="2" style="padding: 12px 15px; font-weight: 500; color: #37474f;">Gesamt</td>
-                                        <td style="padding: 12px 15px; font-weight: 500; color: #37474f; text-align: center;">${totalMinutes} Min</td>
-                                        <td colspan="2" style="padding: 12px 15px; font-weight: 500; color: #37474f;">Nicht abrechenbar: ${excludedMinutes} Min</td>
+                                        <td colspan="2" style="padding: ${cellPadding}; font-weight: 500; color: #37474f;">Gesamt</td>
+                                        <td style="padding: ${cellPadding}; font-weight: 500; color: #37474f; text-align: center;">${totalMinutes} Min</td>
+                                        <td colspan="2" style="padding: ${cellPadding}; font-weight: 500; color: #37474f;">Nicht abrechenbar: ${excludedMinutes} Min</td>
                                     </tr>
                                 </tfoot>
-                                </table>`;
+                                </table>
+                                </div>`;
                                 breaksContent.innerHTML = html;
                             } else {
                                 breaksContent.innerHTML = '<div style="text-align: center; padding: 30px 0;"><i class="fas fa-coffee" style="font-size: 3em; color: #b0bec5; margin-bottom: 15px;"></i><p style="color: #666;">Keine Pausendaten gefunden.</p></div>';

@@ -63,18 +63,49 @@
                 <tr data-user-id="{{ user[0] }}">
                     <td>{{ user[0] }}</td>
                     <td>{{ user[1] }}</td>
-                    <td class="consent-status" data-user-id="{{ user[0] }}">{% if user|length > 2 %}{{ user[2] }}{% else %}Unknown{% endif %}</td>
+                    <td class="consent-status" data-user-id="{{ user[0] }}">
+                        {% if user['consent_status'] == 'granted' %}
+                            <span style="color: #2e7d32;">Einwilligung erteilt</span>
+                        {% elif user['consent_status'] == 'declined' %}
+                            <span style="color: #c62828;">Einwilligung verweigert</span>
+                        {% else %}
+                            <span style="color: #757575;">Nicht festgelegt</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <button class="delete-user-btn" data-user-id="{{ user[0] }}" style="background:#b71c1c;">Delete</button>
-                        <form action="/reset_password/{{ user[0] }}" method="post" style="display:inline;">
-                            <input type="password" name="new_password" placeholder="New password" required style="width:120px;">
-                            <button type="submit">Reset PW</button>
-                        </form>
+                        <button class="change-password-btn" data-user-id="{{ user[0] }}" data-username="{{ user[1] }}" style="background:#1976d2;">Passwort ändern</button>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
+        <!-- Modal für Passwortänderung -->
+        <div id="password-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000;">
+            <div style="position:relative; background-color:white; width:400px; margin:100px auto; padding:20px; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+                <h3>Passwort ändern für <span id="password-change-username"></span></h3>
+                <form id="password-change-form" style="margin-top:20px;">
+                    <input type="hidden" id="password-change-user-id">
+                    <div style="margin-bottom:15px;">
+                        <label for="new-password" style="display:block; margin-bottom:5px;">Neues Passwort:</label>
+                        <input type="password" id="new-password" name="new_password" required style="width:100%; padding:8px;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label for="confirm-password" style="display:block; margin-bottom:5px;">Passwort bestätigen:</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required style="width:100%; padding:8px;">
+                    </div>
+                    <div id="password-mismatch" style="color:#c62828; display:none; margin-bottom:10px;">
+                        Die Passwörter stimmen nicht überein.
+                    </div>
+                    <div style="text-align:right; margin-top:20px;">
+                        <button type="button" id="cancel-password-change" style="background:#757575; margin-right:10px;">Abbrechen</button>
+                        <button type="submit" style="background:#388e3c;">Passwort ändern</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
         <script>
         document.addEventListener('DOMContentLoaded', function() {
             // AJAX delete user (already present)
@@ -221,7 +252,11 @@
                         // Update the consent status in the table
                         const statusCell = document.querySelector(`.consent-status[data-user-id="${userId}"]`);
                         if (statusCell) {
-                            statusCell.textContent = consentStatus === 'granted' ? 'Consent Granted' : 'Consent Declined';
+                            if (consentStatus === 'granted') {
+                                statusCell.innerHTML = '<span style="color: #2e7d32;">Einwilligung erteilt</span>';
+                            } else {
+                                statusCell.innerHTML = '<span style="color: #c62828;">Einwilligung verweigert</span>';
+                            }
                         }
                     }
                 })
@@ -234,6 +269,94 @@
                     feedback.style.padding = '0.7em 1em';
                     feedback.style.borderRadius = '6px';
                 });
+            });
+
+            // Passwort-Änderung Modal
+            const passwordModal = document.getElementById('password-modal');
+            const passwordChangeForm = document.getElementById('password-change-form');
+            const cancelPasswordChange = document.getElementById('cancel-password-change');
+            const passwordChangeUsername = document.getElementById('password-change-username');
+            const passwordChangeUserId = document.getElementById('password-change-user-id');
+            const newPassword = document.getElementById('new-password');
+            const confirmPassword = document.getElementById('confirm-password');
+            const passwordMismatch = document.getElementById('password-mismatch');
+            
+            // Event-Listener für die "Passwort ändern" Buttons
+            document.querySelectorAll('.change-password-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const userId = btn.getAttribute('data-user-id');
+                    const username = btn.getAttribute('data-username');
+                    
+                    passwordChangeUsername.textContent = username;
+                    passwordChangeUserId.value = userId;
+                    newPassword.value = '';
+                    confirmPassword.value = '';
+                    passwordMismatch.style.display = 'none';
+                    
+                    passwordModal.style.display = 'block';
+                });
+            });
+            
+            // Schließen des Modals bei Klick auf "Abbrechen"
+            cancelPasswordChange.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+            });
+            
+            // Passwortüberprüfung und Formular-Abmittlung
+            passwordChangeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (newPassword.value !== confirmPassword.value) {
+                    passwordMismatch.style.display = 'block';
+                    return;
+                }
+                
+                passwordMismatch.style.display = 'none';
+                
+                // Passwort-Änderung an den Server schicken
+                fetch(`/reset_password/${passwordChangeUserId.value}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        new_password: newPassword.value,
+                        confirm_password: confirmPassword.value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    passwordModal.style.display = 'none';
+                    
+                    const feedback = document.getElementById('delete-user-feedback');
+                    feedback.style.display = 'block';
+                    feedback.textContent = data.message;
+                    feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                    feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                    feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                    feedback.style.padding = '0.7em 1em';
+                    feedback.style.borderRadius = '6px';
+                })
+                .catch(() => {
+                    passwordModal.style.display = 'none';
+                    
+                    const feedback = document.getElementById('delete-user-feedback');
+                    feedback.style.display = 'block';
+                    feedback.textContent = 'Fehler beim Ändern des Passworts.';
+                    feedback.style.color = '#b71c1c';
+                    feedback.style.background = '#ffeaea';
+                    feedback.style.border = '1px solid #ffcdd2';
+                    feedback.style.padding = '0.7em 1em';
+                    feedback.style.borderRadius = '6px';
+                });
+            });
+
+            // Schließen des Modals, wenn außerhalb geklickt wird
+            window.addEventListener('click', function(event) {
+                if (event.target == passwordModal) {
+                    passwordModal.style.display = 'none';
+                }
             });
         });
         </script>
