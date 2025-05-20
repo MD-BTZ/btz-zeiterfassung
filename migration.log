@@ -12,3 +12,15 @@
 2025-05-15 20:51:59,677 - migration - INFO - Column max_breaks_per_day already exists in user_settings
 2025-05-15 20:51:59,678 - migration - INFO - Column preferred_break_spacing already exists in user_settings
 2025-05-15 20:51:59,678 - migration - INFO - User break preferences migration completed successfully
+2025-05-20 17:33:35,683 - migration - INFO - Starting temporary passwords migration
+2025-05-20 17:33:35,683 - migration - INFO - Adding verification_hash column to temp_passwords table
+2025-05-20 17:33:35,684 - migration - INFO - Migrating 8 existing temporary password records
+2025-05-20 17:33:35,852 - migration - INFO - Updated temporary password for user 1 with hash and verification hash
+2025-05-20 17:33:36,021 - migration - INFO - Updated temporary password for user 2 with hash and verification hash
+2025-05-20 17:33:36,186 - migration - INFO - Updated temporary password for user 3 with hash and verification hash
+2025-05-20 17:33:36,352 - migration - INFO - Updated temporary password for user 4 with hash and verification hash
+2025-05-20 17:33:36,525 - migration - INFO - Updated temporary password for user 5 with hash and verification hash
+2025-05-20 17:33:36,692 - migration - INFO - Updated temporary password for user 9 with hash and verification hash
+2025-05-20 17:33:36,859 - migration - INFO - Updated temporary password for user 11 with hash and verification hash
+2025-05-20 17:33:37,026 - migration - INFO - Updated temporary password for user 12 with hash and verification hash
+2025-05-20 17:33:37,027 - migration - INFO - Migration of temporary passwords completed successfully

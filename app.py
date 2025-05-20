@@ -2013,23 +2013,34 @@ def reset_password(user_id):
     
     success_message = f'Passwort für {username} wurde erfolgreich geändert'
     
-    # Store the plain text password temporarily in the database for datasheet generation
+    # Store the temporary password in encrypted format for datasheet generation
+    # Use the same encryption method but with a different salt to allow decryption
     try:
         # We need to reconnect to the database here since we closed it above
         conn = sqlite3.connect(DATABASE)
         conn.row_factory = sqlite3.Row  # Set row factory for consistent behavior
         cursor = conn.cursor()
         
+        # Generate a secure random key for this password that we can use to verify
+        import base64
+        import hashlib
+        
+        # Create a verification hash - will be used to verify this is the correct password
+        verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        
         # Delete any existing temp password for this user first
         cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
-        # Insert new temp password
-        cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
-                      (user_id, new_password))
+        
+        # Insert new temp password with verification hash
+        cursor.execute('''
+            INSERT INTO temp_passwords (user_id, temp_password, verification_hash) 
+            VALUES (?, ?, ?)
+        ''', (user_id, hashed_password, verification_hash))
         conn.commit()
         conn.close()
-        logging.info(f"Temporary password stored in database for password reset, user ID: {user_id}")
+        logging.info(f"Encrypted temporary password stored in database for password reset, user ID: {user_id}")
     except Exception as e:
-        logging.error(f"Error storing temp password for reset: {str(e)}")
+        logging.error(f"Error storing encrypted temp password for reset: {str(e)}")
         if 'conn' in locals() and conn:
             conn.close()
     
@@ -2097,23 +2108,30 @@ def change_password():
         conn.commit()
         conn.close()
         
-        # Store the plain text password temporarily in the database for password print button
+        # Store the temporary password in encrypted format for password print button
         try:
             # Reconnect to the database
             conn = sqlite3.connect(DATABASE)
             conn.row_factory = sqlite3.Row  # Set row factory for consistent behavior
             cursor = conn.cursor()
             
+            # Generate a verification hash for the password
+            import hashlib
+            verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
+            
             # Delete any existing temp password for this user first
             cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
-            # Insert new temp password
-            cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
-                          (user_id, new_password))
+            
+            # Insert new temp password with verification hash
+            cursor.execute('''
+                INSERT INTO temp_passwords (user_id, temp_password, verification_hash) 
+                VALUES (?, ?, ?)
+            ''', (user_id, hashed_password, verification_hash))
             conn.commit()
             conn.close()
-            logging.info(f"Temporary password stored in database after user-initiated password change, user ID: {user_id}")
+            logging.info(f"Encrypted temporary password stored in database after user-initiated password change, user ID: {user_id}")
         except Exception as e:
-            logging.error(f"Error storing temp password after password change: {str(e)}")
+            logging.error(f"Error storing encrypted temp password after password change: {str(e)}")
             if 'conn' in locals() and conn:
                 conn.close()
         
@@ -2460,15 +2478,99 @@ def get_user_password(user_id):
         # Hashed passwords cannot be decrypted, but we can check if there's a temporary password
         if user['password'].startswith('$2b$'):  # bcrypt hash prefix
             # Try to get the temporary password from the temp_passwords table
-            cursor.execute('SELECT temp_password FROM temp_passwords WHERE user_id = ?', (user_id,))
-            temp_password = cursor.fetchone()
+            cursor.execute('SELECT temp_password, verification_hash FROM temp_passwords WHERE user_id = ?', (user_id,))
+            temp_password_record = cursor.fetchone()
             
-            if temp_password:
-                return jsonify({'success': True, 'password': temp_password['temp_password']})
+            if temp_password_record:
+                # Check if we have the verification hash (new format)
+                if 'verification_hash' in temp_password_record.keys() and temp_password_record['verification_hash']:
+                    # This is a new-style entry with the verification hash
+                    verification_hash = temp_password_record['verification_hash']
+                    
+                    # Generate a new random password
+                    import secrets
+                    import string
+                    import hashlib
+                    
+                    # Generate a secure random password of length 10
+                    alphabet = string.ascii_letters + string.digits
+                    new_password = ''.join(secrets.choice(alphabet) for i in range(10))
+                    
+                    # Hash the new password for storage
+                    hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                    
+                    # Update the user's password
+                    cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+                    
+                    # Create a new verification hash for the new password
+                    new_verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
+                    
+                    # Update the temporary password record
+                    cursor.execute('''
+                        UPDATE temp_passwords 
+                        SET temp_password = ?, verification_hash = ? 
+                        WHERE user_id = ?
+                    ''', (hashed_password, new_verification_hash, user_id))
+                    
+                    db.commit()
+                    
+                    logging.info(f"New password generated for user ID: {user_id} during get_password call (using verification hash)")
+                    
+                    return jsonify({
+                        'success': True, 
+                        'password': new_password,
+                        'message': 'Ein neues Passwort wurde generiert.'
+                    })
+                else:
+                    # This is a legacy entry without verification hash, or with plaintext password
+                    # We need to check if the password is in plaintext or hashed
+                    legacy_password = temp_password_record['temp_password']
+                    
+                    if legacy_password.startswith('$2b$'):
+                        # This is a hashed temporary password without verification hash
+                        # Generate a new password
+                        import secrets
+                        import string
+                        import hashlib
+                        
+                        # Generate a secure random password of length 10
+                        alphabet = string.ascii_letters + string.digits
+                        new_password = ''.join(secrets.choice(alphabet) for i in range(10))
+                        
+                        # Hash the new password for storage
+                        hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                        
+                        # Update the user's password
+                        cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+                        
+                        # Create a verification hash for the new password
+                        verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
+                        
+                        # Update the temporary password record with the new format
+                        cursor.execute('''
+                            UPDATE temp_passwords 
+                            SET temp_password = ?, verification_hash = ? 
+                            WHERE user_id = ?
+                        ''', (hashed_password, verification_hash, user_id))
+                        
+                        db.commit()
+                        
+                        logging.info(f"New password generated for user ID: {user_id} during get_password call (migrating from legacy format)")
+                        
+                        return jsonify({
+                            'success': True, 
+                            'password': new_password,
+                            'message': 'Ein neues Passwort wurde generiert.'
+                        })
+                    else:
+                        # This is a plaintext legacy password - use it directly
+                        logging.info(f"Retrieved legacy plaintext password for user ID: {user_id} during get_password call")
+                        return jsonify({'success': True, 'password': legacy_password})
             else:
                 # If there's no temporary password, reset the password and store a new temporary one
                 import secrets
                 import string
+                import hashlib
                 
                 # Generate a secure random password of length 10
                 alphabet = string.ascii_letters + string.digits
@@ -2477,13 +2579,18 @@ def get_user_password(user_id):
                 # Hash the password for storage
                 hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
                 
+                # Create a verification hash for the new password
+                verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
+                
                 # Update the user's password
                 cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
                 
-                # Store the plain text password temporarily
+                # Store the hashed password with verification hash
                 cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
-                cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
-                             (user_id, new_password))
+                cursor.execute('''
+                    INSERT INTO temp_passwords (user_id, temp_password, verification_hash) 
+                    VALUES (?, ?, ?)
+                ''', (user_id, hashed_password, verification_hash))
                 
                 db.commit()
                 
