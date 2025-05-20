@@ -175,14 +175,11 @@
             passwordChangeForm.style.display = 'none';
             passwordPrintSection.style.display = 'block';
             
-            // Get current password from server with cache busting
-            fetch('/get_password/' + userId + '?_=' + new Date().getTime(), {
+            // Get current password from server
+            fetch('/get_password/' + userId, {
                 method: 'GET',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(function(response) { return response.json(); })
@@ -563,13 +560,13 @@
                 passwordMismatch.style.display = 'none';
                 const userId = passwordChangeUserId.value;
                 
-                fetch('/reset_password/' + userId, {
+                fetch('/change_password', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest' 
                     },
-                    body: JSON.stringify({ new_password: newPasswordValue, confirm_password: confirmPasswordValue })
+                    body: JSON.stringify({ user_id: userId, new_password: newPasswordValue })
                 })
                 .then(response => response.json())
                 .then(data => {

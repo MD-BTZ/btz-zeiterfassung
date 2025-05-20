@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arbeitszeiten bearbeiten</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/edit_attendance.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        <h1>Arbeitszeiten bearbeiten</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if attendance %}
+            <form id="edit-attendance-form" action="/edit_attendance/{{ attendance.id }}" method="post">
+                <div class="edit-form-container">
+                    <div class="edit-form-section">
+                        <h2>Arbeitszeit ID: {{ attendance.id }}</h2>
+                        <p class="form-info">Sie bearbeiten Ihren Eintrag vom {{ attendance.check_in[:10] }}</p>
+                        
+                        <div class="form-group">
+                            <label for="check_in">Check-In Zeit:</label>
+                            <input type="datetime-local" id="check_in" name="check_in" value="{{ attendance.check_in[:16] }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="check_out">Check-Out Zeit:</label>
+                            <input type="datetime-local" id="check_out" name="check_out" value="{{ attendance.check_out[:16] if attendance.check_out else '' }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="current_password">Aktuelles Passwort zur Bestätigung:</label>
+                            <input type="password" id="current_password" name="current_password" required>
+                            <p class="password-notice">Aus Sicherheitsgründen müssen Sie Ihr aktuelles Passwort eingeben, um Änderungen zu bestätigen.</p>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="primary-button">
+                                <i class="fas fa-save"></i> Änderungen speichern
+                            </button>
+                            <a href="/my_attendance" class="cancel-button">
+                                <i class="fas fa-times"></i> Abbrechen
+                            </a>
+                            <button type="button" class="delete-button" onclick="showDeleteModal()">
+                                <i class="fas fa-trash-alt"></i> Löschen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {% if attendance.has_auto_breaks %}
+                    <div class="edit-form-section">
+                        <h3>Hinweis zu automatischen Pausen</h3>
+                        <div class="info-box">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Dieser Eintrag enthält automatische Pausen. Diese werden beim Ändern der Ein- oder Auscheckzeiten neu berechnet.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if breaks %}
+                    <div class="edit-form-section">
+                        <h3>Pausenübersicht</h3>
+                        <div class="breaks-container">
+                            <table class="breaks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Start</th>
+                                        <th>Ende</th>
+                                        <th>Dauer</th>
+                                        <th>Typ</th>
+                                        <th>Beschreibung</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for break in breaks %}
+                                    <tr class="break-row {% if break.is_auto %}auto-break{% endif %} {% if break.break_type == 'arbzg' %}arbzg-break{% endif %}">
+                                        <td>{{ break.start_time }}</td>
+                                        <td>{{ break.end_time }}</td>
+                                        <td>{{ format_minutes(break.duration_minutes) }}</td>
+                                        <td>
+                                            {% if break.break_type == 'arbzg' %}
+                                                <span class="break-type arbzg">Gesetzlich</span>
+                                            {% elif break.is_auto %}
+                                                <span class="break-type auto">Auto</span>
+                                            {% else %}
+                                                <span class="break-type manual">Manuell</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ break.description }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </form>
+        {% else %}
+            <div class="not-found">
+                <h2>Eintrag nicht gefunden</h2>
+                <p>Der angeforderte Arbeitszeiteintrag wurde nicht gefunden oder Sie haben keine Berechtigung, diesen zu bearbeiten.</p>
+                <a href="/my_attendance" class="back-button">Zurück zur Übersicht</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Arbeitszeiteintrag löschen</h2>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Sind Sie sicher, dass Sie diesen Arbeitszeiteintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                <form id="delete-form" action="/delete_attendance/{{ attendance.id }}" method="post">
+                    <div class="form-group">
+                        <label for="delete-password">Passwort zur Bestätigung:</label>
+                        <input type="password" id="delete-password" name="current_password" required>
+                        <p class="password-notice">Aus Sicherheitsgründen müssen Sie Ihr Passwort eingeben, um das Löschen zu bestätigen.</p>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="danger-button">
+                            <i class="fas fa-trash-alt"></i> Löschen bestätigen
+                        </button>
+                        <button type="button" class="cancel-button" onclick="closeDeleteModal()">
+                            <i class="fas fa-times"></i> Abbrechen
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('edit-attendance-form');
+            const checkInInput = document.getElementById('check_in');
+            const checkOutInput = document.getElementById('check_out');
+            
+            // Validate form before submission
+            form.addEventListener('submit', function(e) {
+                if (checkInInput.value && checkOutInput.value) {
+                    const checkIn = new Date(checkInInput.value);
+                    const checkOut = new Date(checkOutInput.value);
+                    
+                    if (checkOut <= checkIn) {
+                        e.preventDefault();
+                        alert('Die Check-Out Zeit muss nach der Check-In Zeit liegen.');
+                    }
+                }
+            });
+        });
+        
+        // Modal functions
+        function showDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'block';
+        }
+        
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+        }
+        
+        // Close modal when clicked outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('delete-modal');
+            if (event.target == modal) {
+                closeDeleteModal();
+            }
+        }
+    </script>
+</body>
+</html>

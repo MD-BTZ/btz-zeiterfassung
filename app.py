@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify, send_file, make_response
 from markupsafe import Markup
 import sqlite3
 import os
@@ -255,6 +255,14 @@ def init_db():
             processed_date TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id),
             FOREIGN KEY(processed_by) REFERENCES users(id)
+        )''')
+        # Create temp_passwords table for storing temporary plaintext passwords
+        cursor.execute('''CREATE TABLE IF NOT EXISTS temp_passwords (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER UNIQUE,
+            temp_password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
         )''')
         # Insert default admin if not exists
         cursor.execute('SELECT * FROM users WHERE username=?', ("admin",))
@@ -685,16 +693,27 @@ def add_user():
     
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
+    # Debug output
+    logging.info(f"add_user called, is_ajax: {is_ajax}, headers: {request.headers}")
+    
     # Get form data
     username = request.form.get('username')
     password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
     
     # Validate form data
-    if not username or not password:
+    if not username or not password or not confirm_password:
         if is_ajax:
-            return jsonify({'success': False, 'message': 'Benutzername und Passwort sind erforderlich'}), 400
+            return jsonify({'success': False, 'message': 'Benutzername, Passwort und Passwortbestätigung sind erforderlich'}), 400
         else:
-            return render_template('user_management.html', error='Benutzername und Passwort sind erforderlich')
+            return render_template('user_management.html', error='Benutzername, Passwort und Passwortbestätigung sind erforderlich')
+            
+    # Check if passwords match
+    if password != confirm_password:
+        if is_ajax:
+            return jsonify({'success': False, 'message': 'Die Passwörter stimmen nicht überein'}), 400
+        else:
+            return render_template('user_management.html', error='Die Passwörter stimmen nicht überein')
     
     if len(password) < 4:
         if is_ajax:
@@ -728,15 +747,32 @@ def add_user():
         
         logging.info(f"New user created: {username} (ID: {user_id})")
         
+        # Store the plain text password temporarily in the database
+        try:
+            # Delete any existing temp password for this user first
+            cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+            # Insert new temp password
+            cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
+                          (user_id, password))
+            conn.commit()
+            logging.info(f"Temporary password stored in database for user {username} (ID: {user_id})")
+        except Exception as e:
+            logging.error(f"Error storing temp password: {str(e)}")
+        
+        # Generate datasheet URL
+        datasheet_url = url_for('user_datasheet', user_id=user_id)
+        
         if is_ajax:
             return jsonify({
                 'success': True, 
                 'message': f'Benutzer {username} wurde erfolgreich angelegt',
                 'user_id': user_id,
-                'username': username
+                'username': username,
+                'datasheet_url': datasheet_url
             })
         else:
-            flash(f'Benutzer {username} wurde erfolgreich angelegt', 'success')
+            # Add session flash with datasheet URL for non-AJAX requests
+            flash(f'Benutzer {username} wurde erfolgreich angelegt. <a href="{datasheet_url}" target="_blank" style="display: inline-block; background: #1976d2; color: white; padding: 4px 12px; text-decoration: none; border-radius: 4px; margin-left: 10px;">Datenblatt öffnen</a>', 'success')
             return redirect(url_for('user_management'))
         
     except Exception as e:
@@ -746,6 +782,86 @@ def add_user():
             return jsonify({'success': False, 'message': f'Fehler beim Anlegen des Benutzers: {str(e)}'}), 500
         else:
             return render_template('user_management.html', error=f'Fehler beim Anlegen des Benutzers: {str(e)}')
+
+@app.route('/user_datasheet/<int:user_id>')
+@app.route('/user_datasheet/<int:user_id>')
+def user_datasheet(user_id):
+    """Generate a printable user data sheet"""
+    logging.info(f">>> Entering user_datasheet function for user_id: {user_id}")
+    if not session.get('username'):
+        logging.info(">>> User not logged in, redirecting")
+        return redirect(url_for('login'))
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        flash('Nur Administratoren können Benutzerdatenblätter erstellen', 'error')
+        return redirect(url_for('index'))
+    
+    # Debug output
+    logging.info(f"user_datasheet called, user_id: {user_id}")
+    
+    # Connect to database
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    try:
+        # Get the temp password from the database
+        cursor.execute('SELECT temp_password FROM temp_passwords WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        
+        temp_password = result['temp_password'] if result else None
+        logging.info(f"temp_password found in database: {bool(temp_password)}")
+    except Exception as e:
+        logging.error(f"Error retrieving temp password: {str(e)}")
+        temp_password = None
+    
+    if not temp_password:
+        flash('Datenblatt ist nicht mehr verfügbar. Bitte setzen Sie das Passwort zurück, um ein neues Datenblatt zu erstellen.', 'error')
+        return redirect(url_for('user_management'))
+    
+    # Delete the temp password after use (one-time use)
+    try:
+        cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+        conn.commit()
+        logging.info(f"Deleted temp password for user_id: {user_id}")
+    except Exception as e:
+        logging.error(f"Error deleting temp password: {str(e)}")
+        conn.rollback()
+    
+    try:
+        # Get user information
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            flash('Benutzer nicht gefunden', 'error')
+            return redirect(url_for('user_management'))
+        
+        # Create data for the template
+        username = user['username']
+        creation_date = datetime.now().strftime("%d.%m.%Y %H:%M")
+        current_date = datetime.now().strftime("%d.%m.%Y")
+        
+        # Get the base URL for login
+        if request.host.startswith('localhost') or request.host.startswith('127.0.0.1'):
+            login_url = f"http://{request.host}"
+        else:
+            login_url = f"https://{request.host}"
+        
+        return render_template('user_datasheet.html',
+                               username=username,
+                               password=temp_password,
+                               creation_date=creation_date,
+                               current_date=current_date,
+                               login_url=login_url)
+    
+    except Exception as e:
+        logging.error(f"Error generating user datasheet: {str(e)}")
+        flash(f'Fehler beim Erstellen des Benutzerdatenblatts: {str(e)}', 'error')
+        return redirect(url_for('user_management'))
+    finally:
+        conn.close()
 
 @app.route('/break_settings')
 def break_settings():
@@ -812,6 +928,365 @@ def data_access():
                           user=user,
                           record_count=record_count,
                           user_id=user_id)
+
+@app.route('/my_attendance')
+def my_attendance():
+    """View user's own attendance records with edit options"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    
+    # Get page number for pagination
+    page = request.args.get('page', 1, type=int)
+    per_page = 15  # Records per page
+    offset = (page - 1) * per_page
+    
+    # Get filter parameters
+    selected_month = request.args.get('month', '')
+    selected_date = request.args.get('date', '')
+    
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    cursor = db.cursor()
+    
+    # Base query
+    query = '''
+        SELECT * FROM attendance 
+        WHERE user_id = ?
+    '''
+    params = [user_id]
+    
+    # Apply filters
+    if selected_month:
+        year, month = selected_month.split('-')
+        query += " AND strftime('%Y-%m', check_in) = ?"
+        params.append(f"{year}-{month}")
+    elif selected_date:
+        query += " AND date(check_in) = date(?)"
+        params.append(selected_date)
+    
+    # Count total records for pagination
+    count_query = f"SELECT COUNT(*) as count FROM ({query})"
+    cursor.execute(count_query, params)
+    total_records = cursor.fetchone()['count']
+    total_pages = (total_records + per_page - 1) // per_page
+    
+    # Add sorting and pagination
+    query += " ORDER BY check_in DESC LIMIT ? OFFSET ?"
+    params.extend([per_page, offset])
+    
+    # Get paginated records
+    cursor.execute(query, params)
+    records = cursor.fetchall()
+    
+    # Get available months for filter
+    cursor.execute('''
+        SELECT DISTINCT strftime('%Y-%m', check_in) as month
+        FROM attendance
+        WHERE user_id = ?
+        ORDER BY month DESC
+    ''', (user_id,))
+    months_raw = cursor.fetchall()
+    
+    # Format months for display
+    months_available = []
+    for month in months_raw:
+        month_value = month['month']
+        year, month_num = month_value.split('-')
+        month_name = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+                     'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][int(month_num) - 1]
+        months_available.append(f"{year}-{month_num}")
+    
+    return render_template('my_attendance.html',
+                          records=records,
+                          months_available=months_available,
+                          selected_month=selected_month,
+                          selected_date=selected_date,
+                          current_page=page,
+                          total_pages=total_pages)
+
+@app.route('/edit_attendance/<int:attendance_id>', methods=['GET', 'POST'])
+def edit_attendance(attendance_id):
+    """Edit a specific attendance record"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    cursor = db.cursor()
+    
+    # Check if the attendance record exists and belongs to the current user
+    cursor.execute('''
+        SELECT * FROM attendance
+        WHERE id = ? AND user_id = ?
+    ''', (attendance_id, user_id))
+    
+    attendance = cursor.fetchone()
+    
+    # If not found or not belonging to the user, redirect
+    if not attendance:
+        flash('Der angeforderte Arbeitszeiteintrag wurde nicht gefunden oder gehört nicht zu Ihrem Konto', 'error')
+        return redirect(url_for('my_attendance'))
+    
+    # Handle POST request to update the record
+    if request.method == 'POST':
+        # Get form data
+        check_in = request.form.get('check_in')
+        check_out = request.form.get('check_out')
+        current_password = request.form.get('current_password')
+        
+        # Validate form data
+        if not check_in:
+            flash('Check-In Zeit ist erforderlich', 'error')
+            return render_template('edit_attendance.html', attendance=attendance)
+        
+        # Format datetime strings correctly
+        check_in = check_in.replace('T', ' ') + ':00'
+        
+        if check_out:
+            check_out = check_out.replace('T', ' ') + ':00'
+            
+            # Validate that check_out is after check_in
+            try:
+                check_in_dt = datetime.strptime(check_in, '%Y-%m-%d %H:%M:%S')
+                check_out_dt = datetime.strptime(check_out, '%Y-%m-%d %H:%M:%S')
+                
+                if check_out_dt <= check_in_dt:
+                    flash('Check-Out Zeit muss nach der Check-In Zeit liegen', 'error')
+                    return render_template('edit_attendance.html', attendance=attendance)
+            except ValueError:
+                flash('Ungültiges Datumsformat', 'error')
+                return render_template('edit_attendance.html', attendance=attendance)
+        
+        # Verify user password
+        cursor.execute('SELECT password FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        
+        if not user or not bcrypt.check_password_hash(user['password'], current_password):
+            flash('Falsches Passwort', 'error')
+            return render_template('edit_attendance.html', attendance=attendance)
+        
+        try:
+            # Begin transaction
+            db.execute('BEGIN')
+            
+            # Update the attendance record
+            if check_out:
+                # Calculate billable minutes if check-out provided
+                check_in_dt = datetime.strptime(check_in, '%Y-%m-%d %H:%M:%S')
+                check_out_dt = datetime.strptime(check_out, '%Y-%m-%d %H:%M:%S')
+                billable_minutes = int((check_out_dt - check_in_dt).total_seconds() / 60)
+                
+                # If there are breaks, we need to recalculate them
+                # First, delete old auto breaks regardless of the has_auto_breaks flag
+                cursor.execute('''
+                    DELETE FROM breaks
+                    WHERE attendance_id = ? AND is_auto_detected = 1
+                ''', (attendance_id,))
+                
+                # Get user break settings
+                cursor.execute('''
+                    SELECT us.arbzg_breaks_enabled
+                    FROM user_settings us
+                    WHERE us.user_id = ?
+                ''', (user_id,))
+                
+                settings = cursor.fetchone()
+                
+                # Use system default settings if user has none
+                if not settings:
+                    cursor.execute('''
+                        SELECT arbzg_breaks_enabled
+                        FROM user_settings
+                        WHERE user_id = 0
+                    ''')
+                    settings = cursor.fetchone()
+                
+                # Process ArbZG-compliant breaks if enabled
+                if settings and (settings['arbzg_breaks_enabled'] if 'arbzg_breaks_enabled' in settings else 1):
+                    # Calculate total work duration in minutes without breaks
+                    total_work_minutes = billable_minutes
+                    
+                    # Define required breaks per ArbZG
+                    required_break_minutes = 0
+                    break_desc = ""
+                    
+                    if total_work_minutes > 9 * 60:  # More than 9 hours
+                        required_break_minutes = 45
+                        break_desc = "Gesetzliche Pause (ArbZG §4) für Arbeitszeit über 9 Stunden"
+                    elif total_work_minutes > 6 * 60:  # More than 6 hours
+                        required_break_minutes = 30
+                        break_desc = "Gesetzliche Pause (ArbZG §4) für Arbeitszeit über 6 Stunden"
+                        
+                        if required_break_minutes > 0:
+                            # Try to place break during lunchtime (12:00-13:00) or at middle of the day
+                            halfway_point = check_in_dt + (check_out_dt - check_in_dt) / 2
+                            lunch_start = check_in_dt.replace(hour=12, minute=0, second=0)
+                            lunch_end = check_in_dt.replace(hour=13, minute=0, second=0)
+                            
+                            # If lunch time is within the work period
+                            if check_in_dt <= lunch_end and check_out_dt >= lunch_start:
+                                break_start = max(check_in_dt, lunch_start)
+                                break_end = min(check_out_dt, break_start + timedelta(minutes=required_break_minutes))
+                                
+                                # Make sure break doesn't exceed lunch period
+                                if break_end > lunch_end:
+                                    break_end = lunch_end
+                            else:
+                                # Place break at middle of the day
+                                break_start = halfway_point - timedelta(minutes=required_break_minutes / 2)
+                                break_end = break_start + timedelta(minutes=required_break_minutes)
+                                
+                                # Ensure break is within working hours
+                                if break_start < check_in_dt:
+                                    break_start = check_in_dt
+                                    break_end = min(check_out_dt, break_start + timedelta(minutes=required_break_minutes))
+                                
+                                if break_end > check_out_dt:
+                                    break_end = check_out_dt
+                                    break_start = max(check_in_dt, break_end - timedelta(minutes=required_break_minutes))
+                            
+                            # Format for database
+                            break_start_str = break_start.strftime('%Y-%m-%d %H:%M:%S')
+                            break_end_str = break_end.strftime('%Y-%m-%d %H:%M:%S')
+                            
+                            # Add the break
+                            cursor.execute("""
+                                INSERT INTO breaks (attendance_id, start_time, end_time, duration_minutes,
+                                                is_excluded_from_billing, is_auto_detected, description)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)
+                            """, (attendance_id, break_start_str, break_end_str, required_break_minutes,
+                                1, 1, break_desc))
+                            
+                            # Adjust billable minutes
+                            billable_minutes -= required_break_minutes
+                            
+                            # Set has_auto_breaks flag to true
+                            cursor.execute('''
+                                UPDATE attendance
+                                SET has_auto_breaks = 1
+                                WHERE id = ?
+                            ''', (attendance_id,))
+                
+                # Update attendance record with check-out and billable minutes
+                cursor.execute('''
+                    UPDATE attendance
+                    SET check_in = ?, check_out = ?, billable_minutes = ?
+                    WHERE id = ?
+                ''', (check_in, check_out, billable_minutes, attendance_id))
+            else:
+                # Update only the check-in time if no check-out provided
+                cursor.execute('''
+                    UPDATE attendance
+                    SET check_in = ?
+                    WHERE id = ?
+                ''', (check_in, attendance_id))
+            
+            # Commit transaction
+            db.commit()
+            
+            flash('Arbeitszeiteintrag wurde erfolgreich aktualisiert', 'success')
+            return redirect(url_for('my_attendance'))
+            
+        except Exception as e:
+            db.rollback()
+            logging.error(f"Error updating attendance record: {str(e)}")
+            flash(f'Fehler beim Aktualisieren des Eintrags: {str(e)}', 'error')
+            return render_template('edit_attendance.html', attendance=attendance)
+    
+    # For GET request, get breaks and render the edit form
+    # Get breaks for this attendance
+    cursor.execute('''
+        SELECT id, start_time, end_time, duration_minutes, 
+            is_excluded_from_billing, 
+            is_auto_detected, 
+            description
+        FROM breaks
+        WHERE attendance_id = ?
+        ORDER BY start_time
+    ''', (attendance_id,))
+    
+    breaks = []
+    for row in cursor.fetchall():
+        break_type = "auto" if row['is_auto_detected'] else "manual"
+        if row['is_auto_detected'] and row['description'] and 'ArbZG' in row['description']:
+            break_type = 'arbzg'
+            
+        breaks.append({
+            'id': row['id'],
+            'start_time': row['start_time'].replace('T', ' ')[:16] if row['start_time'] else '',
+            'end_time': row['end_time'].replace('T', ' ')[:16] if row['end_time'] else '',
+            'duration_minutes': row['duration_minutes'],
+            'is_excluded': bool(row['is_excluded_from_billing']),
+            'is_auto': bool(row['is_auto_detected']),
+            'break_type': break_type,
+            'description': row['description'] or ''
+        })
+    
+    return render_template('edit_attendance.html', attendance=attendance, breaks=breaks)
+
+@app.route('/delete_attendance/<int:attendance_id>', methods=['POST'])
+def delete_attendance(attendance_id):
+    """Delete a specific attendance record"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    cursor = db.cursor()
+    
+    # Check if the attendance record exists and belongs to the current user
+    cursor.execute('''
+        SELECT id FROM attendance
+        WHERE id = ? AND user_id = ?
+    ''', (attendance_id, user_id))
+    
+    attendance = cursor.fetchone()
+    
+    # If not found or not belonging to the user, redirect
+    if not attendance:
+        flash('Der angeforderte Arbeitszeiteintrag wurde nicht gefunden oder gehört nicht zu Ihrem Konto', 'error')
+        return redirect(url_for('my_attendance'))
+    
+    # Verify user password
+    current_password = request.form.get('current_password')
+    if not current_password:
+        flash('Passwort ist erforderlich', 'error')
+        return redirect(url_for('edit_attendance', attendance_id=attendance_id))
+    
+    cursor.execute('SELECT password FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    
+    if not user or not bcrypt.check_password_hash(user['password'], current_password):
+        flash('Falsches Passwort', 'error')
+        return redirect(url_for('edit_attendance', attendance_id=attendance_id))
+    
+    try:
+        # Begin transaction
+        db.execute('BEGIN')
+        
+        # First delete all breaks associated with this attendance
+        cursor.execute('DELETE FROM breaks WHERE attendance_id = ?', (attendance_id,))
+        
+        # Then delete the attendance record itself
+        cursor.execute('DELETE FROM attendance WHERE id = ?', (attendance_id,))
+        
+        # Commit transaction
+        db.commit()
+        
+        flash('Arbeitszeiteintrag wurde erfolgreich gelöscht', 'success')
+        return redirect(url_for('my_attendance'))
+        
+    except Exception as e:
+        db.rollback()
+        logging.error(f"Error deleting attendance record: {str(e)}")
+        flash(f'Fehler beim Löschen des Eintrags: {str(e)}', 'error')
+        return redirect(url_for('edit_attendance', attendance_id=attendance_id))
 
 @app.route('/request_data_deletion', methods=['POST'])
 def request_data_deletion():
@@ -1502,8 +1977,35 @@ def reset_password(user_id):
     
     success_message = f'Passwort für {username} wurde erfolgreich geändert'
     
+    # Store the plain text password temporarily in the database for datasheet generation
+    try:
+        # We need to reconnect to the database here since we closed it above
+        conn = sqlite3.connect(DATABASE)
+        conn.row_factory = sqlite3.Row  # Set row factory for consistent behavior
+        cursor = conn.cursor()
+        
+        # Delete any existing temp password for this user first
+        cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+        # Insert new temp password
+        cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
+                      (user_id, new_password))
+        conn.commit()
+        conn.close()
+        logging.info(f"Temporary password stored in database for password reset, user ID: {user_id}")
+    except Exception as e:
+        logging.error(f"Error storing temp password for reset: {str(e)}")
+        if 'conn' in locals() and conn:
+            conn.close()
+    
+    # Generate datasheet URL
+    datasheet_url = url_for('user_datasheet', user_id=user_id)
+    
     if is_ajax:
-        return jsonify({'success': True, 'message': success_message})
+        return jsonify({
+            'success': True, 
+            'message': success_message,
+            'datasheet_url': datasheet_url
+        })
     
     flash(success_message, 'success')
     return redirect(url_for('user_management'))
@@ -1558,6 +2060,26 @@ def change_password():
         cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
         conn.commit()
         conn.close()
+        
+        # Store the plain text password temporarily in the database for password print button
+        try:
+            # Reconnect to the database
+            conn = sqlite3.connect(DATABASE)
+            conn.row_factory = sqlite3.Row  # Set row factory for consistent behavior
+            cursor = conn.cursor()
+            
+            # Delete any existing temp password for this user first
+            cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+            # Insert new temp password
+            cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
+                          (user_id, new_password))
+            conn.commit()
+            conn.close()
+            logging.info(f"Temporary password stored in database after user-initiated password change, user ID: {user_id}")
+        except Exception as e:
+            logging.error(f"Error storing temp password after password change: {str(e)}")
+            if 'conn' in locals() and conn:
+                conn.close()
         
         flash('Ihr Passwort wurde erfolgreich geändert', 'success')
         return redirect(url_for('index'))
@@ -1866,6 +2388,83 @@ def update_consent():
     except Exception as e:
         logging.error(f"Error updating consent: {str(e)}")
         return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
+@app.route('/get_password/<int:user_id>', methods=['GET'])
+def get_user_password(user_id):
+    """
+    Retrieve a user's password for display.
+    Only accessible by admins.
+    """
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können auf Passwörter zugreifen'}), 403
+    
+    # Add cache control headers to prevent caching
+    response = make_response()
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    try:
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        # Fetch user information
+        cursor.execute('SELECT username, password FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+        
+        # For security, we only show passwords stored in plaintext format
+        # Hashed passwords cannot be decrypted, but we can check if there's a temporary password
+        if user['password'].startswith('$2b$'):  # bcrypt hash prefix
+            # Try to get the temporary password from the temp_passwords table
+            cursor.execute('SELECT temp_password FROM temp_passwords WHERE user_id = ?', (user_id,))
+            temp_password = cursor.fetchone()
+            
+            if temp_password:
+                return jsonify({'success': True, 'password': temp_password['temp_password']})
+            else:
+                # If there's no temporary password, reset the password and store a new temporary one
+                import secrets
+                import string
+                
+                # Generate a secure random password of length 10
+                alphabet = string.ascii_letters + string.digits
+                new_password = ''.join(secrets.choice(alphabet) for i in range(10))
+                
+                # Hash the password for storage
+                hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                
+                # Update the user's password
+                cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
+                
+                # Store the plain text password temporarily
+                cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+                cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
+                             (user_id, new_password))
+                
+                db.commit()
+                
+                logging.info(f"Password reset during get_password call for user ID: {user_id}")
+                
+                return jsonify({
+                    'success': True, 
+                    'password': new_password,
+                    'message': 'Das Passwort wurde zurückgesetzt und ein neues Passwort generiert.'
+                })
+        
+        return jsonify({'success': True, 'password': user['password']})
+        
+    except Exception as e:
+        logging.error(f"Error retrieving password for user {user_id}: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+    # Note: No finally block needed as db connection is handled by Flask's teardown_appcontext
 
 if __name__ == '__main__':
     print("Initializing BTZ-Zeiterfassung application...")

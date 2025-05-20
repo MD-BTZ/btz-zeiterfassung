@@ -5,6 +5,7 @@
     <title>Benutzer Bericht - {{ username }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="/static/breaks.css">
+    <link rel="stylesheet" href="/static/report.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -52,7 +53,17 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="{% if all_users %}4{% else %}3{% endif %}" class="total-label">Gesamtdauer</th>
+                        <td class="total-duration">{{ total_duration }}</td>
+                    </tr>
+                </tfoot>
             </table>
+            
+            <div class="report-timestamp">
+                <p><i class="far fa-clock"></i> Bericht generiert am: {{ current_time }}</p>
+            </div>
         </div>
         <div class="total-time-container" id="total-time">
             Gesamtzeit: <span class="total-time-value">{{ total_time }}</span>
@@ -180,11 +191,54 @@
         });
         </script>
         {% else %}
-        <div class="no-records-message">
-            <i class="fas fa-exclamation-circle"></i>
-            <span>Keine Anwesenheitsaufzeichnungen für diesen Benutzer gefunden.</span>
+        <div class="no-data-message">
+            <p>Keine Daten gefunden für den angegebenen Zeitraum.</p>
+            <p>Bitte versuchen Sie einen anderen Zeitraum oder kehren Sie zur <a href="/admin">Hauptseite</a> zurück.</p>
         </div>
         {% endif %}
+        
+        <div class="report-controls">
+            <a href="javascript:history.back()" class="action-button return-button">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </a>
+        </div>
     </div>
+    
+    <!-- PDF generation script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Benutzer Bericht', 14, 20);
+            
+            doc.setFontSize(16);
+            doc.text('{{ username }}', 14, 30);
+            
+            // Generate table
+            doc.autoTable({
+                html: '#report-table',
+                startY: 40,
+                theme: 'grid',
+                headStyles: { fillColor: [25, 118, 210], textColor: 255 },
+                styles: { fontSize: 10 },
+                margin: { top: 40 }
+            });
+            
+            // Add timestamp
+            const now = new Date();
+            const timestamp = `Bericht generiert am: ${now.toLocaleString('de-DE')}`;
+            doc.setFontSize(10);
+            doc.text(timestamp, 14, doc.lastAutoTable.finalY + 15);
+            
+            // Save the PDF
+            doc.save('Bericht_{{ username }}.pdf');
+        }
+    </script>
 </body>
 </html>

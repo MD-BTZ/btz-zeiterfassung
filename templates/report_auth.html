@@ -23,7 +23,7 @@
             <h2>Passwort bestätigen</h2>
             <p>Um Ihren Bericht einzusehen, bestätigen Sie bitte Ihr Passwort:</p>
             
-            <form action="/user_report/{{ username }}" method="post" style="margin-top: 20px;">
+            <form action="/report_auth/{{ username }}" method="post" style="margin-top: 20px;">
                 <input type="hidden" name="date" value="{{ date }}">
                 <input type="hidden" name="week" value="{{ week }}">
                 <input type="hidden" name="month" value="{{ month }}">
@@ -34,7 +34,10 @@
                     <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
                 
-                <button type="submit" style="background-color: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Bestätigen</button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" style="background-color: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Bestätigen</button>
+                    <button type="button" onclick="window.history.back()" style="background-color: #757575; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Zurück</button>
+                </div>
             </form>
         </div>
     </div>

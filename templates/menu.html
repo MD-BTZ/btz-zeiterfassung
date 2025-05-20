@@ -5,13 +5,17 @@
         {% if session.get('admin_logged_in') %}
             <a href="/admin">Admin</a>
             <a href="/user_management">Benutzerverwaltung</a>
-            <a href="/break_settings">Pauseneinstellungen</a>
+            <a href="/user_management#add-user-section" title="Neuen Benutzer anlegen"><i class="fas fa-user-plus"></i> Benutzer anlegen</a>
+            <a href="/break_settings" title="Systemweite Pauseneinstellungen verwalten"><i class="fas fa-cogs"></i> Systemweite Pauseneinstellungen</a>
+            <a href="/deletion_requests"><i class="fas fa-trash-alt"></i> Datenlöschungsanfragen</a>
         {% endif %}
         
         {% if session.get('username') %}
             <a href="/data_access" title="Zugriff auf Ihre persönlichen Daten"><i class="fas fa-user-shield"></i> Meine Daten</a>
+            <a href="/my_attendance" title="Ihre Arbeitszeiten anzeigen und bearbeiten"><i class="far fa-calendar-alt"></i> Meine Arbeitszeiten</a>
             <a href="/manual_attendance" title="Anwesenheitsaufzeichnungen manuell hinzufügen"><i class="fas fa-plus-circle"></i> Zeiterfassung hinzufügen</a>
-            <a href="/user_break_preferences" title="Persönliche Pauseneinstellungen anpassen"><i class="fas fa-coffee"></i> Pauseneinstellungen</a>
+            <a href="/user_break_preferences" title="Persönliche Pauseneinstellungen anpassen"><i class="fas fa-coffee"></i> Persönliche Pauseneinstellungen</a>
+            <a href="/change_password" title="Ändern Sie Ihr Passwort"><i class="fas fa-key"></i> Passwort ändern</a>
         {% else %}
             <a href="/data_access">Datenzugriff</a>
         {% endif %}

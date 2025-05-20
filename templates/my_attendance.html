@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Meine Arbeitszeiten</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .attendance-tools {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f4f6f8;
+            padding: 15px;
+            border-radius: 8px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-tools {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .search-tools label {
+            font-weight: 500;
+        }
+        
+        .action-button {
+            padding: 8px 15px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .action-button:hover {
+            background-color: #1565c0;
+        }
+        
+        .action-button.warning {
+            background-color: #f57c00;
+        }
+        
+        .action-button.warning:hover {
+            background-color: #ef6c00;
+        }
+        
+        .action-button i {
+            font-size: 14px;
+        }
+        
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .attendance-table th {
+            background: linear-gradient(to bottom, #f8fafc, #eef1f5);
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid #e0e4e8;
+            color: #37474f;
+            font-weight: 500;
+        }
+        
+        .attendance-table th i {
+            margin-right: 5px;
+            color: #607d8b;
+        }
+        
+        .attendance-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eceff1;
+        }
+        
+        .attendance-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .attendance-table tr:hover {
+            background-color: #f1f4f7;
+        }
+        
+        .attendance-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .no-records {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f4f6f8;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .no-records i {
+            font-size: 48px;
+            color: #b0bec5;
+            margin-bottom: 15px;
+        }
+        
+        .no-records p {
+            color: #546e7a;
+            font-size: 16px;
+        }
+        
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .pagination a {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+            border-radius: 3px;
+        }
+        
+        .pagination a.active {
+            background-color: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        .pagination a:hover:not(.active) {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        <h1>Meine Arbeitszeiten</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="attendance-tools">
+            <div class="search-tools">
+                <div>
+                    <label for="month-selector">Zeitraum:</label>
+                    <select id="month-selector" onchange="filterByMonth(this.value)">
+                        <option value="">Alle anzeigen</option>
+                        {% for month_year in months_available %}
+                            <option value="{{ month_year }}" {% if month_year == selected_month %}selected{% endif %}>
+                                {{ month_year }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <input type="date" id="date-filter" onchange="filterByDate(this.value)" value="{{ selected_date }}">
+                    <button class="action-button" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Filter zurücksetzen
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        {% if records %}
+            <div class="table-container">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th><i class="far fa-calendar"></i> Datum</th>
+                            <th><i class="far fa-clock"></i> Check-In</th>
+                            <th><i class="far fa-clock"></i> Check-Out</th>
+                            <th><i class="fas fa-hourglass-half"></i> Dauer</th>
+                            <th><i class="fas fa-coffee"></i> Pausen</th>
+                            <th><i class="fas fa-cog"></i> Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                            <tr>
+                                <td>{{ record.check_in[:10] }}</td>
+                                <td>{{ record.check_in[11:16] }}</td>
+                                <td>{% if record.check_out %}{{ record.check_out[11:16] }}{% else %}-{% endif %}</td>
+                                <td>
+                                    {% if record.check_in and record.check_out %}
+                                        {{ get_duration(record.check_in, record.check_out) }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.has_auto_breaks %}
+                                        <span class="break-indicator" title="Automatische Pausen">⏱️</span>
+                                    {% else %}
+                                        <span>Keine</span>
+                                    {% endif %}
+                                </td>
+                                <td class="attendance-actions">
+                                    <a href="/edit_attendance/{{ record.id }}" class="action-button">
+                                        <i class="fas fa-edit"></i> Bearbeiten
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Simple pagination -->
+            {% if total_pages > 1 %}
+                <div class="pagination">
+                    {% if current_page > 1 %}
+                        <a href="?page={{ current_page - 1 }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">&laquo; Zurück</a>
+                    {% endif %}
+                    
+                    {% for i in range(1, total_pages + 1) %}
+                        <a href="?page={{ i }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}" {% if i == current_page %}class="active"{% endif %}>{{ i }}</a>
+                    {% endfor %}
+                    
+                    {% if current_page < total_pages %}
+                        <a href="?page={{ current_page + 1 }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">Weiter &raquo;</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="no-records">
+                <i class="far fa-calendar-times"></i>
+                <p>Keine Arbeitszeiten im ausgewählten Zeitraum gefunden.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        function filterByMonth(month) {
+            const currentUrl = new URL(window.location.href);
+            if (month) {
+                currentUrl.searchParams.set('month', month);
+                currentUrl.searchParams.delete('date'); // Reset date when month filter changes
+            } else {
+                currentUrl.searchParams.delete('month');
+            }
+            currentUrl.searchParams.set('page', 1); // Reset to first page when filter changes
+            window.location.href = currentUrl.toString();
+        }
+        
+        function filterByDate(date) {
+            const currentUrl = new URL(window.location.href);
+            if (date) {
+                currentUrl.searchParams.set('date', date);
+                currentUrl.searchParams.delete('month'); // Reset month when date filter changes
+            } else {
+                currentUrl.searchParams.delete('date');
+            }
+            currentUrl.searchParams.set('page', 1); // Reset to first page when filter changes
+            window.location.href = currentUrl.toString();
+        }
+        
+        function clearFilters() {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.delete('month');
+            currentUrl.searchParams.delete('date');
+            currentUrl.searchParams.set('page', 1); // Reset to first page when filters cleared
+            window.location.href = currentUrl.toString();
+            
+            // Also reset the form inputs
+            document.getElementById('month-selector').value = '';
+            document.getElementById('date-filter').value = '';
+        }
+    </script>
+</body>
+</html>

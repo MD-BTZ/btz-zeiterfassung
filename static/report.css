@@ -1,0 +1,134 @@
+/* Report styles */
+.username-header {
+    color: #1976d2;
+    margin-bottom: 1.5em;
+    font-weight: 500;
+}
+
+.report-controls {
+    display: flex;
+    justify-content: space-between;
+    margin: 1.5em 0;
+    gap: 10px;
+}
+
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7em 1.2em;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.95em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.action-button i {
+    margin-right: 8px;
+}
+
+.print-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.print-button:hover {
+    background-color: #388e3c;
+}
+
+.download-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.download-button:hover {
+    background-color: #d32f2f;
+}
+
+.return-button {
+    background-color: #757575;
+    color: white;
+}
+
+.return-button:hover {
+    background-color: #616161;
+}
+
+.report-timestamp {
+    margin-top: 2em;
+    color: #757575;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+.report-timestamp i {
+    margin-right: 5px;
+}
+
+.total-label {
+    text-align: right;
+    font-weight: 500;
+}
+
+.total-duration {
+    font-weight: 700;
+    color: #1976d2;
+}
+
+.no-data-message {
+    padding: 2em;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    text-align: center;
+    color: #555;
+}
+
+.no-data-message p {
+    margin: 0.5em 0;
+}
+
+.no-data-message a {
+    color: #1976d2;
+    text-decoration: none;
+}
+
+.scrollable-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Print styles */
+@media print {
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .report-controls {
+        display: none;
+    }
+    
+    .report-timestamp {
+        margin-top: 1em;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    th {
+        background-color: #f2f2f2;
+    }
+}

@@ -407,3 +407,90 @@ Error while checking confirmation need: can't subtract offset-naive and offset-a
 10.42.1.77 - - [15/May/2025 13:41:38] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
 10.42.1.77 - - [15/May/2025 13:41:38] "[36mGET /static/break_settings.css HTTP/1.1[0m" 304 -
 10.42.1.77 - - [15/May/2025 13:41:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+Initializing BTZ-Zeiterfassung application...
+Checking and fixing database schema...
+Database schema check and fix completed
+Database initialization complete
+Starting web server...
+ * Serving Flask app 'app'
+ * Debug mode: on
+2025-05-19 21:36:52,594 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://192.168.178.52:8091
+2025-05-19 21:36:52,594 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-19 21:36:52,595 - werkzeug - INFO -  * Restarting with stat
+2025-05-19 21:36:52,675 - werkzeug - WARNING -  * Debugger is active!
+2025-05-19 21:36:52,680 - werkzeug - INFO -  * Debugger PIN: 166-001-295
+Initializing BTZ-Zeiterfassung application...
+Checking and fixing database schema...
+Database schema check and fix completed
+Database initialization complete
+Starting web server...
+Traceback (most recent call last):
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/app.py", line 2418, in <module>
+    app.run(host='0.0.0.0', port=8091, debug=True)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/flask/app.py", line 612, in run
+    run_simple(t.cast(str, host), port, self, **options)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/werkzeug/serving.py", line 1099, in run_simple
+    run_with_reloader(
+    ~~~~~~~~~~~~~~~~~^
+        srv.serve_forever,
+        ^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        reloader_type=reloader_type,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/werkzeug/_reloader.py", line 446, in run_with_reloader
+    ensure_echo_on()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/werkzeug/_reloader.py", line 426, in ensure_echo_on
+    termios.tcsetattr(sys.stdin, termios.TCSANOW, attributes)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+termios.error: (4, 'Interrupted system call')
+Initializing BTZ-Zeiterfassung application...
+Checking and fixing database schema...
+Database schema check and fix completed
+Database initialization complete
+Starting web server...
+ * Serving Flask app 'app'
+ * Debug mode: on
+Address already in use
+Port 8091 is in use by another program. Either identify and stop that program, or start the server with a different port.
+ * Serving Flask app 'app'
+ * Debug mode: on
+2025-05-19 21:42:28,983 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8092
+ * Running on http://192.168.178.52:8092
+2025-05-19 21:42:28,983 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-19 21:42:28,983 - werkzeug - INFO -  * Restarting with stat
+2025-05-19 21:42:29,068 - werkzeug - WARNING -  * Debugger is active!
+2025-05-19 21:42:29,073 - werkzeug - INFO -  * Debugger PIN: 166-001-295
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys; from app import app; app.run(host='0.0.0.0', port=8092, debug=True)
+                                     ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/flask/app.py", line 612, in run
+    run_simple(t.cast(str, host), port, self, **options)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/werkzeug/serving.py", line 1099, in run_simple
+    run_with_reloader(
+    ~~~~~~~~~~~~~~~~~^
+        srv.serve_forever,
+        ^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        reloader_type=reloader_type,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/werkzeug/_reloader.py", line 446, in run_with_reloader
+    ensure_echo_on()
+    ~~~~~~~~~~~~~~^^
+  File "/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/venv/lib/python3.13/site-packages/werkzeug/_reloader.py", line 426, in ensure_echo_on
+    termios.tcsetattr(sys.stdin, termios.TCSANOW, attributes)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+termios.error: (4, 'Interrupted system call')

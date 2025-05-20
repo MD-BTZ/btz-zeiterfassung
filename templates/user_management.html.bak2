@@ -127,7 +127,7 @@
         </div>
         
         <script>
-        // Global function definition for password printing with error handling
+        // Global function definition for password printing
         function handlePrintPasswordBtn(btn) {
             if (!btn) {
                 console.error('Button element is required');
@@ -142,13 +142,7 @@
                 return;
             }
             
-            // Get all required DOM elements with error handling
             var passwordModal = document.getElementById('password-modal');
-            if (!passwordModal) {
-                console.error('Element with ID "password-modal" not found');
-                return;
-            }
-            
             var passwordChangeForm = document.getElementById('password-change-form');
             var passwordChangeUsername = document.getElementById('password-change-username');
             var passwordChangeUserId = document.getElementById('password-change-user-id');
@@ -157,13 +151,6 @@
             var passwordPrintSection = document.getElementById('password-print-section');
             var printUsername = document.getElementById('print-username');
             var printPassword = document.getElementById('print-password');
-            
-            // Verify all elements are found
-            if (!passwordChangeForm || !passwordChangeUsername || !passwordChangeUserId || 
-                !modalAction || !modalTitle || !passwordPrintSection || !printUsername || !printPassword) {
-                console.error('One or more required elements not found');
-                return;
-            }
             
             passwordChangeUsername.textContent = username;
             passwordChangeUserId.value = userId;
@@ -175,14 +162,11 @@
             passwordChangeForm.style.display = 'none';
             passwordPrintSection.style.display = 'block';
             
-            // Get current password from server with cache busting
-            fetch('/get_password/' + userId + '?_=' + new Date().getTime(), {
+            // Get current password from server
+            fetch('/get_password/' + userId, {
                 method: 'GET',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(function(response) { return response.json(); })
@@ -279,58 +263,91 @@
             
             // Initialize delete buttons
             document.querySelectorAll('.delete-user-btn').forEach(function(btn) {
-                // Remove existing event listeners (if possible)
-                btn.onclick = null;
+                // Remove any existing handlers to avoid duplicates
+                btn.removeEventListener('click', handleDeleteUser);
                 // Add the click handler
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    if (confirm('Möchten Sie diesen Benutzer wirklich löschen?')) {
-                        var userId = this.getAttribute('data-user-id');
+                btn.addEventListener('click', handleDeleteUser);
+            });
+        }
+        
+        // Handle user deletion
+        function handleDeleteUser(e) {
+            e.preventDefault();
+            
+            if (confirm('Möchten Sie diesen Benutzer wirklich löschen?')) {
+                var userId = this.getAttribute('data-user-id');
+                
+                fetch('/delete_user/' + userId, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        // Remove the row from the table
+                        var row = document.querySelector('tr[data-user-id="' + userId + '"]');
+                        if (row) row.remove();
                         
-                        fetch('/delete_user/' + userId, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(function(response) { return response.json(); })
-                        .then(function(data) {
-                            if (data.success) {
-                                // Remove the row from the table
-                                var row = document.querySelector('tr[data-user-id="' + userId + '"]');
-                                if (row) row.remove();
-                                
-                                // Show success message
-                                var feedback = document.getElementById('delete-user-feedback');
-                                feedback.style.display = 'block';
-                                feedback.textContent = 'Benutzer erfolgreich gelöscht.';
-                                feedback.style.color = '#2e7d32';
-                                feedback.style.background = '#e8f5e9';
-                                feedback.style.border = '1px solid #c8e6c9';
-                                feedback.style.padding = '0.7em 1em';
-                                feedback.style.borderRadius = '6px';
-                            } else {
-                                // Show error message
-                                var feedback = document.getElementById('delete-user-feedback');
-                                feedback.style.display = 'block';
-                                feedback.textContent = data.message || 'Fehler beim Löschen des Benutzers.';
-                                feedback.style.color = '#b71c1c';
-                                feedback.style.background = '#ffeaea';
-                                feedback.style.border = '1px solid #ffcdd2';
-                                feedback.style.padding = '0.7em 1em';
-                                feedback.style.borderRadius = '6px';
-                            }
-                        });
+                        // Show success message
+                        var feedback = document.getElementById('delete-user-feedback');
+                        feedback.style.display = 'block';
+                        feedback.textContent = 'Benutzer erfolgreich gelöscht.';
+                        feedback.style.color = '#2e7d32';
+                        feedback.style.background = '#e8f5e9';
+                        feedback.style.border = '1px solid #c8e6c9';
+                        feedback.style.padding = '0.7em 1em';
+                        feedback.style.borderRadius = '6px';
+                    } else {
+                        // Show error message
+                        var feedback = document.getElementById('delete-user-feedback');
+                        feedback.style.display = 'block';
+                        feedback.textContent = data.message || 'Fehler beim Löschen des Benutzers.';
+                        feedback.style.color = '#b71c1c';
+                        feedback.style.background = '#ffeaea';
+                        feedback.style.border = '1px solid #ffcdd2';
+                        feedback.style.padding = '0.7em 1em';
+                        feedback.style.borderRadius = '6px';
                     }
                 });
-            });
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize all button handlers when the page loads
+            // Initialize all button handlers on page load
             initializeButtonEventHandlers();
-            
+                    e.preventDefault();
+                    if (!confirm('Delete user?')) return;
+                    var userId = btn.getAttribute('data-user-id');
+                    var feedback = document.getElementById('delete-user-feedback');
+                    fetch(`/delete_user/${userId}`, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        feedback.style.display = 'block';
+                        feedback.textContent = data.message;
+                        feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                        feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                        feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                        feedback.style.padding = '0.7em 1em';
+                        feedback.style.borderRadius = '6px';
+                        if (data.success) {
+                            var row = btn.closest('tr');
+                            row.parentNode.removeChild(row);
+                        }
+                    })
+                    .catch(() => {
+                        feedback.style.display = 'block';
+                        feedback.textContent = 'Error deleting user.';
+                        feedback.style.color = '#b71c1c';
+                        feedback.style.background = '#ffeaea';
+                        feedback.style.border = '1px solid #ffcdd2';
+                    });
+                });
+            });
             // AJAX add user
             document.getElementById('add-user-form').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -390,6 +407,39 @@
                         feedback.style.border = '1px solid #ffcdd2';
                         feedback.style.padding = '0.7em 1em';
                         feedback.style.borderRadius = '6px';
+                    }
+                        // Re-attach delete event to new button
+                        newRow.querySelector('.delete-user-btn').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (!confirm('Delete user?')) return;
+                            var userId = this.getAttribute('data-user-id');
+                            var feedback = document.getElementById('delete-user-feedback');
+                            fetch(`/delete_user/${userId}`, {
+                                method: 'POST',
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                feedback.style.display = 'block';
+                                feedback.textContent = data.message;
+                                feedback.style.color = data.success ? '#256029' : '#b71c1c';
+                                feedback.style.background = data.success ? '#e8f5e9' : '#ffeaea';
+                                feedback.style.border = data.success ? '1px solid #a5d6a7' : '1px solid #ffcdd2';
+                                feedback.style.padding = '0.7em 1em';
+                                feedback.style.borderRadius = '6px';
+                                if (data.success) {
+                                    var row = this.closest('tr');
+                                    row.parentNode.removeChild(row);
+                                }
+                            })
+                            .catch(() => {
+                                feedback.style.display = 'block';
+                                feedback.textContent = 'Error deleting user.';
+                                feedback.style.color = '#b71c1c';
+                                feedback.style.background = '#ffeaea';
+                                feedback.style.border = '1px solid #ffcdd2';
+                            });
+                        });
                     }
                 })
                 .catch(() => {
@@ -538,13 +588,6 @@
             cancelPasswordPrint.addEventListener('click', function() {
                 passwordModal.style.display = 'none';
             });
-            
-            // Schließen des Modals, wenn außerhalb geklickt wird
-            window.addEventListener('click', function(event) {
-                if (event.target === passwordModal) {
-                    passwordModal.style.display = 'none';
-                }
-            });
 
             // Event-Listener für das Passwort-Änderungsformular
             passwordChangeForm.addEventListener('submit', function(e) {
@@ -563,13 +606,13 @@
                 passwordMismatch.style.display = 'none';
                 const userId = passwordChangeUserId.value;
                 
-                fetch('/reset_password/' + userId, {
+                fetch('/change_password', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest' 
                     },
-                    body: JSON.stringify({ new_password: newPasswordValue, confirm_password: confirmPasswordValue })
+                    body: JSON.stringify({ user_id: userId, new_password: newPasswordValue })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -604,33 +647,9 @@
                     passwordModal.style.display = 'none';
                 }
             });
-
-            // Global click handler for all buttons
-            document.body.addEventListener('click', function(event) {
-                let target = event.target;
-                
-                // Find the actual button element if we clicked on a child element
-                while (target && target !== document) {
-                    if (target.tagName === 'BUTTON') {
-                        break;
-                    }
-                    target = target.parentNode;
-                }
-                
-                if (!target || target === document) return;
-                
-                // Handle print password button clicks
-                if (target.classList.contains('print-password-btn')) {
-                    event.preventDefault();
-                    handlePrintPasswordBtn(target);
-                }
-                
-                // Handle change password button clicks
-                if (target.classList.contains('change-password-btn')) {
-                    event.preventDefault();
-                    handleChangePasswordBtn(target);
-                }
-            });
+            
+            // We're no longer using event delegation as it was causing conflicts
+            // Instead we're properly initializing handlers after dynamic elements are added
         });
         </script>
     </div>
