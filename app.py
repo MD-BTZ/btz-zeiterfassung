@@ -1288,6 +1288,42 @@ def delete_attendance(attendance_id):
         flash(f'Fehler beim Löschen des Eintrags: {str(e)}', 'error')
         return redirect(url_for('edit_attendance', attendance_id=attendance_id))
 
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzer löschen'}), 403
+    
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Prüfen, ob der Benutzer existiert
+        cursor.execute('SELECT id FROM users WHERE id = ?', (user_id,))
+        if not cursor.fetchone():
+            return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+            
+        # Temporäre Passwörter löschen
+        cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+        
+        # Benutzer löschen
+        cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+        
+        # Alle abhängigen Daten löschen
+        cursor.execute('DELETE FROM user_consents WHERE user_id = ?', (user_id,))
+        cursor.execute('DELETE FROM attendance WHERE user_id = ?', (user_id,))
+        cursor.execute('DELETE FROM user_settings WHERE user_id = ?', (user_id,))
+        
+        db.commit()
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Benutzer wurde erfolgreich gelöscht'
+        })
+    
+    except Exception as e:
+        logging.error(f"Error deleting user: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
 @app.route('/request_data_deletion', methods=['POST'])
 def request_data_deletion():
     """Process user's request for data deletion"""

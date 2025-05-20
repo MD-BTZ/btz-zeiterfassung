@@ -276,61 +276,52 @@
                     handlePrintPasswordBtn(this);
                 });
             });
-            
-            // Initialize delete buttons
-            document.querySelectorAll('.delete-user-btn').forEach(function(btn) {
-                // Remove existing event listeners (if possible)
-                btn.onclick = null;
-                // Add the click handler
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    if (confirm('Möchten Sie diesen Benutzer wirklich löschen?')) {
-                        var userId = this.getAttribute('data-user-id');
-                        
-                        fetch('/delete_user/' + userId, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(function(response) { return response.json(); })
-                        .then(function(data) {
-                            if (data.success) {
-                                // Remove the row from the table
-                                var row = document.querySelector('tr[data-user-id="' + userId + '"]');
-                                if (row) row.remove();
-                                
-                                // Show success message
-                                var feedback = document.getElementById('delete-user-feedback');
-                                feedback.style.display = 'block';
-                                feedback.textContent = 'Benutzer erfolgreich gelöscht.';
-                                feedback.style.color = '#2e7d32';
-                                feedback.style.background = '#e8f5e9';
-                                feedback.style.border = '1px solid #c8e6c9';
-                                feedback.style.padding = '0.7em 1em';
-                                feedback.style.borderRadius = '6px';
-                            } else {
-                                // Show error message
-                                var feedback = document.getElementById('delete-user-feedback');
-                                feedback.style.display = 'block';
-                                feedback.textContent = data.message || 'Fehler beim Löschen des Benutzers.';
-                                feedback.style.color = '#b71c1c';
-                                feedback.style.background = '#ffeaea';
-                                feedback.style.border = '1px solid #ffcdd2';
-                                feedback.style.padding = '0.7em 1em';
-                                feedback.style.borderRadius = '6px';
-                            }
-                        });
-                    }
-                });
-            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize all button handlers when the page loads
             initializeButtonEventHandlers();
             
+            // Event-Delegation für alle Delete-Buttons
+            document.body.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('delete-user-btn')) {
+                    e.preventDefault();
+                    
+                    const userId = e.target.getAttribute('data-user-id');
+                    if (!userId) {
+                        console.error('Button is missing data-user-id attribute');
+                        return;
+                    }
+                    
+                    if (confirm('Möchten Sie diesen Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+                        fetch(`/delete_user/${userId}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Entfernen der Zeile aus der Tabelle
+                                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                                if (row) {
+                                    row.remove();
+                                }
+                                alert(data.message);
+                            } else {
+                                alert(data.message || 'Fehler beim Löschen des Benutzers');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Fehler beim Löschen des Benutzers');
+                        });
+                    }
+                }
+            });
+
             // AJAX add user
             document.getElementById('add-user-form').addEventListener('submit', function(e) {
                 e.preventDefault();
