@@ -1404,11 +1404,6 @@ def privacy_policy():
     """Privacy policy page"""
     return render_template('privacy_policy.html')
 
-@app.route('/font_awesome_test')
-def font_awesome_test():
-    """Test page for Font Awesome icons"""
-    return render_template('font_awesome_test.html')
-
 @app.route('/manual_attendance')
 def manual_attendance():
     """Manual attendance entry page"""
