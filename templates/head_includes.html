@@ -1,0 +1,37 @@
+<!-- Common head includes for all pages -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1976d2">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/icon-fix.css">
+<link rel="stylesheet" href="/static/group-menu.css">
+<link rel="stylesheet" href="/static/dropdown-menu.css">
+<link rel="stylesheet" href="/static/content-fix.css">
+<link rel="stylesheet" href="/static/page-layout-fix.css">
+<script src="/static/dropdown-menu.js" defer></script>
+<script>
+// Check if Font Awesome loaded properly
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple test: check if the Font Awesome stylesheet is in the document
+    const isFontAwesomeLoaded = Array.from(document.styleSheets).some(sheet => {
+        try {
+            return sheet.href && sheet.href.includes('font-awesome');
+        } catch (e) {
+            return false;
+        }
+    });
+    
+    if (!isFontAwesomeLoaded) {
+        console.error('Font Awesome not loaded properly. Attempting to reload...');
+        // Try to reload the stylesheet if not loaded
+        const fontAwesomeLink = document.createElement('link');
+        fontAwesomeLink.rel = 'stylesheet';
+        fontAwesomeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css';
+        fontAwesomeLink.integrity = 'sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==';
+        fontAwesomeLink.crossOrigin = 'anonymous';
+        fontAwesomeLink.referrerPolicy = 'no-referrer';
+        document.head.appendChild(fontAwesomeLink);
+    }
+});
+</script>

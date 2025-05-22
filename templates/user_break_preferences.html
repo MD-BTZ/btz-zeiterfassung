@@ -2,29 +2,21 @@
 <html>
 <head>
     <title>Persönliche Pauseneinstellungen</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
+    {% include 'head_includes.html' %}
     <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
-    <script src="/static/mobile-menu.js" defer></script></head>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script></head>
 <body>
     {% include 'menu.html' %}
-    
-    <div class="container">
+    <div class="main-card card-style">
         <h1>Persönliche Pauseneinstellungen</h1>
         
         <div class="break-settings-container">
             <h2>Meine Pausenpräferenzen</h2>
             
             {% if message %}
-                <div class="alert {% if message_type %}alert-{{ message_type }}{% else %}alert-success{% endif %}">
-                    {{ message }}
-                </div>
+                <div class="flash-message {% if message_type %}{{ message_type }}{% else %}success{% endif %}">{{ message }}</div>
             {% endif %}
             
             <form action="/update_user_break_preferences" method="post" class="settings-form">

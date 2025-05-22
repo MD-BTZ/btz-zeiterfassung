@@ -2,16 +2,13 @@
 <html>
 <head>
     <title>Zeiterfassung - Check In/Out</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
+    {% include 'head_includes.html' %}
     <link rel="stylesheet" href="/static/breaks.css">
+    <link rel="stylesheet" href="/static/checkin-checkout.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
-    <script src="/static/mobile-menu.js" defer></script></head>
+    <script src="/static/checkin-checkout.js" defer></script></head>
 <body>
     {% include 'menu.html' %}
     
@@ -37,7 +34,7 @@
         {% endwith %}
         
         <!-- Form starts after flash messages -->
-        <div id="attendance-forms">
+        <div id="attendance-forms" class="attendance-controls">
             <div class="user-selector-wrapper">
                 {% if session.get('admin_logged_in') %}
                     <!-- Admin sees dropdown with all users -->
@@ -56,14 +53,26 @@
                 {% endif %}
             </div>
             <div class="button-group">
-                <form action="/checkin" method="post" class="inline-form">
-                    <input type="hidden" name="user_id" id="checkin-user-id">
-                    <button type="submit" id="checkin-btn">Check In</button>
-                </form>
-                <form action="/checkout" method="post" class="inline-form">
-                    <input type="hidden" name="user_id" id="checkout-user-id">
-                    <button type="submit" id="checkout-btn">Check Out</button>
-                </form>
+                <div class="attendance-button-card checkin">
+                    <form action="/checkin" method="post" class="inline-form">
+                        <input type="hidden" name="user_id" id="checkin-user-id">
+                        <button type="submit" id="checkin-btn">
+                            <span class="button-icon"><i class="fas fa-sign-in-alt"></i></span>
+                            Check In
+                        </button>
+                    </form>
+                    <div id="checkin-status" class="status-indicator">Nicht eingestempelt</div>
+                </div>
+                <div class="attendance-button-card checkout">
+                    <form action="/checkout" method="post" class="inline-form">
+                        <input type="hidden" name="user_id" id="checkout-user-id">
+                        <button type="submit" id="checkout-btn">
+                            <span class="button-icon"><i class="fas fa-sign-out-alt"></i></span>
+                            Check Out
+                        </button>
+                    </form>
+                    <div id="checkout-status" class="status-indicator">Nicht ausgestempelt</div>
+                </div>
             </div>
             
             <!-- Info about system-wide break detection -->
@@ -210,40 +219,9 @@
             </div>
         </div>
     </div>
-    <style>
-        .inline-form {
-            display: inline-block;
-        }
-    </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const userSelector = document.getElementById('user-selector');
-        const checkinUserIdField = document.getElementById('checkin-user-id');
-        const checkoutUserIdField = document.getElementById('checkout-user-id');
-        const checkinBtn = document.getElementById('checkin-btn');
-        const checkoutBtn = document.getElementById('checkout-btn');
-        
-        // Initialize user ID for forms
-        function updateUserIds() {
-            const selectedUserId = userSelector.value;
-            if (selectedUserId) {
-                checkinUserIdField.value = selectedUserId;
-                checkoutUserIdField.value = selectedUserId;
-                checkinBtn.disabled = false;
-                checkoutBtn.disabled = false;
-            } else {
-                checkinBtn.disabled = true;
-                checkoutBtn.disabled = true;
-            }
-        }
-        
-        // For admin dropdown, listen for changes
-        if (userSelector.tagName === 'SELECT') {
-            userSelector.addEventListener('change', updateUserIds);
-        }
-        
-        // Initial setup
-        updateUserIds();
+        // Main check-in/check-out functionality is in checkin-checkout.js
         
         // Report generation handling
         const reportDateInput = document.getElementById('report-date');

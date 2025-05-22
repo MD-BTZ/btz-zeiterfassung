@@ -1,18 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/mobile-menu.js" defer></script>
+    {% include 'head_includes.html' %}
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e3f0ff 0%, #f8fbff 100%);
+        }
+        .login-card {
+            background: #fff;
+            max-width: 370px;
+            margin: 40px auto;
+            padding: 2.2em 2em 1.5em 2em;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(25, 118, 210, 0.10), 0 1.5px 6px rgba(25, 118, 210, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .login-card h1 {
+            text-align: center;
+            color: #1976d2;
+            margin-bottom: 1.2em;
+            font-size: 1.6em;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1em;
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            padding: 0.9em 1em;
+            border: 1px solid #b0bec5;
+            border-radius: 8px;
+            font-size: 1.05em;
+            background: #f7fafd;
+            transition: border-color 0.2s;
+        }
+        .login-form input:focus {
+            border-color: #1976d2;
+            outline: none;
+        }
+        .login-form button {
+            padding: 0.9em 1em;
+            background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .login-form button:hover {
+            background: linear-gradient(90deg, #1565c0 60%, #1976d2 100%);
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.13);
+        }
+        .show-password {
+            display: flex;
+            align-items: center;
+            margin-top: -0.7em;
+            margin-bottom: 0.5em;
+            font-size: 0.98em;
+            color: #1976d2;
+            cursor: pointer;
+            user-select: none;
+        }
+        .show-password input[type="checkbox"] {
+            margin-right: 0.5em;
+        }
+        .flash-message {
+            margin-bottom: 1em;
+            padding: 0.9em 1em;
+            border-radius: 8px;
+            font-size: 1em;
+            text-align: center;
+        }
+        .flash-message.error {
+            background: #ffeaea;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        .flash-message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        .login-card .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.2em;
+            color: #1976d2;
+            text-decoration: none;
+            font-size: 1em;
+            transition: color 0.2s;
+        }
+        .login-card .back-link:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 1.2em 0.7em 1em 0.7em;
+                max-width: 98vw;
+            }
+        }
+    </style>
 </head>
 <body>
     {% include 'menu.html' %}
-    <div class="container">
-        <h1>Login</h1>
-        
-        <!-- Display flash messages -->
+    <div class="login-card">
+        <h1><i class="fas fa-sign-in-alt" style="margin-right: 0.5em;"></i>Login</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -22,25 +127,29 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
-        <form method="post">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+        <form method="post" class="login-form">
+            <input type="text" name="username" placeholder="Benutzername" autocomplete="username" required>
+            <input type="password" name="password" id="password-input" placeholder="Passwort" autocomplete="current-password" required>
+            <label class="show-password"><input type="checkbox" id="show-password-toggle"> Passwort anzeigen</label>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
         </form>
-        <a href="/">Back to Home</a>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Zurück zur Startseite</a>
     </div>
     {% if 'user_id' in session %}
     <script>
-        // Store user ID in sessionStorage for consent tracking
         sessionStorage.setItem('user_id', '{{ session.user_id }}');
     </script>
     {% else %}
     <script>
-        // Clear any previous user ID if we're not logged in
         sessionStorage.removeItem('user_id');
     </script>
     {% endif %}
+    <script>
+    document.getElementById('show-password-toggle').addEventListener('change', function() {
+        var pwd = document.getElementById('password-input');
+        pwd.type = this.checked ? 'text' : 'password';
+    });
+    </script>
     <script src="/static/script.js"></script>
 </body>
 </html>

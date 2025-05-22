@@ -1404,6 +1404,11 @@ def privacy_policy():
     """Privacy policy page"""
     return render_template('privacy_policy.html')
 
+@app.route('/font_awesome_test')
+def font_awesome_test():
+    """Test page for Font Awesome icons"""
+    return render_template('font_awesome_test.html')
+
 @app.route('/manual_attendance')
 def manual_attendance():
     """Manual attendance entry page"""
@@ -1574,6 +1579,54 @@ def user_break_preferences():
         settings = cursor.fetchone()
     
     return render_template('user_break_preferences.html', settings=settings)
+
+@app.route('/get_attendance_status')
+def get_attendance_status():
+    """API endpoint to check if a user is checked in or out"""
+    if not session.get('username'):
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    # Get user ID from query parameter
+    user_id = request.args.get('user_id')
+    
+    # Admin users can check status for other users
+    if session.get('admin_logged_in') is not True and str(session.get('user_id')) != str(user_id):
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    # Connect to database
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    # Get current date in the application's timezone
+    today = datetime.now(pytz.timezone(TIMEZONE)).strftime('%Y-%m-%d')
+    
+    # Check if checked in today
+    cursor.execute('''
+        SELECT * FROM attendance
+        WHERE user_id = ? AND date(check_in) = ?
+        ORDER BY id DESC LIMIT 1
+    ''', (user_id, today))
+    
+    attendance_record = cursor.fetchone()
+    
+    result = {
+        'is_checked_in': False,
+        'is_checked_out': False,
+        'check_in_time': None,
+        'check_out_time': None
+    }
+    
+    if attendance_record:
+        result['is_checked_in'] = True
+        result['check_in_time'] = attendance_record['check_in']
+        
+        if attendance_record['check_out']:
+            result['is_checked_out'] = True
+            result['check_out_time'] = attendance_record['check_out']
+    
+    conn.close()
+    return jsonify(result)
 
 @app.route('/checkin', methods=['POST'])
 def checkin():

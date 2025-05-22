@@ -1,0 +1,31 @@
+/* Content padding adjustments to accommodate fixed menu */
+body {
+    padding-top: 60px; /* Space for header */
+}
+
+.container {
+    padding: 15px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 10px;
+    }
+}
+
+/* Smooth transitions for all menu elements */
+.menu-panel *,
+.menu-container * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fix z-index stacking context */
+.menu-panel {
+    z-index: 1000;
+}
+.menu-header {
+    z-index: 1001;
+}
+.menu-container {
+    z-index: 999;
+}

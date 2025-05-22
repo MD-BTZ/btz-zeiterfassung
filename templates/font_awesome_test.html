@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Font Awesome Test Page</title>
+    {% include 'head_includes.html' %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .icon-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .icon-box {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            border: 1px solid #e0e4e8;
+        }
+        .icon-box i {
+            font-size: 24px;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+            color: #1976d2;
+        }
+        h1 {
+            color: #1976d2;
+            margin-bottom: 30px;
+        }
+        h2 {
+            margin-top: 40px;
+            color: #333;
+        }
+        .status-container {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #f8fffa;
+            border-radius: 8px;
+            border-left: 4px solid #1976d2;
+        }
+        .status-item {
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .status-success {
+            color: green;
+        }
+        .status-error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div class="container">
+        <h1><i class="fas fa-check-circle"></i> Font Awesome Icon Test</h1>
+        
+        <div class="status-container">
+            <h3>Font Awesome Status:</h3>
+            <div id="fa-status" class="status-item">Checking Font Awesome status...</div>
+            <div id="fa-version" class="status-item">Checking version...</div>
+        </div>
+        
+        <p>This page tests if Font Awesome icons are loading properly. If you can see the icons below, then Font Awesome is working correctly.</p>
+        
+        <h2>Solid Icons (fas)</h2>
+        <div class="icon-container">
+            <div class="icon-box"><i class="fas fa-home"></i> fa-home</div>
+            <div class="icon-box"><i class="fas fa-user"></i> fa-user</div>
+            <div class="icon-box"><i class="fas fa-cog"></i> fa-cog</div>
+            <div class="icon-box"><i class="fas fa-users-cog"></i> fa-users-cog</div>
+            <div class="icon-box"><i class="fas fa-trash-alt"></i> fa-trash-alt</div>
+            <div class="icon-box"><i class="fas fa-key"></i> fa-key</div>
+            <div class="icon-box"><i class="fas fa-shield-alt"></i> fa-shield-alt</div>
+            <div class="icon-box"><i class="fas fa-sign-out-alt"></i> fa-sign-out-alt</div>
+        </div>
+        
+        <h2>Regular Icons (far)</h2>
+        <div class="icon-container">
+            <div class="icon-box"><i class="far fa-calendar-alt"></i> fa-calendar-alt</div>
+            <div class="icon-box"><i class="far fa-user"></i> fa-user</div>
+            <div class="icon-box"><i class="far fa-clipboard"></i> fa-clipboard</div>
+            <div class="icon-box"><i class="far fa-clock"></i> fa-clock</div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check Font Awesome status
+            const isFontAwesomeLoaded = Array.from(document.styleSheets).some(sheet => {
+                try {
+                    return sheet.href && sheet.href.includes('font-awesome');
+                } catch (e) {
+                    return false;
+                }
+            });
+            
+            const statusEl = document.getElementById('fa-status');
+            const versionEl = document.getElementById('fa-version');
+            
+            if (isFontAwesomeLoaded) {
+                statusEl.innerHTML = '<strong class="status-success">✓ Font Awesome is loaded</strong>';
+                
+                // Try to detect version
+                const versionMatch = Array.from(document.styleSheets)
+                    .find(sheet => {
+                        try {
+                            return sheet.href && sheet.href.includes('font-awesome');
+                        } catch (e) {
+                            return false;
+                        }
+                    })?.href.match(/\/(\d+\.\d+\.\d+)\//);
+                
+                if (versionMatch && versionMatch[1]) {
+                    versionEl.innerHTML = '<strong>Version: ' + versionMatch[1] + '</strong>';
+                } else {
+                    versionEl.innerHTML = 'Version: Unknown';
+                }
+            } else {
+                statusEl.innerHTML = '<strong class="status-error">✗ Font Awesome is NOT loaded properly</strong>';
+                versionEl.innerHTML = 'Version: N/A';
+            }
+        });
+    </script>
+</body>
+</html>

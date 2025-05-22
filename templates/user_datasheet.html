@@ -2,10 +2,7 @@
 <html>
 <head>
     <title>Benutzerdaten - BTZ Zeiterfassung</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {% include 'head_includes.html' %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -162,7 +159,8 @@
 
     <script src="/static/mobile-menu.js" defer></script></head>
 <body>
-    <div class="container">
+    {% include 'menu.html' %}
+    <div class="main-card card-style">
         <div style="text-align: right; margin: 10px 0;">
             <a href="/user_management" style="display: inline-block; padding: 6px 12px; background: #757575; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">
                 <i class="fas fa-arrow-left"></i> Zurück zur Benutzerverwaltung
@@ -172,6 +170,13 @@
             <h1>BTZ Zeiterfassung - Benutzerdaten</h1>
             <p>Zugangsdaten für das Zeiterfassungssystem</p>
         </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         
         <div class="info-section">
             <table class="data-table">

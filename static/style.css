@@ -10,6 +10,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-top: 6.5em; /* Added padding to account for fixed menu height */
 }
 
 .menu-panel {
@@ -18,12 +19,11 @@ body {
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: #1976d2;
-    padding: 1em 0;
+    background: linear-gradient(to right, #1565c0, #1976d2);
     margin-bottom: 2em;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
 }
 .menu-panel a {
     color: #fff;
@@ -50,7 +50,10 @@ body {
     box-shadow: 0 4px 24px rgba(0,0,0,0.08);
     text-align: center;
     min-width: 320px;
-    margin-top: 5em;
+    margin-top: 1em; /* Reduced since we added padding to body */
+    margin-bottom: 2em;
+    width: 90%;
+    max-width: 1200px;
 }
 
 h1 {

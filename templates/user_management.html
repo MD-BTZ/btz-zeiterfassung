@@ -2,10 +2,7 @@
 <html>
 <head>
     <title>Benutzerverwaltung</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/mobile-menu.js" defer></script>
+    {% include 'head_includes.html' %}
     <style>
         /* User Management Specific Styles */
         .btn {
@@ -181,8 +178,15 @@
 </head>
 <body>
     {% include 'menu.html' %}
-    <div class="container">
+    <div class="main-card card-style">
         <h1>Benutzerverwaltung</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         
         <section class="user-creation-section">
             <h2 id="add-user-section">Benutzerkonto anlegen</h2>

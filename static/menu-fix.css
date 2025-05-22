@@ -11,7 +11,8 @@ html {
 
 /* Fix for fixed menu and container spacing */
 body {
-    padding-top: env(safe-area-inset-top, 0); /* For notched devices like iPhone X+ */
+    padding-top: 60px; /* Space for fixed header */
+    padding-top: calc(60px + env(safe-area-inset-top, 0)); /* For notched devices like iPhone X+ */
 }
 
 /* Fix for menu overflows */
@@ -21,6 +22,31 @@ body {
     top: 0;
     left: 0;
     transform: translateZ(0); /* Forces hardware acceleration for smoother fixed positioning */
+    z-index: 1000; /* Ensure menu is above page content */
+}
+
+/* Styles for dropdown menu */
+@media screen and (max-width: 768px) {
+    /* Header remains visible */
+    .menu-header {
+        z-index: 1001; /* Above the dropdown content */
+        background-color: #1976d2; /* Match menu color */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12); /* Subtle shadow */
+    }
+    
+    /* Position dropdown below header */
+    .menu-container {
+        top: 60px; /* Match header height */
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+    
+    /* Fix for body when menu is open */
+    body.menu-open {
+        height: 100vh;
+        overflow: hidden;
+    }
 }
 
 /* Ensure form inputs don't cause horizontal overflow */

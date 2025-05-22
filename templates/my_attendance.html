@@ -2,10 +2,7 @@
 <html>
 <head>
     <title>Meine Arbeitszeiten</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {% include 'head_includes.html' %}
     <style>
         .attendance-tools {
             display: flex;
@@ -137,13 +134,20 @@
         .pagination a:hover:not(.active) {
             background-color: #f1f1f1;
         }
+        
+        .main-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
     </style>
 
     <script src="/static/mobile-menu.js" defer></script></head>
 <body>
     {% include 'menu.html' %}
-    
-    <div class="container">
+    <div class="main-card card-style">
         <h1>Meine Arbeitszeiten</h1>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
