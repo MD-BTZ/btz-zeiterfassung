@@ -1,0 +1,350 @@
+/* Enhanced responsive menu for BTZ Zeiterfassung */
+
+/* Base menu styles */
+.menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: #1976d2;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 100vh;
+}
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8em 1.5em;
+    position: relative;
+    width: 100%;
+}
+
+.logo-link {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.logo-link:hover {
+    text-decoration: none;
+    opacity: 0.9;
+}
+
+.menu-toggle {
+    display: none; /* Hidden on desktop */
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.7rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    transition: transform 0.3s;
+    z-index: 1050;
+}
+
+.menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.menu-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
+}
+
+.menu-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in Chrome, Safari and Opera */
+}
+
+.menu-items {
+    display: flex;
+    align-items: center;
+    padding: 0 1em;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.menu-item {
+    color: white;
+    text-decoration: none;
+    padding: 1em 0.8em;
+    margin: 0 0.2em;
+    transition: background-color 0.2s, color 0.2s;
+    border-radius: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent items from shrinking */
+    font-size: clamp(0.85rem, 2.5vw, 1rem); /* Responsive font size */
+}
+
+.menu-item i {
+    margin-right: 6px;
+    font-size: 1rem;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.menu-section {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Prevent sections from shrinking */
+}
+
+.menu-section-title {
+    display: none; /* Hidden on desktop view */
+    color: #c3dffc;
+    font-weight: 500;
+    padding: 0.8em;
+    cursor: default;
+}
+
+.menu-bottom {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Prevent from shrinking */
+}
+
+.menu-user-section {
+    display: flex;
+    align-items: center;
+    margin-left: 1em;
+    padding-left: 1em;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.username-display {
+    color: white;
+    padding: 0.5em 1em;
+    margin-right: 0.5em;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.username-display i {
+    margin-right: 8px;
+}
+
+.logout-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.login-btn {
+    background-color: #2196f3;
+    font-weight: bold;
+}
+
+.logout-btn:hover, .login-btn:hover {
+    background-color: #1565c0;
+}
+
+/* Mobile menu styles */
+@media screen and (max-width: 1200px) {
+    .menu-item {
+        padding: 0.8em 0.6em;
+        margin: 0 0.1em;
+    }
+    
+    .username-display {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .menu-item i {
+        font-size: 1.1rem; /* Slightly larger icons on medium screens */
+    }
+    
+    .menu-item {
+        padding: 0.7em 0.5em;
+        font-size: 0.9rem;
+    }
+    
+    .menu-item i {
+        margin-right: 5px;
+    }
+    
+    .logo-link {
+        font-size: 1rem;
+    }
+    
+    .menu-user-section {
+        margin-left: 0.5em;
+        padding-left: 0.5em;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body.menu-open {
+        overflow: hidden; /* Prevent scrolling when menu is open */
+    }
+    
+    .menu-panel {
+        padding: 0;
+        overflow: visible;
+    }
+    
+    .menu-header {
+        padding: 0.8em 1em;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .menu-toggle {
+        display: flex; /* Show hamburger on mobile */
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .menu-container {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100%;
+        background: #1976d2;
+        transition: right 0.3s ease-in-out;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        flex-direction: column;
+        align-items: flex-start;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-top: 60px; /* Space for the header */
+        z-index: 999;
+    }
+    
+    .menu-container.active {
+        right: 0;
+    }
+    
+    .menu-items {
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+        padding-bottom: 70px; /* Extra padding at the bottom for scrolling */
+    }
+    
+    .menu-item {
+        width: 100%;
+        padding: 0.8em 1.5em;
+        margin: 0;
+        border-radius: 0;
+        box-sizing: border-box;
+        border-left: 3px solid transparent;
+        justify-content: flex-start;
+    }
+    
+    .menu-item:hover {
+        border-left: 3px solid white;
+    }
+    
+    .menu-section {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-section-title {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .menu-section-title:after {
+        content: '+';
+        position: absolute;
+        right: 15px;
+        transition: transform 0.3s;
+    }
+    
+    .menu-section.expanded .menu-section-title:after {
+        transform: rotate(45deg);
+    }
+    
+    .menu-section:not(.menu-bottom):not(.expanded) .menu-item {
+        display: none;
+    }
+    
+    .menu-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: auto;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .menu-user-section {
+        width: 100%;
+        margin: 0;
+        padding: 0.8em 1.5em;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .username-display {
+        padding: 0.8em 0;
+        margin: 0;
+        width: 100%;
+    }
+    
+    .logout-btn, .login-btn {
+        width: 100%;
+        text-align: left;
+        margin-top: 0.5em;
+    }
+    
+    /* Animation for menu items */
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .menu-container.active .menu-item {
+        animation: fadeInRight 0.3s ease-in-out forwards;
+        animation-delay: calc(0.05s * var(--item-index, 0));
+    }
+}
+
+/* Small mobile styles */
+@media screen and (max-width: 480px) {
+    .menu-container {
+        width: 85%; /* Wider menu on very small screens */
+    }
+}

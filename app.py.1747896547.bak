@@ -2028,14 +2028,14 @@ def reset_password(user_id):
         # Create a verification hash - will be used to verify this is the correct password
         verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
         
-        # Update the user's plain password and verification hash
+        # Delete any existing temp password for this user first
+        cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+        
+        # Insert new temp password with verification hash
         cursor.execute('''
-            UPDATE users 
-            SET plain_password = ?,
-                verification_hash = ?,
-                last_password_change = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ''', (hashed_password, verification_hash, user_id))
+            INSERT INTO temp_passwords (user_id, temp_password, verification_hash) 
+            VALUES (?, ?, ?)
+        ''', (user_id, hashed_password, verification_hash))
         conn.commit()
         conn.close()
         logging.info(f"Encrypted temporary password stored in database for password reset, user ID: {user_id}")
@@ -2119,14 +2119,14 @@ def change_password():
             import hashlib
             verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
             
-            # Update the user's plain password and verification hash
+            # Delete any existing temp password for this user first
+            cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+            
+            # Insert new temp password with verification hash
             cursor.execute('''
-                UPDATE users 
-                SET plain_password = ?,
-                    verification_hash = ?,
-                    last_password_change = CURRENT_TIMESTAMP
-                WHERE id = ?
-            ''', (hashed_password, verification_hash, user_id))
+                INSERT INTO temp_passwords (user_id, temp_password, verification_hash) 
+                VALUES (?, ?, ?)
+            ''', (user_id, hashed_password, verification_hash))
             conn.commit()
             conn.close()
             logging.info(f"Encrypted temporary password stored in database after user-initiated password change, user ID: {user_id}")
@@ -2477,8 +2477,8 @@ def get_user_password(user_id):
         # For security, we only show passwords stored in plaintext format
         # Hashed passwords cannot be decrypted, but we can check if there's a temporary password
         if user['password'].startswith('$2b$'):  # bcrypt hash prefix
-            # Get the plain password from the users table
-            cursor.execute('SELECT plain_password, verification_hash FROM users WHERE id = ?', (user_id,))
+            # Try to get the temporary password from the temp_passwords table
+            cursor.execute('SELECT temp_password, verification_hash FROM temp_passwords WHERE user_id = ?', (user_id,))
             temp_password_record = cursor.fetchone()
             
             if temp_password_record:
@@ -2505,11 +2505,11 @@ def get_user_password(user_id):
                     # Create a new verification hash for the new password
                     new_verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
                     
-                    # Update the user record
+                    # Update the temporary password record
                     cursor.execute('''
-                        UPDATE users 
-                        SET plain_password = ?, verification_hash = ?, last_password_change = CURRENT_TIMESTAMP 
-                        WHERE id = ?
+                        UPDATE temp_passwords 
+                        SET temp_password = ?, verification_hash = ? 
+                        WHERE user_id = ?
                     ''', (hashed_password, new_verification_hash, user_id))
                     
                     db.commit()
@@ -2546,11 +2546,11 @@ def get_user_password(user_id):
                         # Create a verification hash for the new password
                         verification_hash = hashlib.sha256(new_password.encode()).hexdigest()
                         
-                        # Update the user record with the new format
+                        # Update the temporary password record with the new format
                         cursor.execute('''
-                            UPDATE users 
-                            SET plain_password = ?, verification_hash = ?, last_password_change = CURRENT_TIMESTAMP 
-                            WHERE id = ?
+                            UPDATE temp_passwords 
+                            SET temp_password = ?, verification_hash = ? 
+                            WHERE user_id = ?
                         ''', (hashed_password, verification_hash, user_id))
                         
                         db.commit()
@@ -2586,11 +2586,11 @@ def get_user_password(user_id):
                 cursor.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
                 
                 # Store the hashed password with verification hash
+                cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
                 cursor.execute('''
-                    UPDATE users 
-                    SET plain_password = ?, verification_hash = ?, last_password_change = CURRENT_TIMESTAMP 
-                    WHERE id = ?
-                ''', (hashed_password, verification_hash, user_id))
+                    INSERT INTO temp_passwords (user_id, temp_password, verification_hash) 
+                    VALUES (?, ?, ?)
+                ''', (user_id, hashed_password, verification_hash))
                 
                 db.commit()
                 

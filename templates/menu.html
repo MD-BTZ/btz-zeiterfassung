@@ -1,34 +1,49 @@
 <nav class="menu-panel">
-    <div>
-        <a href="/">Home</a>
-        
-        {% if session.get('admin_logged_in') %}
-            <a href="/admin">Admin</a>
-            <a href="/user_management">Benutzerverwaltung</a>
-           <!-- <a href="/user_management#add-user-section" title="Neuen Benutzer anlegen"><i class="fas fa-user-plus"></i> Benutzer anlegen</a> -->
-           <!-- <a href="/break_settings" title="Systemweite Pauseneinstellungen verwalten"><i class="fas fa-cogs"></i> Systemweite Pauseneinstellungen</a>-->
-            <a href="/deletion_requests"><i class="fas fa-trash-alt"></i> Datenlöschungsanfragen</a>
-        {% endif %}
-        
-        {% if session.get('username') %}
-            <a href="/data_access" title="Zugriff auf Ihre persönlichen Daten"><i class="fas fa-user-shield"></i> Meine Daten</a>
-            <a href="/my_attendance" title="Ihre Arbeitszeiten anzeigen und bearbeiten"><i class="far fa-calendar-alt"></i> Meine Arbeitszeiten</a>
-            <a href="/manual_attendance" title="Anwesenheitsaufzeichnungen manuell hinzufügen"><i class="fas fa-plus-circle"></i> Zeiterfassung hinzufügen</a>
-            <!--<a href="/user_break_preferences" title="Persönliche Pauseneinstellungen anpassen"><i class="fas fa-coffee"></i> Persönliche Pauseneinstellungen</a> -->
-            <a href="/change_password" title="Ändern Sie Ihr Passwort"><i class="fas fa-key"></i> Passwort ändern</a>
-        {% else %}
-            <a href="/data_access">Datenzugriff</a>
-        {% endif %}
-        <a href="/privacy_policy">Datenschutzerklärung</a>
+    <div class="menu-header">
+        <a href="/" class="logo-link">BTZ Zeiterfassung</a>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Menü öffnen">☰</button>
     </div>
-    <div class="menu-right">
-        {% if session.get('username') %}
-            <span class="username-display">{{ session.get('username') }}</span>
-            <a href="/logout">Logout</a>
-        {% else %}
-            <a href="/login">Login</a>
-        {% endif %}
+    <div class="menu-container" id="menu-container">
+        <div class="menu-items" id="menu-items">
+            <a href="/" class="menu-item"><i class="fas fa-home"></i> Home</a>
+            
+            {% if session.get('admin_logged_in') %}
+                <div class="menu-section">
+                    <span class="menu-section-title">Administration</span>
+                    <a href="/admin" class="menu-item"><i class="fas fa-tools"></i> Admin</a>
+                    <a href="/user_management" class="menu-item"><i class="fas fa-users-cog"></i> Benutzerverwaltung</a>
+                    <a href="/deletion_requests" class="menu-item"><i class="fas fa-trash-alt"></i> Datenlöschungsanfragen</a>
+                </div>
+            {% endif %}
+            
+            {% if session.get('username') %}
+                <div class="menu-section">
+                    <span class="menu-section-title">Persönlicher Bereich</span>
+                    <a href="/data_access" class="menu-item" title="Zugriff auf Ihre persönlichen Daten"><i class="fas fa-user-shield"></i> Meine Daten</a>
+                    <a href="/my_attendance" class="menu-item" title="Ihre Arbeitszeiten anzeigen und bearbeiten"><i class="far fa-calendar-alt"></i> Meine Arbeitszeiten</a>
+                    <a href="/manual_attendance" class="menu-item" title="Anwesenheitsaufzeichnungen manuell hinzufügen"><i class="fas fa-plus-circle"></i> Zeiterfassung hinzufügen</a>
+                    <a href="/change_password" class="menu-item" title="Ändern Sie Ihr Passwort"><i class="fas fa-key"></i> Passwort ändern</a>
+                </div>
+            {% else %}
+                <a href="/data_access" class="menu-item"><i class="fas fa-database"></i> Datenzugriff</a>
+            {% endif %}
+            
+            <div class="menu-section menu-bottom">
+                <a href="/privacy_policy" class="menu-item"><i class="fas fa-shield-alt"></i> Datenschutzerklärung</a>
+                
+                <div class="menu-user-section">
+                    {% if session.get('username') %}
+                        <div class="username-display"><i class="fas fa-user-circle"></i> {{ session.get('username') }}</div>
+                        <a href="/logout" class="menu-item logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    {% else %}
+                        <a href="/login" class="menu-item login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </nav>
+
+{% include 'cookie-consent.html' %}
 
 {% include 'cookie-consent.html' %}

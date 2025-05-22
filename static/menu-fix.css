@@ -1,0 +1,30 @@
+/* Additional fixes for menu scaling issues */
+html {
+    scroll-padding-top: 90px; /* Ensures anchors don't get hidden under the fixed menu */
+}
+
+@media screen and (max-width: 768px) {
+    html {
+        scroll-padding-top: 70px;
+    }
+}
+
+/* Fix for fixed menu and container spacing */
+body {
+    padding-top: env(safe-area-inset-top, 0); /* For notched devices like iPhone X+ */
+}
+
+/* Fix for menu overflows */
+.menu-panel {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transform: translateZ(0); /* Forces hardware acceleration for smoother fixed positioning */
+}
+
+/* Ensure form inputs don't cause horizontal overflow */
+input, select, textarea, button {
+    max-width: 100%;
+    box-sizing: border-box;
+}
