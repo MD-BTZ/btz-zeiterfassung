@@ -5,100 +5,7 @@
     {% include 'head_includes.html' %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        @media print {
-            body {
-                font-family: Arial, sans-serif;
-                font-size: 12pt;
-                margin: 2cm;
-                line-height: 1.3;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
-            .container {
-                width: 100%;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-            .header {
-                text-align: center;
-                margin-bottom: 30px;
-            }
-            .header h1 {
-                font-size: 18pt;
-                margin-bottom: 5px;
-            }
-            .header p {
-                font-size: 14pt;
-                color: #555;
-                margin: 5px 0;
-            }
-            .info-section {
-                border: 1px solid #ccc;
-                padding: 20px;
-                margin-bottom: 30px;
-                break-inside: avoid;
-            }
-            .data-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0;
-            }
-            .data-table th, .data-table td {
-                padding: 10px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-            .data-table th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-            }
-            .footer {
-                font-size: 10pt;
-                color: #777;
-                text-align: center;
-                margin-top: 50px;
-            }
-            .notice {
-                background-color: #f8f8f8;
-                padding: 15px;
-                border-left: 5px solid #4285f4;
-                margin: 20px 0;
-            }
-            .button-container {
-                margin: 20px 0;
-                text-align: center;
-            }
-            .print-button {
-                background-color: #4285f4;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 14pt;
-            }
-            @media print {
-                .print-button {
-                    display: none;
-                }
-            }
-        }
-        
-        /* Styles for screen viewing */
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12pt;
-            margin: 2cm;
-            line-height: 1.3;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .header {
+    <link rel="stylesheet" href="/static/css/datasheet.css">
             text-align: center;
             margin-bottom: 30px;
         }
@@ -161,8 +68,8 @@
 <body>
     {% include 'menu.html' %}
     <div class="main-card card-style">
-        <div style="text-align: right; margin: 10px 0;">
-            <a href="/user_management" style="display: inline-block; padding: 6px 12px; background: #757575; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">
+        <div class="back-container">
+            <a href="/user_management" class="back-button">
                 <i class="fas fa-arrow-left"></i> Zurück zur Benutzerverwaltung
             </a>
         </div>
@@ -201,23 +108,23 @@
             <div class="notice">
                 <p><strong>Login-URL:</strong> <span>{{ login_url }}</span></p>
                 <p>Sie können sich unter der oben angegebenen URL mit Ihren Zugangsdaten einloggen.</p>
-                <div style="text-align: center; margin-top: 15px;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ login_url }}" alt="QR-Code für Login" style="max-width: 150px;">
-                    <p style="font-size: 12px; color: #666; margin-top: 5px;">QR-Code für mobilen Zugriff</p>
+                <div class="qr-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ login_url }}" alt="QR-Code für Login" class="qr-code">
+                    <p class="qr-caption">QR-Code für mobilen Zugriff</p>
                 </div>
             </div>
         </div>
         
         <div class="button-container">
-            <button class="print-button" style="margin-right: 10px; font-weight: bold;" onclick="window.print()">
+            <button class="print-button" onclick="window.print()">
                 <i class="fas fa-print"></i> Im Browser drucken
             </button>
             
-            <button id="generate-pdf-btn" class="print-button" style="background-color: #d32f2f; font-weight: bold; font-size: 16pt; padding: 12px 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+            <button id="generate-pdf-btn" class="print-button pdf-button">
                 <i class="fas fa-file-pdf"></i> PDF erstellen und herunterladen
             </button>
             
-            <p style="margin-top: 15px; font-size: 14px; color: #444; font-weight: bold;">
+            <p class="button-tip">
                 Tipp: Für zuverlässige Ergebnisse empfehlen wir die PDF-Option ⬆️
             </p>
         </div>
@@ -233,16 +140,7 @@
                 // Zeige Ladeanzeige
                 var loadingMessage = document.createElement('div');
                 loadingMessage.innerHTML = 'PDF wird erstellt...';
-                loadingMessage.style.position = 'fixed';
-                loadingMessage.style.top = '50%';
-                loadingMessage.style.left = '50%';
-                loadingMessage.style.transform = 'translate(-50%, -50%)';
-                loadingMessage.style.padding = '20px';
-                loadingMessage.style.background = '#fff';
-                loadingMessage.style.border = '1px solid #ddd';
-                loadingMessage.style.borderRadius = '5px';
-                loadingMessage.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
-                loadingMessage.style.zIndex = '9999';
+                loadingMessage.className = 'loading-overlay';
                 document.body.appendChild(loadingMessage);
                 
                 // Verstecke den zurück Button für den Screenshot

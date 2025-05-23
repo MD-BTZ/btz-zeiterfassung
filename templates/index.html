@@ -5,6 +5,7 @@
     {% include 'head_includes.html' %}
     <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="/static/checkin-checkout.css">
+    <link rel="stylesheet" href="/static/components.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -94,13 +95,13 @@
                     Wenn keine ausreichenden Pausen gemacht wurden, werden diese beim Auschecken automatisch hinzugefügt.
                 </p>
                 <div class="arbzg-info-block">
-                    <p><strong><i class="fas fa-lightbulb" style="margin-right: 5px;"></i>Intelligente Pausenplatzierung:</strong> Das System platziert gesetzliche Pausen bevorzugt während der Mittagszeit (11:30-14:00) oder fügt sie am Ende des Arbeitstages ein, wenn keine Mittagszeit verfügbar ist.</p>
-                    <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
-                        <span class="arbzg-badge lunch-badge" style="display: inline-flex; align-items: center;">
-                            <i class="fas fa-utensils" style="margin-right: 5px;"></i>Mittagspause
+                    <p><strong><i class="fas fa-lightbulb icon-inline"></i>Intelligente Pausenplatzierung:</strong> Das System platziert gesetzliche Pausen bevorzugt während der Mittagszeit (11:30-14:00) oder fügt sie am Ende des Arbeitstages ein, wenn keine Mittagszeit verfügbar ist.</p>
+                    <div class="form-row">
+                        <span class="arbzg-badge lunch-badge">
+                            <i class="fas fa-utensils badge-icon"></i>Mittagspause
                         </span>
-                        <span class="arbzg-badge" style="display: inline-flex; align-items: center;">
-                            <i class="fas fa-clock" style="margin-right: 5px;"></i>Ende des Arbeitstages
+                        <span class="arbzg-badge">
+                            <i class="fas fa-clock badge-icon"></i>Ende des Arbeitstages
                         </span>
                     </div>
                 </div>
@@ -110,7 +111,7 @@
             <div id="break-tracker"></div>
             
             <!-- Manual break entry -->
-            <div id="manual-break-entry" class="break-entry-section" style="display: none;">
+            <div id="manual-break-entry" class="break-entry-section" hidden>
                 <h4>Pause manuell eintragen</h4>
                 <p>Tragen Sie manuell eine Pause für den aktuellen Tag ein:</p>
                 <form id="add-break-form" class="break-form">
@@ -155,31 +156,31 @@
             </div>
             
             <!-- Report options -->
-            <div style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
-                <h3>Bericht generieren</h3>
-                <p style="color: #666; font-size: 0.9em; margin-bottom: 10px;">Bitte wählen Sie eine der folgenden Optionen:</p>
-                <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px;">
+            <div class="report-section">
+                <h3 class="report-heading">Bericht generieren</h3>
+                <p class="report-description">Bitte wählen Sie eine der folgenden Optionen:</p>
+                <div class="options-container">
                     <!-- Date selector -->
-                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                    <div class="option-card">
                         <label for="report-date">Datum:</label>
-                        <input type="date" id="report-date" name="date" style="padding: 5px;">
+                        <input type="date" id="report-date" name="date" class="datepicker-field">
                     </div>
                     
                     <!-- Week selector with calendar -->
-                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                    <div class="option-card">
                         <label for="week-picker">Woche:</label>
-                        <div style="display: flex; gap: 5px; align-items: center;">
-                            <input type="text" id="week-picker" style="padding: 5px; width: 120px;" placeholder="KW wählen" readonly>
-                            <span id="selected-week-display" style="background: #f0f0f0; padding: 5px; border-radius: 3px; font-size: 0.9em;"></span>
+                        <div class="option-field">
+                            <input type="text" id="week-picker" class="week-picker" placeholder="KW wählen" readonly>
+                            <span id="selected-week-display" class="week-display"></span>
                             <input type="hidden" id="report-week" name="week">
                         </div>
                     </div>
                     
                     <!-- Month selector with fallback -->
-                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
+                    <div class="option-card">
                         <label for="report-month-select">Monat:</label>
-                        <div style="display: flex; gap: 5px; align-items: center;">
-                            <select id="report-month-select" style="padding: 5px; width: 100px;">
+                        <div class="option-field">
+                            <select id="report-month-select" class="month-select">
                                 <option value="" selected disabled>Monat</option>
                                 <option value="1">Januar</option>
                                 <option value="2">Februar</option>
@@ -194,7 +195,7 @@
                                 <option value="11">November</option>
                                 <option value="12">Dezember</option>
                             </select>
-                            <select id="report-month-year" style="padding: 5px; width: 80px;">
+                            <select id="report-month-year" class="year-select">
                                 {% for year in range(2023, 2026) %}
                                 <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
                                 {% endfor %}
@@ -204,17 +205,19 @@
                     </div>
                     
                     <!-- Entire period option -->
-                    <div style="border: 1px solid #ddd; padding: 10px; border-radius: 5px;">
-                        <label style="display: flex; align-items: center; cursor: pointer;">
-                            <input type="checkbox" id="entire-period" style="margin-right: 5px;">
+                    <div class="option-card">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="entire-period">
                             <span>Gesamter Zeitraum</span>
                         </label>
-                        <p style="font-size: 0.8em; color: #666; margin-top: 5px;">Alle verfügbaren Daten anzeigen</p>
+                        <p class="report-description">Alle verfügbaren Daten anzeigen</p>
                         <input type="hidden" id="report-entire-period" name="entire_period" value="0">
                     </div>
                 </div>
-                <div style="margin-top: 15px;">
-                    <button type="button" id="generate-report-btn" style="padding: 8px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Bericht generieren</button>
+                <div class="button-container">
+                    <button type="button" id="generate-report-btn" class="action-button print-button">
+                        <i class="fas fa-file-alt"></i> Bericht generieren
+                    </button>
                 </div>
             </div>
         </div>

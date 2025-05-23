@@ -1,0 +1,274 @@
+/**
+ * User Management Styles for BTZ Zeiterfassung
+ * Contains styles specific to the user management page
+ */
+
+/* Button styles */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background-color: #1976d2;
+}
+
+.btn-success {
+    background-color: #388e3c;
+}
+
+.btn-danger {
+    background-color: #b71c1c;
+}
+
+.btn-secondary {
+    background-color: #757575;
+}
+
+.btn-print {
+    background-color: #f57c00;
+}
+
+/* Input field styles */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s;
+}
+
+.input-field:focus {
+    border-color: #1976d2;
+    outline: none;
+}
+
+/* Form section styles */
+.form-section {
+    background: #f4f6f8;
+    padding: 1.5em;
+    border-radius: 10px;
+    margin-bottom: 2em;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* User table styles */
+#users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0 2em 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#users-table th, #users-table td {
+    padding: 12px;
+    text-align: left;
+}
+
+#users-table th {
+    background-color: #f0f0f0;
+}
+
+#users-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+#users-table td .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Modal styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    width: 90%;
+    max-width: 450px;
+    margin: 100px auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+/* Section styles */
+h2 {
+    color: #2c3e50;
+    padding-bottom: 0.5rem;
+    margin: 2rem 0 1.5rem 0;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+h3 {
+    color: #34495e;
+    margin: 1rem 0;
+}
+
+.users-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+}
+
+/* Table responsiveness */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+}
+
+/* Button groups in table cells */
+.button-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Status badges */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.badge-dot {
+    font-size: 10px;
+    margin-right: 4px;
+}
+
+.badge-success {
+    color: #2e7d32;
+    background: #e8f5e9;
+}
+
+.badge-error {
+    color: #c62828;
+    background: #ffebee;
+}
+
+.badge-neutral {
+    color: #757575;
+    background: #f5f5f5;
+}
+
+/* Consent styles */
+.consent-info {
+    text-align: left;
+    font-size: 0.9em;
+    color: #546e7a;
+}
+
+.consent-link {
+    color: #1976d2;
+}
+
+.consent-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    margin-bottom: 1em;
+}
+
+.consent-select-user {
+    flex: 2;
+    min-width: 200px;
+}
+
+.consent-select-status {
+    flex: 1;
+    min-width: 150px;
+}
+
+.consent-button {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Modal form styles */
+.modal-form {
+    margin-top: 20px;
+}
+
+.modal-form-field {
+    margin-bottom: 15px;
+}
+
+.modal-form-label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.modal-form-actions {
+    text-align: right;
+    margin-top: 25px;
+}
+
+.modal-action-cancel {
+    margin-right: 10px;
+}
+
+/* Feedback messages */
+.feedback-success {
+    color: #256029;
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    padding: 0.7em 1em;
+    border-radius: 6px;
+    margin-bottom: 1em;
+}
+
+.feedback-error {
+    color: #b71c1c;
+    background: #ffeaea;
+    border: 1px solid #ffcdd2;
+    padding: 0.7em 1em;
+    border-radius: 6px;
+    margin-bottom: 1em;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    
+    #users-table td {
+        padding: 8px 6px;
+    }
+    
+    #users-table td .btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+    
+    .form-section {
+        padding: 1em;
+    }
+    
+    .button-group {
+        flex-direction: column;
+        gap: 5px;
+    }
+}

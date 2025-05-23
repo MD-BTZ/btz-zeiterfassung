@@ -1,0 +1,16 @@
+2025-05-15 19:51:46,344 - break_validation - INFO - Running test case: 6 Hour Work Day - No Break Required
+2025-05-15 19:51:46,347 - break_validation - INFO - PASS: Found expected number of breaks: 0
+2025-05-15 19:51:46,347 - break_validation - INFO - Running test case: 7 Hour Work Day - 30 Min Break Required (Lunch)
+2025-05-15 19:51:46,347 - break_validation - INFO - Adding lunch break: 2025-05-15 12:30:00 to 2025-05-15 13:00:00
+2025-05-15 19:51:46,349 - break_validation - INFO - PASS: Found expected number of breaks: 1
+2025-05-15 19:51:46,349 - break_validation - INFO - PASS: Break duration correct: 30 min
+2025-05-15 19:51:46,350 - break_validation - INFO - Running test case: 10 Hour Work Day - 45 Min Break Required (Lunch)
+2025-05-15 19:51:46,350 - break_validation - INFO - Adding lunch break: 2025-05-15 12:22:30 to 2025-05-15 13:07:30
+2025-05-15 19:51:46,352 - break_validation - INFO - PASS: Found expected number of breaks: 1
+2025-05-15 19:51:46,352 - break_validation - INFO - PASS: Break duration correct: 45 min
+2025-05-15 19:51:46,352 - break_validation - INFO - Running test case: 8 Hour Work After Lunch - 30 Min Break At End
+2025-05-15 19:51:46,353 - break_validation - INFO - No lunch period overlap, adding end-of-day break
+2025-05-15 19:51:46,355 - break_validation - INFO - PASS: Found expected number of breaks: 1
+2025-05-15 19:51:46,355 - break_validation - INFO - PASS: Break duration correct: 30 min
+2025-05-15 19:51:46,355 - break_validation - INFO - PASS: Break position correct: ArbZG §4 Pflichtpause (Ende des Arbeitstages) - Validation Test
+2025-05-15 19:51:46,357 - break_validation - INFO - Break placement validation completed

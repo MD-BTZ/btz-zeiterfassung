@@ -19,6 +19,16 @@
    ```
 4. Open your browser and go to `http://localhost:5000`
 
+## Project Structure
+- `app.py` - Main application file
+- `templates/` - HTML templates
+- `static/` - CSS, JS, and other static files
+- `docs/` - Documentation files
+- `run_migrations.sh` - Script to run database migrations
+- `run.sh` - Script to start the application
+
+For details about the project cleanup and file organization, see `docs/cleanup_documentation.md`.
+
 ## Features
 - Check-in and check-out tracking
 - Automatic break detection

@@ -3,103 +3,8 @@
 <head>
     <title>Benutzerverwaltung</title>
     {% include 'head_includes.html' %}
-    <style>
-        /* User Management Specific Styles */
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            font-weight: 500;
-            color: white;
-            text-align: center;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-        
-        .btn-primary {
-            background-color: #1976d2;
-        }
-        
-        .btn-success {
-            background-color: #388e3c;
-        }
-        
-        .btn-danger {
-            background-color: #b71c1c;
-        }
-        
-        .btn-secondary {
-            background-color: #757575;
-        }
-        
-        .btn-print {
-            background-color: #f57c00;
-        }
-        
-        .input-field {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            transition: border-color 0.3s;
-        }
-        
-        .input-field:focus {
-            border-color: #1976d2;
-            outline: none;
-        }
-        
-        .form-section {
-            background: #f4f6f8;
-            padding: 1.5em;
-            border-radius: 10px;
-            margin-bottom: 2em;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .feedback-success {
-            color: #256029;
-            background: #e8f5e9;
-            border: 1px solid #a5d6a7;
-            padding: 0.7em 1em;
-            border-radius: 6px;
-            margin-bottom: 1em;
-        }
-        
-        .feedback-error {
-            color: #b71c1c;
-            background: #ffeaea;
-            border: 1px solid #ffcdd2;
-            padding: 0.7em 1em;
-            border-radius: 6px;
-            margin-bottom: 1em;
-        }
-        
-        #users-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1em 0 2em 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        #users-table th, #users-table td {
-            padding: 12px;
-            text-align: left;
-        }
-        
-        #users-table th {
-            background-color: #f0f0f0;
-        }
-        
-        #users-table tr:hover {
-            background-color: #f9f9f9;
-        }
+    <link rel="stylesheet" href="/static/css/user-management.css">
+    <link rel="stylesheet" href="/static/components.css">
         
         #users-table td .btn {
             margin-right: 5px;
@@ -202,37 +107,37 @@
             <input type="password" id="password" name="password" required class="input-field">
             <label for="confirm_password">Passwort bestätigen:</label>
             <input type="password" id="confirm_password" name="confirm_password" required class="input-field">
-            <div id="password-add-mismatch" class="feedback-error" style="display:none; margin-top:8px; margin-bottom:15px;">
+            <div id="password-add-mismatch" class="feedback-error" style="display:none;">
                 Die Passwörter stimmen nicht überein.
             </div>
             <button type="submit" class="btn btn-success">Benutzer anlegen</button>
         </form>
-        <div id="add-user-feedback" style="display:none;margin-bottom:1em;"></div>
-        <div id="delete-user-feedback" style="display:none;margin-bottom:1em;"></div>
+        <div id="add-user-feedback" class="feedback-message" style="display:none;"></div>
+        <div id="delete-user-feedback" class="feedback-message" style="display:none;"></div>
         </section>
         
         <!-- Consent Management Section -->
         <section class="consent-management-section">
             <h2>Verwaltung der Einwilligung zur Datenverarbeitung</h2>
-        <div id="consent-feedback" style="display:none;margin-bottom:1em;"></div>
+        <div id="consent-feedback" class="feedback-message" style="display:none;"></div>
         <form id="consent-form" class="form-section">
-            <p style="text-align: left; margin-bottom: 1em;">Verwaltung der Einwilligung zur Verarbeitung personenbezogener Daten:</p>
-            <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em;">
-                <select id="consent-user-id" name="user_id" class="input-field" style="flex: 2; min-width: 200px;">
+            <p class="consent-info" style="margin-bottom: 1em;">Verwaltung der Einwilligung zur Verarbeitung personenbezogener Daten:</p>
+            <div class="consent-form-row">
+                <select id="consent-user-id" name="user_id" class="input-field consent-select-user">
                     <option value="" selected disabled>Benutzer auswählen</option>
                     {% for user in users %}
                     <option value="{{ user[0] }}">{{ user[1] }}</option>
                     {% endfor %}
                 </select>
-                <select id="consent-status" name="consent_status" class="input-field" style="flex: 1; min-width: 150px;">
+                <select id="consent-status" name="consent_status" class="input-field consent-select-status">
                     <option value="granted">Einwilligung erteilt</option>
                     <option value="declined">Einwilligung verweigert</option>
                 </select>
-                <button type="submit" id="update-consent-btn" class="btn btn-success" style="flex: 1; min-width: 150px;">Einwilligung aktualisieren</button>
+                <button type="submit" id="update-consent-btn" class="btn btn-success consent-button">Einwilligung aktualisieren</button>
             </div>
-            <div style="text-align: left; font-size: 0.9em; color: #546e7a;">
+            <div class="consent-info">
                 <p>Verarbeitete Daten umfassen Anwesenheitsaufzeichnungen und Benutzerinformationen.</p>
-                <p>Weitere Informationen finden Sie in unserer <a href="/privacy_policy" style="color: #1976d2;">Datenschutzerklärung</a>.</p>
+                <p>Weitere Informationen finden Sie in unserer <a href="/privacy_policy" class="consent-link">Datenschutzerklärung</a>.</p>
             </div>
         </form>
         </section>
@@ -255,16 +160,16 @@
                         <td>{{ user[0] }}</td>
                         <td>{{ user[1] }}</td>                    <td class="consent-status" data-user-id="{{ user[0] }}">
                         {% if user['consent_status'] == 'granted' %}
-                            <span style="color: #2e7d32; padding: 4px 8px; background: #e8f5e9; border-radius: 4px; display: inline-block;">
-                                <span style="font-size: 10px; margin-right: 4px;">●</span> Einwilligung erteilt
+                            <span class="badge badge-success">
+                                <span class="badge-dot">●</span> Einwilligung erteilt
                             </span>
                         {% elif user['consent_status'] == 'declined' %}
-                            <span style="color: #c62828; padding: 4px 8px; background: #ffebee; border-radius: 4px; display: inline-block;">
-                                <span style="font-size: 10px; margin-right: 4px;">●</span> Einwilligung verweigert
+                            <span class="badge badge-error">
+                                <span class="badge-dot">●</span> Einwilligung verweigert
                             </span>
                         {% else %}
-                            <span style="color: #757575; padding: 4px 8px; background: #f5f5f5; border-radius: 4px; display: inline-block;">
-                                <span style="font-size: 10px; margin-right: 4px;">○</span> Nicht festgelegt
+                            <span class="badge badge-neutral">
+                                <span class="badge-dot">○</span> Nicht festgelegt
                             </span>
                         {% endif %}
                     </td>
@@ -282,25 +187,25 @@
         </section>
         
         <!-- Modal für Passwortänderung -->
-        <div id="password-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000;">
+        <div id="password-modal" class="modal-overlay">
             <div class="modal-content">
                 <h3><span id="modal-title">Passwort ändern für </span><span id="password-change-username"></span></h3>
-                <form id="password-change-form" style="margin-top:20px;">
+                <form id="password-change-form" class="modal-form">
                     <input type="hidden" id="password-change-user-id">
                     <input type="hidden" id="modal-action" value="change">
-                    <div style="margin-bottom:15px;">
-                        <label for="new-password" style="display:block; margin-bottom:5px;">Neues Passwort:</label>
-                        <input type="password" id="new-password" name="new_password" required class="input-field" style="margin-bottom:10px;">
+                    <div class="modal-form-field">
+                        <label for="new-password" class="modal-form-label">Neues Passwort:</label>
+                        <input type="password" id="new-password" name="new_password" required class="input-field">
                     </div>
-                    <div style="margin-bottom:15px;">
-                        <label for="confirm-password" style="display:block; margin-bottom:5px;">Passwort bestätigen:</label>
-                        <input type="password" id="confirm-password" name="confirm_password" required class="input-field" style="margin-bottom:10px;">
+                    <div class="modal-form-field">
+                        <label for="confirm-password" class="modal-form-label">Passwort bestätigen:</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required class="input-field">
                     </div>
-                    <div id="password-mismatch" class="feedback-error" style="display:none; margin-bottom:15px;">
+                    <div id="password-mismatch" class="feedback-error" style="display:none;">
                         Die Passwörter stimmen nicht überein.
                     </div>
-                    <div style="text-align:right; margin-top:25px;">
-                        <button type="button" id="cancel-password-change" class="btn btn-secondary" style="margin-right:10px;">Abbrechen</button>
+                    <div class="modal-form-actions">
+                        <button type="button" id="cancel-password-change" class="btn btn-secondary modal-action-cancel">Abbrechen</button>
                         <button type="submit" class="btn btn-success">Passwort ändern</button>
                     </div>
                 </form>
@@ -441,11 +346,11 @@
                         feedback.innerHTML = `
                             <div class="feedback-success">
                                 ${data.message}
-                                <div style="margin-top: 12px;">
-                                    <a href="${data.datasheet_url}" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+                                <div class="button-container">
+                                    <a href="${data.datasheet_url}" target="_blank" class="btn btn-primary">
                                         <i class="fas fa-print"></i> Datenblatt öffnen
                                     </a>
-                                    <span style="font-size: 0.9em; color: #555; margin-left: 10px;">(Zum Ausdrucken im neuen Tab)</span>
+                                    <span class="consent-info" style="margin-left: 10px;">(Zum Ausdrucken im neuen Tab)</span>
                                 </div>
                             </div>
                         `;
@@ -455,7 +360,7 @@
                         var userId = data.user_id;
                         var username = data.username;
                         newRow.setAttribute('data-user-id', userId);
-                        newRow.innerHTML = `<td>${userId}</td><td>${username}</td><td class="consent-status" data-user-id="${userId}"><span style="color: #757575; padding: 4px 8px; background: #f5f5f5; border-radius: 4px; display: inline-block;"><span style="font-size: 10px; margin-right: 4px;">○</span> Nicht festgelegt</span></td><td><div class="button-group"><button class='change-password-btn btn btn-primary' data-user-id='${userId}' data-username='${username}'>Passwort ändern</button><button class='delete-user-btn btn btn-danger' data-user-id='${userId}'>Löschen</button></div></td>`;
+                        newRow.innerHTML = `<td>${userId}</td><td>${username}</td><td class="consent-status" data-user-id="${userId}"><span class="badge badge-neutral"><span class="badge-dot">○</span> Nicht festgelegt</span></td><td><div class="button-group"><button class='change-password-btn btn btn-primary' data-user-id='${userId}' data-username='${username}'>Passwort ändern</button><button class='delete-user-btn btn btn-danger' data-user-id='${userId}'>Löschen</button></div></td>`;
                         form.reset();
                         
                         // Reattach event listeners to newly added buttons
@@ -505,9 +410,9 @@
                         const statusCell = document.querySelector(`.consent-status[data-user-id="${userId}"]`);
                         if (statusCell) {
                             if (consentStatus === 'granted') {
-                                statusCell.innerHTML = '<span style="color: #2e7d32; padding: 4px 8px; background: #e8f5e9; border-radius: 4px; display: inline-block;"><span style="font-size: 10px; margin-right: 4px;">●</span> Einwilligung erteilt</span>';
+                                statusCell.innerHTML = '<span class="badge badge-success"><span class="badge-dot">●</span> Einwilligung erteilt</span>';
                             } else {
-                                statusCell.innerHTML = '<span style="color: #c62828; padding: 4px 8px; background: #ffebee; border-radius: 4px; display: inline-block;"><span style="font-size: 10px; margin-right: 4px;">●</span> Einwilligung verweigert</span>';
+                                statusCell.innerHTML = '<span class="badge badge-error"><span class="badge-dot">●</span> Einwilligung verweigert</span>';
                             }
                         }
                     }

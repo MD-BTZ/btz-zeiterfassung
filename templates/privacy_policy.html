@@ -3,50 +3,14 @@
 <head>
     <title>Datenschutzerklärung - Privacy Policy</title>
     {% include 'head_includes.html' %}
-    <style>
-        .privacy-section {
-            margin-bottom: 2em;
-        }
-        .privacy-section h2 {
-            color: #1976d2;
-            margin-top: 1.5em;
-        }
-        .privacy-section h3 {
-            color: #333;
-            margin-top: 1em;
-        }
-        .privacy-section ul {
-            margin-left: 1.5em;
-        }
-        .privacy-section li {
-            margin-bottom: 0.5em;
-        }
-        .privacy-section table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1em 0;
-        }
-        .privacy-section th, .privacy-section td {
-            border: 1px solid #ddd;
-            padding: 8px 12px;
-            text-align: left;
-        }
-        .privacy-section th {
-            background-color: #f5f5f5;
-        }
-        .last-updated {
-            font-style: italic;
-            color: #666;
-            margin-top: 3em;
-        }
-    </style>
-
-    <script src="/static/mobile-menu.js" defer></script></head>
+    <link rel="stylesheet" href="/static/css/privacy-policy.css">
+    <script src="/static/mobile-menu.js" defer></script>
+</head>
 <body>
     {% include 'menu.html' %}
-    <div class="container" style="max-width: 800px; text-align: left; padding: 2em 3em;">
-        <h1 style="text-align: center; margin-bottom: 1em;">Datenschutzerklärung</h1>
-        <p class="last-updated" style="text-align: center; margin-bottom: 2em;">Letzte Aktualisierung: 9. Mai 2025</p>
+    <div class="container privacy-container">
+        <h1 class="privacy-title">Datenschutzerklärung</h1>
+        <p class="privacy-update-date">Letzte Aktualisierung: 9. Mai 2025</p>
         
         <div class="privacy-section">
             <h2>1. Einleitung</h2>
@@ -238,9 +202,9 @@
             </p>
         </div>
         
-        <div style="margin-top: 3em; text-align: center;">
-            <a href="/data_access" class="button" style="display: inline-block; padding: 0.7em 1.5em; background: #1976d2; color: #fff; text-decoration: none; border-radius: 4px; margin-right: 1em;">Ihre Daten einsehen</a>
-            <a href="/user_management" class="button" style="display: inline-block; padding: 0.7em 1.5em; background: #546e7a; color: #fff; text-decoration: none; border-radius: 4px;">Zurück zur Benutzerverwaltung</a>
+        <div class="privacy-footer">
+            <a href="/data_access" class="privacy-button primary-button">Ihre Daten einsehen</a>
+            <a href="/user_management" class="privacy-button secondary-button">Zurück zur Benutzerverwaltung</a>
         </div>
         
         <p class="last-updated">Diese Datenschutzerklärung wurde zuletzt am 9. Mai 2025 aktualisiert.</p>
