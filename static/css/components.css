@@ -1,0 +1,294 @@
+/**
+ * Component styles for BTZ Zeiterfassung
+ * Contains styles for common UI components used across the application
+ */
+
+@import url('variables.css');
+
+/* Report Components */
+.report-section {
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-lg);
+}
+
+.report-heading {
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+}
+
+.report-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+}
+
+/* Options and Cards */
+.options-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  justify-content: center;
+  margin-top: var(--space-md);
+}
+
+.option-card {
+  border: 1px solid var(--color-border);
+  padding: var(--space-md);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-card-bg);
+  transition: box-shadow var(--transition-speed) ease, 
+              border-color var(--transition-speed) ease;
+}
+
+.option-card:hover {
+  border-color: var(--color-neutral-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.option-field {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+/* Date and Time Input Components */
+.datepicker-field {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: border-color var(--transition-speed);
+}
+
+.datepicker-field:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.week-picker {
+  padding: var(--space-sm);
+  width: 120px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+}
+
+.week-display {
+  background: var(--color-neutral-bg);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  min-width: 80px;
+  text-align: center;
+}
+
+.month-select,
+.year-select {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.month-select {
+  width: 100px;
+}
+
+.year-select {
+  width: 80px;
+}
+
+/* Icon and Badge Components */
+.icon-inline {
+  margin-right: var(--space-sm);
+  display: inline-flex;
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.badge-icon {
+  margin-right: var(--space-xs);
+}
+
+.badge-dot {
+  font-size: 10px;
+  margin-right: var(--space-xs);
+}
+
+/* Status badges - Using our color variables */
+.badge-success {
+  color: var(--color-success-dark);
+  background: var(--color-success-bg);
+}
+
+.badge-warning {
+  color: var(--color-warning-dark);
+  background: var(--color-warning-bg);
+}
+
+.badge-error {
+  color: var(--color-danger-dark);
+  background: var(--color-danger-bg);
+}
+
+.badge-info {
+  color: var(--color-primary-dark);
+  background: var(--color-primary-bg);
+}
+
+.badge-neutral {
+  color: var(--color-neutral-dark);
+  background: var(--color-neutral-bg);
+}
+
+/* ArbZG badges */
+.arbzg-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 50px;
+  font-size: var(--font-size-sm);
+  background: var(--color-primary-bg);
+  color: var(--color-primary-dark);
+  margin-right: var(--space-sm);
+  border: 1px solid var(--color-primary-light);
+}
+
+.lunch-badge {
+  background: var(--color-success-bg);
+  color: var(--color-success-dark);
+  border: 1px solid var(--color-success-light);
+}
+
+/* Form containers */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+/* Consent management */
+.consent-info {
+  text-align: left;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.consent-link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.consent-link:hover {
+  text-decoration: underline;
+}
+
+/* Button containers */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* Modal styling */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: var(--color-card-bg);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 90%;
+  margin: 10% auto;
+  padding: var(--space-lg);
+}
+
+.modal-header {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-xl);
+  color: var(--color-neutral);
+  transition: color var(--transition-speed);
+}
+
+.modal-close:hover {
+  color: var(--color-neutral-dark);
+}
+
+.modal-body {
+  margin-bottom: var(--space-lg);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* Break form */
+.break-form-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: flex-end;
+  margin-top: var(--space-md);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .options-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .option-card {
+    width: 100%;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .modal-container {
+    width: 95%;
+    margin: 5% auto;
+    padding: var(--space-md);
+  }
+}

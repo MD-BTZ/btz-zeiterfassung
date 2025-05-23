@@ -1,0 +1,69 @@
+/**
+ * CSS Variables for BTZ Zeiterfassung
+ * Central location for colors, spacing, and other design variables
+ */
+
+:root {
+  /* Color Palette */
+  --color-primary: #1976d2;
+  --color-primary-dark: #1565c0;
+  --color-primary-light: #42a5f5;
+  --color-primary-bg: #e3f2fd;
+  
+  --color-success: #388e3c;
+  --color-success-dark: #2e7d32;
+  --color-success-light: #66bb6a;
+  --color-success-bg: #e8f5e9;
+  
+  --color-danger: #d32f2f;
+  --color-danger-dark: #c62828;
+  --color-danger-light: #ef5350;
+  --color-danger-bg: #ffebee;
+  
+  --color-warning: #f57c00;
+  --color-warning-dark: #ef6c00;
+  --color-warning-light: #ff9800;
+  --color-warning-bg: #fff3e0;
+  
+  --color-neutral: #757575;
+  --color-neutral-dark: #616161;
+  --color-neutral-light: #9e9e9e;
+  --color-neutral-bg: #f5f7f9;
+  
+  --color-background: #f4f6f8;
+  --color-card-bg: #ffffff;
+  --color-border: #e0e4e8;
+  
+  --color-text-primary: #2d3a4b;
+  --color-text-secondary: #546e7a;
+  --color-text-light: #78909c;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+  
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  
+  /* Transitions */
+  --transition-speed: 0.2s;
+}
