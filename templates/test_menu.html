@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Menu - BTZ Zeiterfassung</title>
+    {% include 'head_includes.html' %}
+</head>
+<body>
+    {% include 'menu.html' %}
+    
+    <div style="padding: 20px; margin-top: 80px;">
+        <h1>Menu Test Page</h1>
+        <p>This page is used to test the styled menu without authentication.</p>
+        <p>User: {{ session.get('full_name', 'Test User') }} ({{ session.get('role', 'admin') }})</p>
+        
+        <div style="margin-top: 40px;">
+            <h2>Menu Features to Test:</h2>
+            <ul>
+                <li>Desktop dropdown menus (hover to activate)</li>
+                <li>Mobile menu toggle (resize window to see mobile view)</li>
+                <li>Keyboard navigation (Tab through menu items)</li>
+                <li>User role indicators</li>
+                <li>Menu animations and transitions</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

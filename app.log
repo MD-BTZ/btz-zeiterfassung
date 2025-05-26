@@ -12922,3 +12922,519 @@ Connection: keep-alive
 2025-05-23 13:49:10,842 - werkzeug - INFO - 172.20.10.3 - - [23/May/2025 13:49:10] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
 2025-05-23 13:49:10,843 - werkzeug - INFO - 172.20.10.3 - - [23/May/2025 13:49:10] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
 2025-05-23 13:49:10,844 - werkzeug - INFO - 172.20.10.3 - - [23/May/2025 13:49:10] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:04,102 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://192.168.178.52:8091
+2025-05-26 19:15:04,102 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-26 19:15:04,103 - werkzeug - INFO -  * Restarting with stat
+2025-05-26 19:15:04,237 - werkzeug - WARNING -  * Debugger is active!
+2025-05-26 19:15:04,245 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-05-26 19:15:07,953 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "[32mGET / HTTP/1.1[0m" 302 -
+2025-05-26 19:15:07,968 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /login HTTP/1.1" 200 -
+2025-05-26 19:15:07,980 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/css/variables.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,981 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:07,984 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/css/components.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,984 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/css/main.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,984 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/style.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,985 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/css/base.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,987 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/group-menu.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,987 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/dropdown-menu.css HTTP/1.1" 200 -
+2025-05-26 19:15:07,992 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:07,997 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:07,999 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-26 19:15:07,999 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 19:15:07,999 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:07] "GET /static/css/login.css HTTP/1.1" 200 -
+2025-05-26 19:15:08,000 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:08,001 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:08,010 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "GET /static/responsive-menu.css HTTP/1.1" 200 -
+2025-05-26 19:15:08,012 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:08,013 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "GET /static/responsive.css HTTP/1.1" 200 -
+2025-05-26 19:15:08,014 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:15:08,025 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:15:08] "[31m[1mGET /get_user_settings HTTP/1.1[0m" 401 -
+2025-05-26 19:25:17,850 - root - INFO - User admin logged in successfully
+2025-05-26 19:25:17,851 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-05-26 19:25:17,869 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET / HTTP/1.1" 200 -
+2025-05-26 19:25:17,877 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,878 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,879 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,881 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,881 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,882 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,883 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,883 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,884 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,885 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET /static/breaks.css HTTP/1.1" 200 -
+2025-05-26 19:25:17,887 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,887 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,890 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,890 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,891 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET /static/checkin-checkout.css HTTP/1.1" 200 -
+2025-05-26 19:25:17,891 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,891 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,892 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,893 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 19:25:17,894 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,894 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,895 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 19:25:17,914 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-26 19:25:17,939 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 19:25:17,939 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 19:25:17,939 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 19:25:17] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 20:01:10,319 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "GET /my_attendance HTTP/1.1" 200 -
+2025-05-26 20:01:10,332 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,334 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,334 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,336 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,336 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "GET /static/mobile-menu.js HTTP/1.1" 200 -
+2025-05-26 20:01:10,336 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,337 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,339 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,339 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,340 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,340 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,341 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,342 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,342 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,343 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,345 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:10,346 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:10,346 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:10] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,669 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "GET /edit_attendance/2 HTTP/1.1" 200 -
+2025-05-26 20:01:12,679 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,681 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,682 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,683 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,684 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,684 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,685 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,686 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,687 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,688 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "GET /static/edit_attendance_enhance.css HTTP/1.1" 200 -
+2025-05-26 20:01:12,689 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,690 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,690 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "GET /static/edit_attendance.css HTTP/1.1" 200 -
+2025-05-26 20:01:12,691 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,693 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,694 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,694 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 20:01:12,695 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 20:01:12,696 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 20:01:12] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,400 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "GET /edit_attendance/2 HTTP/1.1" 200 -
+2025-05-26 21:29:20,412 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:20,416 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,417 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:20,417 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,418 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:20,419 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,420 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,420 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,421 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,422 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,423 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,424 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "GET /static/edit_attendance.css HTTP/1.1" 200 -
+2025-05-26 21:29:20,425 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/edit_attendance_enhance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,427 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:20,428 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,428 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:29:20,429 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:20,429 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:20,430 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:20] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:37,378 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:37] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-05-26 21:29:37,380 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:37] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-26 21:29:37,381 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:37] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,488 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[32mGET /edit_attendance/2 HTTP/1.1[0m" 302 -
+2025-05-26 21:29:58,491 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /login HTTP/1.1" 200 -
+2025-05-26 21:29:58,521 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,522 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/css/main.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,523 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/css/variables.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,523 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/css/base.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,523 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/css/components.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,525 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/group-menu.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,525 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,526 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/dropdown-menu.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,527 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,529 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/css/login.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,529 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/style.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,529 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/script.js HTTP/1.1" 200 -
+2025-05-26 21:29:58,627 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,628 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,629 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,630 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/responsive-menu.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,630 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:29:58,631 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/responsive.css HTTP/1.1" 200 -
+2025-05-26 21:29:58,633 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "GET /static/dropdown-menu.js HTTP/1.1" 200 -
+2025-05-26 21:29:58,647 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[31m[1mGET /get_user_settings HTTP/1.1[0m" 401 -
+2025-05-26 21:29:58,970 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:29:58] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,203 - root - INFO - User admin logged in successfully
+2025-05-26 21:30:03,204 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-05-26 21:30:03,211 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET / HTTP/1.1" 200 -
+2025-05-26 21:30:03,250 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,250 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,251 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,251 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,253 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,254 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /static/checkin-checkout.css HTTP/1.1" 200 -
+2025-05-26 21:30:03,255 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,255 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,256 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,257 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,258 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,259 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /static/breaks.css HTTP/1.1" 200 -
+2025-05-26 21:30:03,260 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,261 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /static/week-picker.js HTTP/1.1" 200 -
+2025-05-26 21:30:03,261 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,261 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,262 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,264 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:03,265 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,265 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,267 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:30:03,267 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /static/checkin-checkout.js HTTP/1.1" 200 -
+2025-05-26 21:30:03,284 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-26 21:30:03,285 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 21:30:03,286 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 21:30:03,336 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:03] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 21:30:07,336 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "GET /my_attendance HTTP/1.1" 200 -
+2025-05-26 21:30:07,357 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,358 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,359 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,360 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,360 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,362 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,363 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,363 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,364 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,365 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,367 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,368 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,368 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,368 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:07,369 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,370 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,372 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:30:07,373 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:07] "GET /static/mobile-menu.js HTTP/1.1" 200 -
+2025-05-26 21:30:08,561 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "GET /edit_attendance/2 HTTP/1.1" 200 -
+2025-05-26 21:30:08,585 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,587 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,590 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,591 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,591 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,592 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "GET /static/edit_attendance_enhance.css HTTP/1.1" 200 -
+2025-05-26 21:30:08,593 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "GET /static/edit_attendance.css HTTP/1.1" 200 -
+2025-05-26 21:30:08,595 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,595 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,596 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,596 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,598 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,598 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,599 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,600 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,601 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,601 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:08,602 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:08,604 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:08] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,039 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,040 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,041 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,041 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,042 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,042 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,046 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:30:33,046 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,047 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,047 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,047 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,048 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,050 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,053 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,054 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,054 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,055 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/edit_attendance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:30:33,056 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:30:33] "[36mGET /static/edit_attendance_enhance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,178 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "GET /edit_attendance/2 HTTP/1.1" 200 -
+2025-05-26 21:33:21,201 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,202 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,203 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,204 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,205 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,206 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,206 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,208 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,208 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,209 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,210 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/edit_attendance_enhance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,211 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/edit_attendance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,211 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,212 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "GET /static/responsive.css HTTP/1.1" 200 -
+2025-05-26 21:33:21,213 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:21,213 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,214 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,215 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:21,217 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:21] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,798 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "GET /my_attendance HTTP/1.1" 200 -
+2025-05-26 21:33:45,805 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,807 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,808 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,812 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,812 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,812 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,812 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,814 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,815 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,816 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,817 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,818 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,821 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,821 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,821 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,822 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:45,823 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:45,823 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:45] "GET /static/responsive.css HTTP/1.1" 200 -
+2025-05-26 21:33:46,822 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "GET /edit_attendance/2 HTTP/1.1" 200 -
+2025-05-26 21:33:46,831 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,832 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,833 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,834 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,835 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,835 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,836 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,837 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,838 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,839 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,839 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,840 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/edit_attendance_enhance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,841 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,842 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/edit_attendance.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,842 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,842 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,843 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:46,844 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:46,845 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:46] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,015 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "GET /admin HTTP/1.1" 200 -
+2025-05-26 21:33:58,026 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,027 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,028 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,029 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,030 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,031 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,032 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,032 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,033 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,034 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,036 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/breaks.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,037 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,038 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,039 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,040 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,041 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/week-picker.js HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,041 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "GET /static/responsive.css HTTP/1.1" 200 -
+2025-05-26 21:33:58,041 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:33:58,042 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,042 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,043 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:33:58,062 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "GET /get_user_settings HTTP/1.1" 200 -
+2025-05-26 21:33:58,075 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:58] "GET /get_today_attendance/1 HTTP/1.1" 200 -
+2025-05-26 21:33:59,704 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:33:59] "GET /get_breaks/4 HTTP/1.1" 200 -
+2025-05-26 21:34:02,911 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "GET /user_management HTTP/1.1" 200 -
+2025-05-26 21:34:02,921 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,923 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,923 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,925 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,925 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,926 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,927 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "GET /static/css/user-management.css HTTP/1.1" 200 -
+2025-05-26 21:34:02,932 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,932 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,932 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,932 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,933 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,933 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,937 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,937 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,938 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:02,939 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:02,939 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:02] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:14,353 - root - INFO - add_user called, is_ajax: True, headers: Host: 192.168.178.52:8091
+Accept: */*
+Origin: http://192.168.178.52:8091
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryZnhSuUN2dQnEh9Ph
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15
+Referer: http://192.168.178.52:8091/user_management
+Content-Length: 352
+X-Requested-With: XMLHttpRequest
+Accept-Language: de-DE,de;q=0.9
+Priority: u=3, i
+Accept-Encoding: gzip, deflate
+Cookie: session=eyJhZG1pbl9sb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.aDSj_Q.Z0NVsy-J28d-X3_n90Wk_Zak-NU
+Connection: keep-alive
+
+
+2025-05-26 21:34:14,645 - root - INFO - New user created: test3 (ID: 3)
+2025-05-26 21:34:14,646 - root - INFO - Temporary password stored in database for user test3 (ID: 3)
+2025-05-26 21:34:14,646 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:14] "POST /add_user HTTP/1.1" 200 -
+2025-05-26 21:34:16,435 - root - INFO - >>> Entering user_datasheet function for user_id: 3
+2025-05-26 21:34:16,435 - root - INFO - user_datasheet called, user_id: 3
+2025-05-26 21:34:16,436 - root - INFO - temp_password found in database: True
+2025-05-26 21:34:16,437 - root - INFO - Deleted temp password for user_id: 3
+2025-05-26 21:34:16,442 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "GET /user_datasheet/3 HTTP/1.1" 200 -
+2025-05-26 21:34:16,450 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:16,451 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:16,452 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:16,453 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,454 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "GET /static/css/datasheet.css HTTP/1.1" 200 -
+2025-05-26 21:34:16,454 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,454 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,455 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,456 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,457 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,458 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,460 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,460 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,461 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:16,462 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,463 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:16,463 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:16,463 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:16,464 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:16] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,176 - root - INFO - >>> Entering user_datasheet function for user_id: 3
+2025-05-26 21:34:59,176 - root - INFO - user_datasheet called, user_id: 3
+2025-05-26 21:34:59,176 - root - INFO - temp_password found in database: False
+2025-05-26 21:34:59,177 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[32mGET /user_datasheet/3 HTTP/1.1[0m" 302 -
+2025-05-26 21:34:59,185 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "GET /user_management HTTP/1.1" 200 -
+2025-05-26 21:34:59,191 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,192 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,192 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,193 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,193 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,194 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,195 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,196 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,197 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,197 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,198 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/css/user-management.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,198 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,200 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,200 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,200 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,201 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:34:59,202 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:34:59,202 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:34:59] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:10,890 - root - INFO - add_user called, is_ajax: True, headers: Host: 192.168.178.52:8091
+Accept: */*
+Origin: http://192.168.178.52:8091
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryfOI9YwvsBnnUfEAc
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15
+Referer: http://192.168.178.52:8091/user_management
+Content-Length: 352
+X-Requested-With: XMLHttpRequest
+Accept-Language: de-DE,de;q=0.9
+Priority: u=3, i
+Accept-Encoding: gzip, deflate
+Cookie: session=eyJhZG1pbl9sb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.aDTCYw.njHa0lj4mrSm53hk_hsfa0r0EXk
+Connection: keep-alive
+
+
+2025-05-26 21:35:11,182 - root - INFO - New user created: test4 (ID: 4)
+2025-05-26 21:35:11,183 - root - INFO - Temporary password stored in database for user test4 (ID: 4)
+2025-05-26 21:35:11,184 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:11] "POST /add_user HTTP/1.1" 200 -
+2025-05-26 21:35:12,555 - root - INFO - >>> Entering user_datasheet function for user_id: 4
+2025-05-26 21:35:12,556 - root - INFO - user_datasheet called, user_id: 4
+2025-05-26 21:35:12,556 - root - INFO - temp_password found in database: True
+2025-05-26 21:35:12,557 - root - INFO - Deleted temp password for user_id: 4
+2025-05-26 21:35:12,561 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "GET /user_datasheet/4 HTTP/1.1" 200 -
+2025-05-26 21:35:12,569 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,571 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,571 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,573 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,573 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,574 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,575 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,576 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,577 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,577 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,578 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,579 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,579 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,580 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,581 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,581 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/css/datasheet.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,582 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:12,583 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:12,584 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:12] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,972 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "GET /privacy_policy HTTP/1.1" 200 -
+2025-05-26 21:35:25,980 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,981 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,981 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,983 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,984 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,985 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,986 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,987 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,987 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,989 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "GET /static/css/privacy-policy.css HTTP/1.1" 200 -
+2025-05-26 21:35:25,990 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,990 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,992 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,993 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,994 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,994 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,995 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:25,996 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:25,996 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:25] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,607 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "GET /data_access HTTP/1.1" 200 -
+2025-05-26 21:35:27,613 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,616 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,616 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,617 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,617 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,618 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,618 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,619 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,620 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "GET /static/css/data-access.css HTTP/1.1" 200 -
+2025-05-26 21:35:27,622 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,624 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,624 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,624 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,625 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,626 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,627 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:27,628 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:27,629 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:27] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,377 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "GET /change_password HTTP/1.1" 200 -
+2025-05-26 21:35:31,385 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,387 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,389 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,390 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,390 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,390 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,391 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,393 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,393 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,394 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,395 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,398 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,400 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,400 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,401 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:31,401 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:31,402 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:31] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,043 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "GET /data_access HTTP/1.1" 200 -
+2025-05-26 21:35:33,052 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/icon-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,053 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/content-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,054 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/page-layout-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,056 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/css/variables.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,056 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/css/main.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,059 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/css/components.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,060 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/css/base.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,061 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,061 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/group-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,062 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/dropdown-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,062 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/dropdown-menu.js HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,064 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/css/data-access.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,065 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/css/responsive-menu.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,065 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/css/responsive.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,068 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,068 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[33mGET /static/css/menu-fix.css HTTP/1.1[0m" 404 -
+2025-05-26 21:35:33,069 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/responsive-menu.css HTTP/1.1[0m" 304 -
+2025-05-26 21:35:33,069 - werkzeug - INFO - 192.168.178.52 - - [26/May/2025 21:35:33] "[36mGET /static/responsive.css HTTP/1.1[0m" 304 -

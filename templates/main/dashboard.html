@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - BTZ Zeiterfassung{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <h1 class="page-title">Dashboard</h1>
+  <p class="sub-heading">Willkommen bei der BTZ Zeiterfassung.</p>
+
+  <div class="dashboard-grid">
+    <!-- Quick Actions Card -->
+    <div class="dashboard-card">
+      <h2 class="card-title">Schnellaktionen</h2>
+      <div class="action-buttons">
+        {% if attendance_status and attendance_status.is_checked_in %}
+          <button class="action-button checkout-button" id="checkout-button">
+            <i class="fas fa-sign-out-alt"></i>
+            Ausstempeln
+          </button>
+        {% else %}
+          <button class="action-button checkin-button" id="checkin-button">
+            <i class="fas fa-sign-in-alt"></i>
+            Einstempeln
+          </button>
+        {% endif %}
+        
+        <a href="{{ url_for('main.edit_attendance') }}" class="action-button secondary-button">
+          <i class="fas fa-plus"></i>
+          Neue Zeit hinzufügen
+        </a>
+        
+        <a href="{{ url_for('main.my_attendance') }}?view=week" class="action-button outline-button">
+          <i class="fas fa-chart-bar"></i>
+          Wochenbericht anzeigen
+        </a>
+      </div>
+    </div>
+
+    <!-- Current Status Card -->
+    <div class="dashboard-card">
+      <h2 class="card-title">Aktueller Status</h2>
+      
+      {% if attendance_status %}
+        <div class="status-info">
+          <div class="status-row">
+            <span class="status-label">Status:</span>
+            {% if attendance_status.is_checked_in %}
+              <span class="status-badge checked-in">
+                <i class="fas fa-circle status-indicator"></i>
+                Eingestempelt
+              </span>
+            {% else %}
+              <span class="status-badge checked-out">
+                <i class="fas fa-circle status-indicator"></i>
+                Ausgestempelt
+              </span>
+            {% endif %}
+          </div>
+        
+          {% if today_record %}
+            <div class="status-row">
+              <span class="status-label">Arbeitszeit heute:</span>
+              <span class="status-value">{{ format_minutes(today_record.billable_minutes or 0) }}</span>
+            </div>
+          {% endif %}
+        
+          {% if attendance_status.check_in_time %}
+            <div class="status-row">
+              <span class="status-label">Eingestempelt:</span>
+              <span class="status-value">{{ attendance_status.check_in_time.strftime('%H:%M:%S') }}</span>
+            </div>
+          {% endif %}
+        
+          {% if attendance_status.check_out_time %}
+            <div class="status-row">
+              <span class="status-label">Ausgestempelt:</span>
+              <span class="status-value">{{ attendance_status.check_out_time.strftime('%H:%M:%S') }}</span>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="no-data-message">
+          <p>Keine Zeiterfassungsdaten für heute verfügbar.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Weekly Summary Card -->
+    <div class="dashboard-card">
+      <h2 class="card-title">Wochenübersicht</h2>
+      {% if week_stats %}
+        <div class="week-stats">
+          <div class="status-row">
+            <span class="status-label">Diese Woche:</span>
+            <span class="status-value">{{ format_minutes(week_stats.total_minutes or 0) }}</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">Arbeitstage:</span>
+            <span class="status-value">{{ week_stats.working_days }}</span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: {{ week_stats.percentage or 0 }}%;"></div>
+        </div>
+        <div class="progress-labels">
+          <span>{{ format_minutes(week_stats.total_minutes or 0) }}</span>
+          <span>{{ format_minutes(week_stats.target_minutes or 0) }}</span>
+        </div>
+      {% else %}
+        <div class="no-data-message">
+          <p>Keine Wochendaten verfügbar.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="dashboard-card full-width">
+    <h2 class="card-title">Letzte Aktivitäten</h2>
+    {% if recent_records %}
+      <div class="recent-activities">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Einstempeln</th>
+              <th>Ausstempeln</th>
+              <th>Arbeitszeit</th>
+              <th>Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in recent_records %}
+              <tr>
+                <td>{{ record.check_in.strftime('%d.%m.%Y') }}</td>
+                <td>{{ record.check_in.strftime('%H:%M:%S') }}</td>
+                <td>{{ record.check_out.strftime('%H:%M:%S') if record.check_out else '-' }}</td>
+                <td>{{ format_minutes(record.billable_minutes) if record.billable_minutes else '-' }}</td>
+                <td>
+                  <a href="{{ url_for('main.edit_attendance', id=record.id) }}" class="table-action">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="no-data-message">
+        <p>Keine kürzlichen Aktivitäten gefunden.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='checkin-checkout.js') }}"></script>
+{% endblock %}

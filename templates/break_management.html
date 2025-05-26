@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pausenverwaltung</title>
+    {% include 'head_includes.html' %}
+    <link rel="stylesheet" href="/static/breaks.css">
+</head>
+<body>
+    {% include 'menu.html' %}
+    <div class="main-card card-style">
+        <h1><i class="fas fa-mug-hot"></i> Pausenverwaltung</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="break-action-panel">
+            <div class="break-status-card">
+                <h2>Aktuelle Pausenstatus</h2>
+                
+                {% if active_break %}
+                <div class="active-break-info">
+                    <p class="status-label">Sie sind gerade in einer Pause</p>
+                    <p class="break-time-info">
+                        <span class="time-label">Beginn:</span> 
+                        <span class="time-value">{{ active_break.start_time.strftime('%H:%M:%S') }}</span>
+                    </p>
+                    <p class="break-duration">
+                        <i class="fas fa-stopwatch"></i> Dauer: 
+                        <span id="break-duration">Wird berechnet...</span>
+                    </p>
+                    <form action="/end_break" method="post" class="end-break-form">
+                        <button type="submit" class="end-break-button">
+                            <i class="fas fa-stop-circle"></i> Pause beenden
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="no-active-break">
+                    <p class="status-label">Keine aktive Pause</p>
+                    {% if is_checked_in %}
+                    <form action="/start_break" method="post" class="start-break-form">
+                        <button type="submit" class="start-break-button">
+                            <i class="fas fa-play-circle"></i> Pause beginnen
+                        </button>
+                    </form>
+                    {% else %}
+                    <p class="not-checked-in-message">
+                        <i class="fas fa-info-circle"></i> Sie müssen eingecheckt sein, um eine Pause zu starten.
+                    </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="break-settings-card">
+                <h2>Pauseneinstellungen</h2>
+                <div class="settings-summary">
+                    <p>
+                        <i class="fas fa-cog"></i> Automatische Pausen: 
+                        <span class="setting-value">{{ "Aktiviert" if settings.auto_break_detection_enabled else "Deaktiviert" }}</span>
+                    </p>
+                    {% if settings.auto_break_detection_enabled %}
+                    <p>
+                        <i class="fas fa-hourglass-half"></i> Inaktivitätsschwelle: 
+                        <span class="setting-value">{{ settings.auto_break_threshold_minutes }} Minuten</span>
+                    </p>
+                    {% endif %}
+                    <p>
+                        <i class="fas fa-gavel"></i> ArbZG-Pausen: 
+                        <span class="setting-value">{{ "Aktiviert" if settings.arbzg_breaks_enabled else "Deaktiviert" }}</span>
+                    </p>
+                </div>
+                <a href="/user_break_preferences" class="settings-link">
+                    <i class="fas fa-sliders-h"></i> Pauseneinstellungen bearbeiten
+                </a>
+            </div>
+        </div>
+        
+        <div class="break-history">
+            <h2>Pausenübersicht</h2>
+            
+            <div class="date-picker-container">
+                <label for="date-picker">Datum auswählen:</label>
+                <input type="date" id="date-picker" value="{{ date }}" onchange="changeDate(this.value)">
+            </div>
+            
+            {% if breaks %}
+            <div class="breaks-container">
+                <table class="breaks-table">
+                    <thead>
+                        <tr>
+                            <th><i class="far fa-clock"></i> Start</th>
+                            <th><i class="far fa-clock"></i> Ende</th>
+                            <th><i class="fas fa-stopwatch"></i> Dauer</th>
+                            <th><i class="fas fa-tag"></i> Typ</th>
+                            <th><i class="fas fa-comment-alt"></i> Beschreibung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for break in breaks %}
+                        <tr class="break-row {% if break.is_auto %}auto-break{% endif %} {% if break.break_type == 'arbzg' %}arbzg-break{% endif %}">
+                            <td>{{ break.start_time }}</td>
+                            <td>{{ break.end_time if break.end_time else "Noch aktiv" }}</td>
+                            <td>{{ format_duration(break.duration) if break.end_time else "Läuft..." }}</td>
+                            <td>
+                                {% if break.break_type == 'arbzg' %}
+                                    <span class="break-type arbzg"><i class="fas fa-gavel"></i> Gesetzlich</span>
+                                {% elif break.is_auto %}
+                                    <span class="break-type auto"><i class="fas fa-robot"></i> Auto</span>
+                                {% else %}
+                                    <span class="break-type manual"><i class="fas fa-user"></i> Manuell</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ break.description if break.description else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="no-breaks-message">
+                <i class="fas fa-info-circle"></i>
+                <p>Keine Pausen an diesem Tag aufgezeichnet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Function to update the active break duration in real-time
+        function updateBreakDuration() {
+            {% if active_break %}
+                const startTime = new Date("{{ active_break.start_time.isoformat() }}");
+                const durationElement = document.getElementById('break-duration');
+                
+                function updateTime() {
+                    const now = new Date();
+                    const diff = Math.floor((now - startTime) / 1000);
+                    
+                    const hours = Math.floor(diff / 3600);
+                    const minutes = Math.floor((diff % 3600) / 60);
+                    const seconds = diff % 60;
+                    
+                    const formattedTime = [
+                        hours.toString().padStart(2, '0'),
+                        minutes.toString().padStart(2, '0'),
+                        seconds.toString().padStart(2, '0')
+                    ].join(':');
+                    
+                    durationElement.textContent = formattedTime;
+                }
+                
+                // Update immediately then every second
+                updateTime();
+                setInterval(updateTime, 1000);
+            {% endif %}
+        }
+        
+        // Function to change date
+        function changeDate(date) {
+            window.location.href = `/break_management?date=${date}`;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBreakDuration();
+        });
+    </script>
+</body>
+</html>

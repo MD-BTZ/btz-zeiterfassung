@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    {% include 'head_includes.html' %}
+</head>
+<body class="login-page">
+    {% include 'menu.html' %}
+    <div class="login-card">
+        <h1><i class="fas fa-sign-in-alt icon-inline"></i>Login</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post" class="login-form">
+            <input type="text" name="username" placeholder="Benutzername" autocomplete="username" required>
+            <input type="password" name="password" id="password-input" placeholder="Passwort" autocomplete="current-password" required>
+            <label class="show-password"><input type="checkbox" id="show-password-toggle"> Passwort anzeigen</label>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Zurück zur Startseite</a>
+    </div>
+    {% if 'user_id' in session %}
+    <script>
+        sessionStorage.setItem('user_id', '{{ session.user_id }}');
+    </script>
+    {% else %}
+    <script>
+        sessionStorage.removeItem('user_id');
+    </script>
+    {% endif %}
+    <script>
+    document.getElementById('show-password-toggle').addEventListener('change', function() {
+        var pwd = document.getElementById('password-input');
+        pwd.type = this.checked ? 'text' : 'password';
+    });
+    </script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
