@@ -2,40 +2,58 @@
 <html>
 <head>
     <title>Anwesenheitsaufzeichnungen manuell hinzufügen</title>
-    {% include 'head_includes.html' %}</head>
-<body>
+    {% include 'head_includes.html' %}
+    <style>
+        /* Info alert styling for non-admin users */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #1e40af;
+        }
+        
+        .alert-info i {
+            color: #3b82f6;
+            font-size: 1.1rem;
+        }
+        
+        .alert strong {
+            font-weight: 600;
+        }
+        
+        /* Improve form spacing */
+        .form-section {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
-    <div class="main-card card-style">
-        <div style="text-align: center; margin-bottom: 2em;">
-            <h1 style="margin-bottom: 0.2em;">
-                <i class="fas fa-plus-circle" style="color: #1976d2; margin-right: 0.3em;"></i>
-                Anwesenheitsaufzeichnung hinzufügen
-            </h1>
-            {% if session.get('username') %}
-            <p style="color: #666; font-size: 1.1em; margin-top: 0.5em;">
-                Angemeldet als <strong>{{ session.get('username') }}</strong>
-            </p>
-            {% endif %}
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <div class="section">
-            <h2>Neue Anwesenheitsaufzeichnung hinzufügen</h2>
-            <p>Verwenden Sie dieses Formular, um eine neue Anwesenheitsaufzeichnung manuell hinzuzufügen.</p>
-            
-            {% if session.get('username') %}
-            <form id="add-attendance-form" method="post" action="/add_manual_attendance" style="background: #f4f6f8; padding: 1.5em; border-radius: 10px; margin: 1.5em 0;">
-                {% if session.get('admin_logged_in') %}
-                <div style="margin-bottom: 1em;">
-                    <label for="user-select" style="display: block; text-align: left; margin-bottom: 0.5em;">Benutzer:</label>
-                    <select id="user-select" name="user_id" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+    <div class="glass-container">
+        <div class="main-card">
+            <div class="text-center mb-3">
+                {% if users %}
+                <h1 class="mb-1"><i class="fas fa-plus-circle text-primary mr-1"></i>Manuelle Anwesenheit hinzufügen</h1>
+                <p class="text-muted mt-1">Hier kannst du eine Anwesenheit für jeden Benutzer manuell eintragen.</p>
+                {% else %}
+                <h1 class="mb-1"><i class="fas fa-plus-circle text-primary mr-1"></i>Meine Anwesenheit hinzufügen</h1>
+                <p class="text-muted mt-1">Hier kannst du deine eigene Anwesenheit manuell nachtragen.</p>
+                {% endif %}
+            </div>
+            <form method="post" action="/add_manual_attendance">
+                {% if users %}
+                <!-- Admin user selection dropdown -->
+                <div class="mb-2">
+                    <label for="user-select" class="mb-1 text-left">Benutzer:</label>
+                    <select id="user-select" name="user_id" required class="input">
                         <option value="">Benutzer auswählen...</option>
                         {% for user in users %}
                         <option value="{{ user[0] }}">{{ user[1] }}</option>
@@ -43,51 +61,48 @@
                     </select>
                 </div>
                 {% else %}
-                <input type="hidden" name="user_id" value="{{ session.get('user_id') }}">
+                <!-- Normal user - hidden input with their own user ID -->
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+                <div class="mb-2">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Anwesenheit für:</strong> {{ username }}
+                    </div>
+                </div>
                 {% endif %}
                 
-                <div style="margin-bottom: 1em;">
-                    <label for="attendance-date" style="display: block; text-align: left; margin-bottom: 0.5em;">Datum:</label>
-                    <input type="date" id="attendance-date" name="date" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                <div class="mb-2">
+                    <label for="attendance-date" class="mb-1 text-left">Datum:</label>
+                    <input type="date" id="attendance-date" name="date" required class="input">
                 </div>
-                
-                <div style="margin-bottom: 1em;">
-                    <label for="attendance-checkin" style="display: block; text-align: left; margin-bottom: 0.5em;">Check-In Zeit:</label>
-                    <input type="time" id="attendance-checkin" name="check_in" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                <div class="mb-2">
+                    <label for="attendance-checkin" class="mb-1 text-left">Check-In Zeit:</label>
+                    <input type="time" id="attendance-checkin" name="check_in" required class="input">
                 </div>
-                
-                <div style="margin-bottom: 1.5em;">
-                    <label for="attendance-checkout" style="display: block; text-align: left; margin-bottom: 0.5em;">Check-Out Zeit:</label>
-                    <input type="time" id="attendance-checkout" name="check_out" style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                    <small style="color: #666; display: block; margin-top: 0.3em;">Optional - leer lassen, wenn nur Check-In hinzugefügt werden soll.</small>
+                <div class="mb-2">
+                    <label for="attendance-checkout" class="mb-1 text-left">Check-Out Zeit:</label>
+                    <input type="time" id="attendance-checkout" name="check_out" class="input">
+                    <small class="text-muted mt-1 d-block">Optional - leer lassen, wenn nur Check-In hinzugefügt werden soll.</small>
                 </div>
-                
-                <div style="margin-bottom: 1.5em;">
-                    <label for="current-password" style="display: block; text-align: left; margin-bottom: 0.5em;">Passwort (zur Bestätigung):</label>
-                    <input type="password" id="current-password" name="current_password" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
+                <div class="mb-2">
+                    <label for="current-password" class="mb-1 text-left">Passwort (zur Bestätigung):</label>
+                    <input type="password" id="current-password" name="current_password" required class="input">
                 </div>
-                
-                <div>
-                    <button type="submit" style="background: #1976d2; padding: 0.8em 1.5em; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
-                        <i class="fas fa-save" style="margin-right: 0.5em;"></i>Aufzeichnung speichern
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-save mr-1"></i>Aufzeichnung speichern</button>
             </form>
-            {% else %}
-            <div style="background: #ffeaea; color: #b71c1c; padding: 1em; border-radius: 6px; margin-top: 1em;">
-                <p>Sie müssen angemeldet sein, um Anwesenheitsaufzeichnungen hinzuzufügen.</p>
-                <p><a href="/login" style="color: #1976d2; font-weight: bold;">Zum Login</a></p>
+            <div class="mt-3">
+                <a href="/login" class="text-primary font-bold">Zum Login</a>
             </div>
-            {% endif %}
-        </div>
-        
-        <div style="margin-top: 2em;">
-            <h3>Hinweise</h3>
-            <ul style="margin-left: 1.5em; line-height: 1.6;">
-                <li>Verwenden Sie diese Funktion nur, wenn Sie vergessen haben, sich ein- oder auszuchecken.</li>
-                <li>Bitte achten Sie auf die Richtigkeit der eingegebenen Daten.</li>
-                <li>Das Datum und die Uhrzeiten müssen in der Vergangenheit liegen.</li>
-                <li>Manuelle Einträge können von Administratoren überprüft werden.</li>
+            <ul class="mt-3 ml-3 list-disc">
+                {% if users %}
+                <li>Bitte stelle sicher, dass die Daten korrekt sind.</li>
+                <li>Alle Felder sind Pflichtfelder, außer Check-Out Zeit.</li>
+                <li>Als Administrator kannst du Anwesenheiten für alle Benutzer hinzufügen.</li>
+                {% else %}
+                <li>Du kannst nur deine eigenen Anwesenheitszeiten nachtragen.</li>
+                <li>Alle Felder sind Pflichtfelder, außer Check-Out Zeit.</li>
+                <li>Bitte stelle sicher, dass die Zeiten korrekt sind.</li>
+                {% endif %}
             </ul>
         </div>
     </div>

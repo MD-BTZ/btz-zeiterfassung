@@ -1,292 +1,570 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Meine Arbeitszeiten</title>
+    <title>BTZ Zeiterfassung - Meine Arbeitszeiten</title>
     {% include 'head_includes.html' %}
     <style>
-        .attendance-tools {
-            display: flex;
-            margin-bottom: 20px;
-            background: #f4f6f8;
-            padding: 15px;
-            border-radius: 8px;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .search-tools {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .search-tools label {
-            font-weight: 500;
-        }
-        
-        .action-button {
-            padding: 8px 15px;
-            background-color: #1976d2;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: background-color 0.2s;
-        }
-        
-        .action-button:hover {
-            background-color: #1565c0;
-        }
-        
-        .action-button.warning {
-            background-color: #f57c00;
-        }
-        
-        .action-button.warning:hover {
-            background-color: #ef6c00;
-        }
-        
-        .action-button i {
-            font-size: 14px;
-        }
-        
+        /* Custom styles for attendance table */
         .attendance-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .attendance-table th {
-            background: linear-gradient(to bottom, #f8fafc, #eef1f5);
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
             text-align: left;
-            border-bottom: 2px solid #e0e4e8;
-            color: #37474f;
-            font-weight: 500;
-        }
-        
-        .attendance-table th i {
-            margin-right: 5px;
-            color: #607d8b;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .attendance-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eceff1;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
         }
         
-        .attendance-table tr:nth-child(even) {
-            background-color: #f8fafc;
+        .attendance-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
         
-        .attendance-table tr:hover {
-            background-color: #f1f4f7;
+        .attendance-table tbody tr:last-child td {
+            border-bottom: none;
         }
         
-        .attendance-actions {
+        .break-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .no-break-indicator {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        .duration-display {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .search-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-form {
             display: flex;
-            gap: 8px;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
         }
         
-        .no-records {
+        .search-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-actions {
+                justify-content: stretch;
+            }
+            
+            .search-actions .btn {
+                flex: 1;
+            }
+            
+            .attendance-table {
+                font-size: 0.875rem;
+            }
+            
+            .attendance-table th,
+            .attendance-table td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .attendance-actions {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .attendance-actions .btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
             text-align: center;
-            padding: 40px 20px;
-            background: #f4f6f8;
-            border-radius: 8px;
-            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .no-records i {
-            font-size: 48px;
-            color: #b0bec5;
-            margin-bottom: 15px;
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
         }
         
-        .no-records p {
-            color: #546e7a;
-            font-size: 16px;
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
         }
         
-        .pagination {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
         }
         
-        .pagination a {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            text-decoration: none;
-            color: #333;
-            border-radius: 3px;
+        /* Edit window button styling */
+        .edit-window-btn {
+            transition: all 0.3s ease;
         }
         
-        .pagination a.active {
-            background-color: #1976d2;
-            color: white;
-            border-color: #1976d2;
-        }
-        
-        .pagination a:hover:not(.active) {
-            background-color: #f1f1f1;
-        }
-        
-        .main-card {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+        .edit-window-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
         }
     </style>
-
-    <script src="/static/mobile-menu.js" defer></script></head>
-<body>
+</head>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
-    <div class="main-card card-style">
-        <h1>Meine Arbeitszeiten</h1>
+    
+    <main class="glass-container">
+        <!-- Page Header -->
+        <div class="glass-card mb-4 text-center">
+            <h1 class="mb-2 d-flex align-center justify-center gap-2">
+                <i class="far fa-calendar-check text-primary"></i>
+                Meine Arbeitszeiten
+            </h1>
+            <p class="text-muted">Übersicht Ihrer erfassten Arbeitszeiten</p>
+        </div>
         
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                    <div class="alert {% if category == 'error' %}danger{% else %}success{% endif %} mb-3">
+                        <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %} icon-sm"></i>
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         
-        <div class="attendance-tools">
-            <div class="search-tools">
-                <div>
-                    <label for="month-selector">Zeitraum:</label>
-                    <select id="month-selector" onchange="filterByMonth(this.value)">
-                        <option value="">Alle anzeigen</option>
-                        {% for month_year in months_available %}
-                            <option value="{{ month_year }}" {% if month_year == selected_month %}selected{% endif %}>
-                                {{ month_year }}
-                            </option>
-                        {% endfor %}
-                    </select>
+        <!-- Search and Filter -->
+        <div class="glass-card mb-4">
+            <h3 class="mb-3 d-flex align-center gap-2">
+                <i class="fas fa-search text-primary"></i>
+                Suchen & Filtern
+            </h3>
+            <form class="search-form" method="GET">
+                <div class="search-group">
+                    <label for="search-date" class="form-label d-flex align-center gap-1">
+                        <i class="far fa-calendar text-primary icon-sm"></i>
+                        Datum
+                    </label>
+                    <input type="date" id="search-date" name="date" class="form-input" 
+                           value="{{ request.args.get('date', '') }}">
                 </div>
-                
-                <div>
-                    <input type="date" id="date-filter" onchange="filterByDate(this.value)" value="{{ selected_date }}">
-                    <button class="action-button" onclick="clearFilters()">
-                        <i class="fas fa-times"></i> Filter zurücksetzen
+                <div class="search-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search icon-sm"></i>
+                        Suchen
                     </button>
+                    <a href="/my_attendance" class="btn btn-ghost">
+                        <i class="fas fa-times icon-sm"></i>
+                        Zurücksetzen
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Statistics Overview (if records exist) -->
+        {% if records %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ records|length }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-calendar-day icon-sm"></i>
+                    Einträge
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">
+                    {% set billable_records = records | selectattr('billable_minutes') | list %}
+                    {% set total_minutes = billable_records | map(attribute='billable_minutes') | sum %}
+                    {% if total_minutes > 0 %}
+                        {% set total_hours = total_minutes / 60 %}
+                        {{ "%.1f"|format(total_hours) }}h
+                    {% else %}
+                        <!-- Debug: Show count of records with/without billable_minutes -->
+                        {% set records_with_billable = records | selectattr('billable_minutes') | list | length %}
+                        {% set total_records = records | length %}
+                        {% if records_with_billable == 0 and total_records > 0 %}
+                            <span title="Keine abrechenbaren Stunden gefunden ({{ total_records }} Einträge ohne billable_minutes)">0.0h</span>
+                        {% else %}
+                            0.0h
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="stat-label">
+                    <i class="fas fa-clock icon-sm"></i>
+                    Gesamtstunden
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">
+                    {% set auto_break_count = records|selectattr('has_auto_breaks')|list|length %}
+                    {{ auto_break_count }}
+                </div>
+                <div class="stat-label">
+                    <i class="fas fa-coffee icon-sm"></i>
+                    Auto-Pausen
                 </div>
             </div>
         </div>
+        {% endif %}
         
-        {% if records %}
-            <div class="table-container">
-                <table class="attendance-table">
+        <!-- Debug Information (temporary) -->
+        {% if records and session.get('admin_logged_in') %}
+        <div class="glass-card mb-4" style="background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);">
+            <h4 class="mb-3" style="color: #f59e0b;">
+                <i class="fas fa-bug"></i>
+                Debug Information (nur für Admins sichtbar)
+            </h4>
+            <div style="font-family: monospace; font-size: 0.875rem;">
+                <p><strong>Total Records:</strong> {{ records | length }}</p>
+                <p><strong>Records with billable_minutes:</strong> {{ records | selectattr('billable_minutes') | list | length }}</p>
+                <p><strong>Sample Record Data:</strong></p>
+                {% for record in records[:3] %}
+                <div style="margin-left: 1rem; margin-bottom: 0.5rem;">
+                    <strong>Record {{ record.id }}:</strong><br>
+                    - check_in: {{ record.check_in }}<br>
+                    - check_out: {{ record.check_out }}<br>
+                    - billable_minutes: {{ record.billable_minutes }}<br>
+                    - has_auto_breaks: {{ record.has_auto_breaks }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Attendance Records -->
+        <div class="glass-card">
+            <h3 class="mb-3 d-flex align-center gap-2">
+                <i class="fas fa-table text-primary"></i>
+                Zeiterfassung
+            </h3>
+            
+            {% if records %}
+            <div class="table-responsive">
+                <table class="attendance-table w-full">
                     <thead>
                         <tr>
-                            <th><i class="far fa-calendar"></i> Datum</th>
-                            <th><i class="far fa-clock"></i> Check-In</th>
-                            <th><i class="far fa-clock"></i> Check-Out</th>
-                            <th><i class="fas fa-hourglass-half"></i> Dauer</th>
-                            <th><i class="fas fa-coffee"></i> Pausen</th>
-                            <th><i class="fas fa-cog"></i> Aktionen</th>
+                            <th>
+                                <i class="far fa-calendar icon-sm"></i>
+                                Datum
+                            </th>
+                            <th>
+                                <i class="fas fa-sign-in-alt icon-sm"></i>
+                                Check-In
+                            </th>
+                            <th>
+                                <i class="fas fa-sign-out-alt icon-sm"></i>
+                                Check-Out
+                            </th>
+                            <th>
+                                <i class="fas fa-hourglass-half icon-sm"></i>
+                                Dauer
+                            </th>
+                            <th>
+                                <i class="fas fa-coffee icon-sm"></i>
+                                Pausen
+                            </th>
+                            <th>
+                                <i class="fas fa-cog icon-sm"></i>
+                                Aktionen
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for record in records %}
-                            <tr>
-                                <td>{{ record.check_in[:10] }}</td>
-                                <td>{{ record.check_in[11:16] }}</td>
-                                <td>{% if record.check_out %}{{ record.check_out[11:16] }}{% else %}-{% endif %}</td>
-                                <td>
-                                    {% if record.check_in and record.check_out %}
-                                        {{ get_duration(record.check_in, record.check_out) }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if record.has_auto_breaks %}
-                                        <span class="break-indicator" title="Automatische Pausen">⏱️</span>
-                                    {% else %}
-                                        <span>Keine</span>
-                                    {% endif %}
-                                </td>
-                                <td class="attendance-actions">
-                                    <a href="/edit_attendance/{{ record.id }}" class="action-button">
-                                        <i class="fas fa-edit"></i> Bearbeiten
-                                    </a>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-center gap-2">
+                                    <i class="far fa-calendar text-primary icon-sm"></i>
+                                    {{ record.check_in[:10] }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-center gap-2">
+                                    <i class="fas fa-clock text-success icon-sm"></i>
+                                    <span class="duration-display">{{ record.check_in[11:16] }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if record.check_out %}
+                                <div class="d-flex align-center gap-2">
+                                    <i class="fas fa-clock text-danger icon-sm"></i>
+                                    <span class="duration-display">{{ record.check_out[11:16] }}</span>
+                                </div>
+                                {% else %}
+                                <div class="d-flex align-center gap-2">
+                                    <i class="fas fa-minus text-muted icon-sm"></i>
+                                    <span class="text-muted">Aktiv</span>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if record.check_in and record.check_out %}
+                                    <span class="duration-display">{{ get_duration(record.check_in, record.check_out) }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if record.has_auto_breaks %}
+                                    <span class="break-indicator">
+                                        <i class="fas fa-check icon-sm"></i>
+                                        Automatisch
+                                    </span>
+                                {% else %}
+                                    <span class="no-break-indicator">Keine</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="attendance-actions d-flex gap-1">
+                                    <button class="btn btn-warning btn-sm edit-window-btn" 
+                                            data-attendance-id="{{ record.id }}">
+                                        <i class="fas fa-edit icon-sm"></i>
+                                        Bearbeiten
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            
-            <!-- Simple pagination -->
-            {% if total_pages > 1 %}
-                <div class="pagination">
-                    {% if current_page > 1 %}
-                        <a href="?page={{ current_page - 1 }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">&laquo; Zurück</a>
+            {% else %}
+            <div class="text-center p-4">
+                <div class="mb-3">
+                    <i class="far fa-calendar-times text-muted" style="font-size: 3rem;"></i>
+                </div>
+                <h4 class="text-muted mb-2">Keine Aufzeichnungen gefunden</h4>
+                <p class="text-muted mb-3">
+                    {% if request.args.get('date') %}
+                        Für das ausgewählte Datum wurden keine Arbeitszeiten gefunden.
+                    {% else %}
+                        Sie haben noch keine Arbeitszeiten erfasst.
                     {% endif %}
-                    
-                    {% for i in range(1, total_pages + 1) %}
-                        <a href="?page={{ i }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}" {% if i == current_page %}class="active"{% endif %}>{{ i }}</a>
-                    {% endfor %}
-                    
-                    {% if current_page < total_pages %}
-                        <a href="?page={{ current_page + 1 }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if selected_date %}&date={{ selected_date }}{% endif %}">Weiter &raquo;</a>
+                </p>
+                <div class="d-flex gap-2 justify-center">
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-plus icon-sm"></i>
+                        Zeit erfassen
+                    </a>
+                    {% if request.args.get('date') %}
+                    <a href="/my_attendance" class="btn btn-ghost">
+                        <i class="fas fa-list icon-sm"></i>
+                        Alle anzeigen
+                    </a>
                     {% endif %}
                 </div>
-            {% endif %}
-        {% else %}
-            <div class="no-records">
-                <i class="far fa-calendar-times"></i>
-                <p>Keine Arbeitszeiten im ausgewählten Zeitraum gefunden.</p>
             </div>
-        {% endif %}
-    </div>
+            {% endif %}
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="glass-card mt-4">
+            <h3 class="mb-3 d-flex align-center gap-2">
+                <i class="fas fa-bolt text-primary"></i>
+                Schnellzugriff
+            </h3>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home icon-sm"></i>
+                    Dashboard
+                </a>
+                <a href="/manual_attendance" class="btn btn-ghost">
+                    <i class="fas fa-plus icon-sm"></i>
+                    Zeit hinzufügen
+                </a>
+                <a href="/data_access" class="btn btn-ghost">
+                    <i class="fas fa-file-alt icon-sm"></i>
+                    Meine Daten
+                </a>
+                {% if session.get('admin_logged_in') %}
+                <a href="/admin" class="btn btn-ghost">
+                    <i class="fas fa-tachometer-alt icon-sm"></i>
+                    Admin-Dashboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
     
     <script>
-        function filterByMonth(month) {
-            const currentUrl = new URL(window.location.href);
-            if (month) {
-                currentUrl.searchParams.set('month', month);
-                currentUrl.searchParams.delete('date'); // Reset date when month filter changes
-            } else {
-                currentUrl.searchParams.delete('month');
-            }
-            currentUrl.searchParams.set('page', 1); // Reset to first page when filter changes
-            window.location.href = currentUrl.toString();
-        }
-        
-        function filterByDate(date) {
-            const currentUrl = new URL(window.location.href);
-            if (date) {
-                currentUrl.searchParams.set('date', date);
-                currentUrl.searchParams.delete('month'); // Reset month when date filter changes
-            } else {
-                currentUrl.searchParams.delete('date');
-            }
-            currentUrl.searchParams.set('page', 1); // Reset to first page when filter changes
-            window.location.href = currentUrl.toString();
-        }
-        
-        function clearFilters() {
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.delete('month');
-            currentUrl.searchParams.delete('date');
-            currentUrl.searchParams.set('page', 1); // Reset to first page when filters cleared
-            window.location.href = currentUrl.toString();
+        // Add some interactive enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current date if showing today's records
+            const today = new Date().toISOString().split('T')[0];
+            const searchDateInput = document.getElementById('search-date');
             
-            // Also reset the form inputs
-            document.getElementById('month-selector').value = '';
-            document.getElementById('date-filter').value = '';
+            // Auto-focus search input on page load
+            if (searchDateInput && !searchDateInput.value) {
+                searchDateInput.focus();
+            }
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + F to focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    searchDateInput.focus();
+                }
+                
+                // Escape to clear search
+                if (e.key === 'Escape' && searchDateInput === document.activeElement) {
+                    searchDateInput.value = '';
+                    searchDateInput.form.submit();
+                }
+            });
+            
+            // Add smooth scrolling for better UX
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+        
+        // New Window Edit Functionality
+        function openEditWindow(attendanceId) {
+            // Calculate window dimensions and position
+            const width = Math.min(800, window.screen.width * 0.8);
+            const height = Math.min(700, window.screen.height * 0.8);
+            const left = (window.screen.width - width) / 2;
+            const top = (window.screen.height - height) / 2;
+            
+            // Window features for a modern popup
+            const features = [
+                `width=${width}`,
+                `height=${height}`,
+                `left=${left}`,
+                `top=${top}`,
+                'resizable=yes',
+                'scrollbars=yes',
+                'status=no',
+                'menubar=no',
+                'toolbar=no',
+                'location=no',
+                'directories=no'
+            ].join(',');
+            
+            // Open the edit window
+            const editWindow = window.open(
+                `/edit_attendance/${attendanceId}`,
+                `editAttendance_${attendanceId}`,
+                features
+            );
+            
+            // Focus the new window
+            if (editWindow) {
+                editWindow.focus();
+                
+                // Listen for window close to refresh current page
+                const checkClosed = setInterval(() => {
+                    if (editWindow.closed) {
+                        clearInterval(checkClosed);
+                        // Refresh the current page to show any changes
+                        window.location.reload();
+                    }
+                }, 1000);
+                
+                // Add a message listener for when the edit is successful
+                window.addEventListener('message', function(event) {
+                    if (event.data && event.data.type === 'attendanceUpdated') {
+                        // Close the edit window and refresh
+                        editWindow.close();
+                        window.location.reload();
+                    }
+                });
+            } else {
+                // Fallback if popup was blocked
+                alert('Popup wurde blockiert. Bitte erlauben Sie Popups für diese Seite oder öffnen Sie den Link in einem neuen Tab.');
+                // Open in new tab as fallback
+                window.open(`/edit_attendance/${attendanceId}`, '_blank');
+            }
         }
+        
+        // Add visual feedback for edit buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-window-btn');
+            editButtons.forEach(button => {
+                // Add click event listener
+                button.addEventListener('click', function() {
+                    const attendanceId = this.getAttribute('data-attendance-id');
+                    if (attendanceId) {
+                        openEditWindow(attendanceId);
+                    }
+                });
+                
+                // Add hover effects
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
     </script>
 </body>
 </html>

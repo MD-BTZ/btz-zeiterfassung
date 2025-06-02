@@ -1,133 +1,660 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Arbeitszeiten bearbeiten</title>
+    <title>BTZ Zeiterfassung - Arbeitszeit bearbeiten</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/edit_attendance.css">
-    <link rel="stylesheet" href="/static/edit_attendance_enhance.css">
     <style>
-        body {
-            background: #f4f6f8;
-        }
-        .responsive-container {
-            max-width: 900px;
+        /* Edit Attendance Page Styles */
+        .edit-container {
+            max-width: 800px;
             margin: 0 auto;
-            padding: 2em 1em 3em 1em;
         }
-        @media (max-width: 600px) {
-            .main-card {
-                padding: 1em;
-            }
-            .edit-form-section {
-                padding: 1em;
-            }
+        
+        .edit-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-        .top-back {
-            margin-bottom: 1.5em;
+        
+        .edit-header h1 {
             display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
-        .top-back a {
-            color: #1976d2;
-            text-decoration: none;
-            font-weight: 500;
+        
+        .edit-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .back-nav {
+            margin-bottom: 1.5rem;
+        }
+        
+        .back-nav .btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.5em;
-            font-size: 1em;
-            transition: color 0.2s;
+            gap: 0.5rem;
+            }
+        
+            .edit-form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-        .top-back a:hover {
-            color: #0d47a1;
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .section-title h2 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .attendance-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .attendance-info i {
+            color: #3b82f6;
+            font-size: 1.25rem;
+        }
+        
+        .attendance-info-text {
+            color: #1e40af;
+            font-weight: 500;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .field-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .field-label i {
+            font-size: 0.9rem;
+        }
+        
+        .field-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .field-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .field-input:invalid {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        
+        .field-input:valid:not(:placeholder-shown) {
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+        
+        .field-help {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .security-notice {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #92400e;
+        }
+        
+        .security-notice i {
+            color: #f59e0b;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .auto-breaks-info {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .auto-breaks-info .icon {
+            color: #059669;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+        
+        .auto-breaks-content {
+            color: #065f46;
+        }
+        
+        .auto-breaks-content h3 {
+            margin: 0 0 0.5rem 0;
+            color: #047857;
+            font-size: 1.1rem;
+        }
+        
+        .auto-breaks-content p {
+            margin: 0 0 0.75rem 0;
+            line-height: 1.5;
+        }
+        
+        .auto-breaks-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .breaks-overview {
+            margin-top: 1rem;
+        }
+        
+        .breaks-table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .breaks-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .breaks-table td {
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .breaks-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .breaks-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .break-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .break-badge.legal {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .break-badge.auto {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .break-badge.manual {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .not-found-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .not-found-state .icon {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .not-found-state h2 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .not-found-state p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        /* Delete Section Styles */
+        .delete-section {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delete-section .section-title h2 {
+            color: #dc2626;
+        }
+        
+        .delete-section .modal-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #dc2626;
+        }
+        
+        /* Loading States */
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .edit-container {
+                padding: 0 1rem;
+            }
+            
+            .edit-form-section {
+                padding: 1.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* Focus and Accessibility */
+        .field-input:focus-visible,
+        .btn:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+        
+        /* Validation Feedback */
+        .field-error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .field-success {
+            color: #059669;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
     </style>
 </head>
-<body>
-    {% include 'menu.html' %}
-    <div class="responsive-container">
-        <div class="top-back">
-            <a href="/my_attendance"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+<body class="glass-morphism-page">
+    
+    
+    <main class="glass-container">
+        <div class="edit-container">
+            <!-- Page Header -->
+            <div class="edit-header">
+                <h1>
+                    <i class="fas fa-edit text-primary"></i>
+                    Arbeitszeit bearbeiten
+                </h1>
+                <p>Bearbeiten Sie Ihre Zeiterfassung mit Sicherheitsbestätigung</p>
         </div>
-        <div class="main-card card-style">
-            <h1>Arbeitszeiten bearbeiten</h1>
+            
+            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        <div class="alert {% if category == 'error' %}danger{% else %}success{% endif %} mb-3">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %} icon-sm"></i>
                             {{ message }}
                         </div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
+            
+            <!-- Back Navigation -->
+            <div class="back-nav">
+                <a href="/my_attendance" class="btn btn-ghost">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zur Übersicht
+                </a>
+            </div>
+            
             {% if attendance %}
-                <form id="edit-attendance-form" action="/edit_attendance/{{ attendance.id }}" method="post">
-                    <div class="edit-form-container">
-                        <div class="edit-form-section">
+                <form id="editForm" action="/edit_attendance/{{ attendance.id }}" method="post" novalidate>
+                    <!-- Main Edit Section -->
+                    <div class="edit-form-section">
+                        <div class="section-title">
+                            <i class="fas fa-clock text-primary"></i>
                             <h2>Arbeitszeit ID: {{ attendance.id }}</h2>
-                            <p class="form-info">Sie bearbeiten Ihren Eintrag vom {{ attendance.check_in[:10] }}</p>
-                            <div class="form-group">
-                                <label for="check_in" data-tooltip="Wann haben Sie die Arbeit begonnen?"><i class="fas fa-sign-in-alt"></i> Check-In Zeit:</label>
-                                <input type="datetime-local" id="check_in" name="check_in" value="{{ attendance.check_in[:16] }}" required autocomplete="off" aria-label="Check-In Zeit">
+                        </div>
+                        
+                        <div class="attendance-info">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="attendance-info-text">
+                                Eintrag vom {{ attendance.check_in[:10] }} wird bearbeitet
+                            </span>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="checkIn" class="field-label">
+                                    <i class="fas fa-sign-in-alt text-success"></i>
+                                    Check-In Zeit
+                                </label>
+                                <input 
+                                    type="datetime-local" 
+                                    id="checkIn" 
+                                    name="check_in" 
+                                    class="field-input"
+                                    value="{{ attendance.check_in[:16] }}" 
+                                    required
+                                    autocomplete="off"
+                                >
+                                <div class="field-help">Wann haben Sie mit der Arbeit begonnen?</div>
                             </div>
-                            <div class="form-group">
-                                <label for="check_out" data-tooltip="Wann haben Sie die Arbeit beendet?"><i class="fas fa-sign-out-alt"></i> Check-Out Zeit:</label>
-                                <input type="datetime-local" id="check_out" name="check_out" value="{{ attendance.check_out[:16] if attendance.check_out else '' }}" autocomplete="off" aria-label="Check-Out Zeit">
+                            
+                            <div class="form-field">
+                                <label for="checkOut" class="field-label">
+                                    <i class="fas fa-sign-out-alt text-danger"></i>
+                                    Check-Out Zeit
+                                </label>
+                                <input 
+                                    type="datetime-local" 
+                                    id="checkOut" 
+                                    name="check_out" 
+                                    class="field-input"
+                                    value="{{ attendance.check_out[:16] if attendance.check_out else '' }}"
+                                    autocomplete="off"
+                                >
+                                <div class="field-help">Wann haben Sie die Arbeit beendet? (Optional)</div>
                             </div>
-                            <div class="form-group">
-                                <label for="current_password"><i class="fas fa-lock"></i> Aktuelles Passwort zur Bestätigung:</label>
-                                <input type="password" id="current_password" name="current_password" required autocomplete="current-password" aria-label="Aktuelles Passwort">
-                                <p class="password-notice">Aus Sicherheitsgründen müssen Sie Ihr aktuelles Passwort eingeben, um Änderungen zu bestätigen.</p>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-field full-width">
+                                <label for="password" class="field-label">
+                                    <i class="fas fa-lock text-primary"></i>
+                                    Passwort zur Bestätigung
+                                </label>
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="current_password" 
+                                    class="field-input"
+                                    required
+                                    autocomplete="current-password"
+                                    placeholder="Ihr aktuelles Passwort"
+                                >
+                                <div class="security-notice">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Aus Sicherheitsgründen müssen Sie Ihr Passwort eingeben, um Änderungen zu bestätigen.</span>
+                                </div>
                             </div>
-                            <div class="button-group">
-                                <button type="submit" id="save-button" class="primary-button">
-                                    <i class="fas fa-save"></i> Änderungen speichern
-                                </button>
-                                <a href="/my_attendance" class="cancel-button">
-                                    <i class="fas fa-times"></i> Abbrechen
+                        </div>
+                        
+                        <div class="form-actions">
+                            <div class="btn-group">
+                                <a href="/my_attendance" class="btn btn-ghost">
+                                    <i class="fas fa-times"></i>
+                                    Abbrechen
                                 </a>
-                                <button type="button" class="delete-button" onclick="showDeleteModal()" data-tooltip="Diesen Eintrag unwiderruflich löschen">
-                                    <i class="fas fa-trash-alt"></i> Löschen
+                                <button type="button" class="btn btn-danger" id="deleteToggleBtn" onclick="toggleDeleteSection()">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Löschen
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="saveBtn">
+                                    <i class="fas fa-save"></i>
+                                    Änderungen speichern
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </form>
+                
+                <!-- Inline Delete Section (Hidden by default) -->
+                <div class="edit-form-section" id="deleteSection" style="display: none;">
+                    <div class="section-title">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                        <h2>Eintrag löschen</h2>
+                    </div>
+                    
+                    <div class="modal-warning">
+                        <strong>Achtung:</strong> Diese Aktion kann nicht rückgängig gemacht werden!
+                    </div>
+                    
+                    <p style="margin: 1rem 0; color: var(--text-secondary);">
+                        Sind Sie sicher, dass Sie diesen Arbeitszeiteintrag permanent löschen möchten?
+                    </p>
+                    
+                    <form id="deleteForm" action="/delete_attendance/{{ attendance.id if attendance else '' }}" method="post">
+                        <div class="form-row">
+                            <div class="form-field full-width">
+                                <label for="deletePassword" class="field-label">
+                                    <i class="fas fa-lock text-primary"></i>
+                                    Passwort zur Bestätigung
+                                </label>
+                                <input 
+                                    type="password" 
+                                    id="deletePassword" 
+                                    name="current_password" 
+                                    class="field-input"
+                                    required
+                                    placeholder="Ihr aktuelles Passwort"
+                                >
+                                <div class="security-notice">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Bestätigen Sie das Löschen mit Ihrem Passwort.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-ghost" onclick="hideDeleteSection()">
+                                    <i class="fas fa-times"></i>
+                                    Abbrechen
+                                </button>
+                                <button type="submit" class="btn btn-danger" id="deleteBtn">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Endgültig löschen
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
                         {% if attendance.has_auto_breaks %}
+                <!-- Auto Breaks Information -->
                         <div class="edit-form-section">
+                    <div class="section-title">
+                        <i class="fas fa-robot text-primary"></i>
+                        <h2>Automatische Pausen</h2>
+                    </div>
+                    
+                    <div class="auto-breaks-info">
+                        <i class="fas fa-info-circle icon"></i>
+                        <div class="auto-breaks-content">
                             <h3>Hinweis zu automatischen Pausen</h3>
-                            <div class="info-box">
-                                <i class="fas fa-info-circle"></i>
-                                <div>
-                                    <p>Dieser Eintrag enthält automatische Pausen. Diese werden beim Ändern der Ein- oder Auscheckzeiten neu berechnet.</p>
-                                    <p style="margin-top: 0.5em; font-size: 0.9em;">Wichtig: Gesetzliche Pausen (ArbZG) werden automatisch eingefügt, wenn die Arbeitszeit die gesetzlichen Schwellenwerte überschreitet.</p>
+                            <p>Dieser Eintrag enthält automatische Pausen, die beim Ändern der Arbeitszeiten neu berechnet werden.</p>
+                            <p><strong>Wichtig:</strong> Gesetzliche Pausen (ArbZG) werden automatisch eingefügt, wenn die Arbeitszeit die gesetzlichen Schwellenwerte überschreitet.</p>
                                 </div>
                             </div>
                         </div>
                         {% endif %}
+                
                         {% if breaks %}
+                <!-- Breaks Overview -->
                         <div class="edit-form-section">
-                            <h3>Pausenübersicht</h3>                        <div class="breaks-container">
+                    <div class="section-title">
+                        <i class="fas fa-coffee text-primary"></i>
+                        <h2>Pausenübersicht</h2>
+                    </div>
+                    
+                    <div class="breaks-overview">
                             <table class="breaks-table">
                                 <thead>
                                     <tr>
-                                        <th><i class="far fa-clock"></i> Start</th>
-                                        <th><i class="far fa-clock"></i> Ende</th>
-                                        <th><i class="fas fa-stopwatch"></i> Dauer</th>
-                                        <th><i class="fas fa-tag"></i> Typ</th>
-                                        <th><i class="fas fa-comment-alt"></i> Beschreibung</th>
+                                    <th><i class="fas fa-play icon-sm"></i> Start</th>
+                                    <th><i class="fas fa-stop icon-sm"></i> Ende</th>
+                                    <th><i class="fas fa-hourglass-half icon-sm"></i> Dauer</th>
+                                    <th><i class="fas fa-tag icon-sm"></i> Typ</th>
+                                    <th><i class="fas fa-comment icon-sm"></i> Beschreibung</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for break in breaks %}
-                                    <tr class="break-row {% if break.is_auto %}auto-break{% endif %} {% if break.break_type == 'arbzg' %}arbzg-break{% endif %}">
+                                <tr>
                                         <td>{{ break.start_time }}</td>
                                         <td>{{ break.end_time }}</td>
                                         <td>{{ format_minutes(break.duration_minutes) }}</td>
                                         <td>
                                             {% if break.break_type == 'arbzg' %}
-                                                <span class="break-type arbzg"><i class="fas fa-gavel"></i> Gesetzlich</span>
+                                            <span class="break-badge legal">
+                                                <i class="fas fa-gavel"></i>
+                                                Gesetzlich
+                                            </span>
                                             {% elif break.is_auto %}
-                                                <span class="break-type auto"><i class="fas fa-robot"></i> Auto</span>
+                                            <span class="break-badge auto">
+                                                <i class="fas fa-robot"></i>
+                                                Automatisch
+                                            </span>
                                             {% else %}
-                                                <span class="break-type manual"><i class="fas fa-user"></i> Manuell</span>
+                                            <span class="break-badge manual">
+                                                <i class="fas fa-user"></i>
+                                                Manuell
+                                            </span>
                                             {% endif %}
                                         </td>
                                         <td>{{ break.description if break.description else '-' }}</td>
@@ -138,175 +665,381 @@
                             </div>
                         </div>
                         {% endif %}
-                    </div>
-                </form>
             {% else %}
-                <div class="not-found">
+                <!-- Not Found State -->
+                <div class="edit-form-section">
+                    <div class="not-found-state">
+                        <div class="icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
                     <h2>Eintrag nicht gefunden</h2>
-                    <p>Der angeforderte Arbeitszeiteintrag wurde nicht gefunden oder Sie haben keine Berechtigung, diesen zu bearbeiten.</p>
-                    <a href="/my_attendance" class="back-button">Zurück zur Übersicht</a>
+                        <p>
+                            Der angeforderte Arbeitszeiteintrag wurde nicht gefunden oder Sie haben keine 
+                            Berechtigung, diesen zu bearbeiten. Möglicherweise wurde der Eintrag bereits 
+                            gelöscht oder Sie sind nicht der Besitzer.
+                        </p>
+                        <a href="/my_attendance" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i>
+                            Zurück zur Übersicht
+                        </a>
+                    </div>
                 </div>
             {% endif %}
         </div>
-    </div>
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-exclamation-triangle"></i> Arbeitszeiteintrag löschen</h2>
-                <span class="close" onclick="closeDeleteModal()" tabindex="0" role="button" aria-label="Schließen">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p><strong>Achtung:</strong> Sind Sie sicher, dass Sie diesen Arbeitszeiteintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.</p>
-                <form id="delete-form" action="/delete_attendance/{{ attendance.id }}" method="post">
-                    <div class="form-group">
-                        <label for="delete-password"><i class="fas fa-lock"></i> Passwort zur Bestätigung:</label>
-                        <input type="password" id="delete-password" name="current_password" required autocomplete="current-password">
-                        <p class="password-notice">Aus Sicherheitsgründen müssen Sie Ihr Passwort eingeben, um das Löschen zu bestätigen.</p>
-                    </div>
-                    <div class="button-group">
-                        <button type="submit" class="danger-button" id="confirm-delete-btn">
-                            <i class="fas fa-trash-alt"></i> Löschen bestätigen
-                        </button>
-                        <button type="button" class="cancel-button" onclick="closeDeleteModal()">
-                            <i class="fas fa-times"></i> Abbrechen
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    </main>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('edit-attendance-form');
-            if (form) {
-                const checkInInput = document.getElementById('check_in');
-                const checkOutInput = document.getElementById('check_out');
-                const saveButton = document.getElementById('save-button');
-                const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-                const deleteForm = document.getElementById('delete-form');
-                
-                // Enhanced form validation
-                form.addEventListener('submit', function(e) {
-                    if (checkInInput.value && checkOutInput.value) {
-                        const checkIn = new Date(checkInInput.value);
-                        const checkOut = new Date(checkOutInput.value);
-                        if (checkOut <= checkIn) {
-                            e.preventDefault();
+        // Simple delete section toggle functions
+        function toggleDeleteSection() {
+            console.log('toggleDeleteSection called');
+            const deleteSection = document.getElementById('deleteSection');
+            const deleteToggleBtn = document.getElementById('deleteToggleBtn');
+            
+            console.log('deleteSection:', deleteSection);
+            console.log('deleteToggleBtn:', deleteToggleBtn);
+            console.log('deleteSection.style.display:', deleteSection ? deleteSection.style.display : 'null');
+            
+            if (deleteSection && (deleteSection.style.display === 'none' || deleteSection.style.display === '')) {
+                console.log('Calling showDeleteSection');
+                showDeleteSection();
+            } else if (deleteSection) {
+                console.log('Calling hideDeleteSection');
+                hideDeleteSection();
+            } else {
+                console.error('deleteSection not found!');
+            }
+        }
+        
+        function showDeleteSection() {
+            console.log('showDeleteSection called');
+            const deleteSection = document.getElementById('deleteSection');
+            const deleteToggleBtn = document.getElementById('deleteToggleBtn');
+            
+            if (!deleteSection) {
+                console.error('deleteSection not found in showDeleteSection');
+                return;
+            }
+            
+            if (!deleteToggleBtn) {
+                console.error('deleteToggleBtn not found in showDeleteSection');
+                return;
+            }
+            
+            console.log('Setting deleteSection display to block');
+            deleteSection.style.display = 'block';
+            deleteSection.classList.add('delete-section');
+            
+            // Update button text
+            deleteToggleBtn.innerHTML = '<i class="fas fa-times"></i> Abbrechen';
+            deleteToggleBtn.onclick = hideDeleteSection;
                             
-                            // Show error notification instead of alert
-                            const errorDiv = document.createElement('div');
-                            errorDiv.className = 'flash-message error';
-                            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Die Check-Out Zeit muss nach der Check-In Zeit liegen.';
-                            form.prepend(errorDiv);
-                            
-                            // Highlight the fields with error
-                            checkOutInput.style.borderColor = '#c62828';
-                            
-                            // Remove error after 5 seconds
+            // Focus password input
                             setTimeout(() => {
-                                if (errorDiv.parentNode) {
-                                    errorDiv.parentNode.removeChild(errorDiv);
+                const passwordInput = document.getElementById('deletePassword');
+                if (passwordInput) {
+                    passwordInput.focus();
+                    console.log('Password input focused');
+                } else {
+                    console.error('deletePassword input not found');
+                }
+            }, 100);
+            
+            // Scroll to delete section
+            deleteSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            console.log('Delete section should now be visible');
                                 }
-                                checkOutInput.style.borderColor = '';
-                            }, 5000);
-                            
-                            return false;
-                        }
-                    }
-                    
-                    // Show saving animation
-                    saveButton.classList.add('is-saving');
-                    saveButton.disabled = true;
-                });
-                
-                // Improved datetime inputs
+        
+        function hideDeleteSection() {
+            console.log('hideDeleteSection called');
+            const deleteSection = document.getElementById('deleteSection');
+            const deleteToggleBtn = document.getElementById('deleteToggleBtn');
+            
+            if (!deleteSection) {
+                console.error('deleteSection not found in hideDeleteSection');
+                return;
+            }
+            
+            if (!deleteToggleBtn) {
+                console.error('deleteToggleBtn not found in hideDeleteSection');
+                return;
+            }
+            
+            console.log('Setting deleteSection display to none');
+            deleteSection.style.display = 'none';
+            deleteSection.classList.remove('delete-section');
+            
+            // Reset button
+            deleteToggleBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Löschen';
+            deleteToggleBtn.onclick = toggleDeleteSection;
+            
+            // Clear password field
+            const passwordInput = document.getElementById('deletePassword');
+            if (passwordInput) {
+                passwordInput.value = '';
+                clearValidation(passwordInput);
+                console.log('Password field cleared');
+            }
+            console.log('Delete section hidden');
+        }
+        
+        // Form and validation management
+        document.addEventListener('DOMContentLoaded', function() {
+            const editForm = document.getElementById('editForm');
+            const deleteForm = document.getElementById('deleteForm');
+            const checkInInput = document.getElementById('checkIn');
+            const checkOutInput = document.getElementById('checkOut');
+            const saveBtn = document.getElementById('saveBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            
+            // Auto-suggest checkout time
+            if (checkInInput && checkOutInput) {
                 checkInInput.addEventListener('change', function() {
-                    // If check-out is empty or before check-in, set it to check-in + 8 hours as a reasonable default
-                    if (!checkOutInput.value || new Date(checkOutInput.value) <= new Date(this.value)) {
-                        const suggestedEnd = new Date(this.value);
-                        suggestedEnd.setHours(suggestedEnd.getHours() + 8);
+                    if (!checkOutInput.value && this.value) {
+                        const checkIn = new Date(this.value);
+                        const suggestedCheckOut = new Date(checkIn.getTime() + (8 * 60 * 60 * 1000));
                         
-                        // Format for datetime-local input
-                        const year = suggestedEnd.getFullYear();
-                        const month = String(suggestedEnd.getMonth() + 1).padStart(2, '0');
-                        const day = String(suggestedEnd.getDate()).padStart(2, '0');
-                        const hours = String(suggestedEnd.getHours()).padStart(2, '0');
-                        const minutes = String(suggestedEnd.getMinutes()).padStart(2, '0');
+                        const year = suggestedCheckOut.getFullYear();
+                        const month = String(suggestedCheckOut.getMonth() + 1).padStart(2, '0');
+                        const day = String(suggestedCheckOut.getDate()).padStart(2, '0');
+                        const hours = String(suggestedCheckOut.getHours()).padStart(2, '0');
+                        const minutes = String(suggestedCheckOut.getMinutes()).padStart(2, '0');
                         
                         checkOutInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
                     }
                 });
-                
-                // Add keyboard focus indicators
-                const focusableElements = form.querySelectorAll('button, input, a');
-                focusableElements.forEach(el => {
-                    el.addEventListener('focus', function(e) {
-                        if (e.target.classList.contains('keyboard-focus')) return;
-                        
-                        // Only add the class if user is navigating with keyboard
-                        if (window.mouseDown) return;
-                        e.target.classList.add('keyboard-focus');
-                    });
+            }
+            
+            // Edit form validation
+            if (editForm) {
+                editForm.addEventListener('submit', function(e) {
+                    const checkIn = checkInInput.value;
+                    const checkOut = checkOutInput.value;
                     
-                    el.addEventListener('blur', function(e) {
-                        e.target.classList.remove('keyboard-focus');
+                    // Validate time sequence
+                    if (checkIn && checkOut) {
+                        const checkInDate = new Date(checkIn);
+                        const checkOutDate = new Date(checkOut);
+                        
+                        if (checkOutDate <= checkInDate) {
+                            e.preventDefault();
+                            showError(checkOutInput, 'Check-Out Zeit muss nach der Check-In Zeit liegen.');
+                            return false;
+                        }
+                        
+                        // Check for unreasonable duration
+                        const diffHours = (checkOutDate - checkInDate) / (1000 * 60 * 60);
+                        if (diffHours > 24) {
+                            if (!confirm('Die Arbeitszeit beträgt mehr als 24 Stunden. Möchten Sie fortfahren?')) {
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+                    }
+                    
+                    // Show loading state
+                    if (saveBtn) {
+                        saveBtn.classList.add('loading');
+                        saveBtn.disabled = true;
+                    }
+                });
+            }
+            
+            // Delete form validation and submission
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const password = document.getElementById('deletePassword').value;
+                    
+                    if (!password.trim()) {
+                        showError(document.getElementById('deletePassword'), 'Passwort ist erforderlich.');
+                        return false;
+                    }
+                    
+                    // Confirm deletion
+                    if (!confirm('Sind Sie wirklich sicher, dass Sie diesen Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+                        return false;
+                    }
+                    
+                    // Show loading state
+                    if (deleteBtn) {
+                        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Löschen...';
+                        deleteBtn.disabled = true;
+                    }
+                    
+                    // Submit the form
+                    const formData = new FormData();
+                    formData.append('current_password', password);
+                    
+                    fetch(deleteForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Success - redirect or close popup
+                            if (window.opener && !window.opener.closed) {
+                                // If popup, notify parent and close
+                                window.opener.postMessage({
+                                    type: 'attendanceUpdated',
+                                    timestamp: new Date().toISOString()
+                                }, window.location.origin);
+                                window.close();
+                            } else {
+                                // Regular window, redirect
+                                window.location.href = '/my_attendance';
+                            }
+                        } else {
+                            // Error - reload page to show error message
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Delete request error:', error);
+                        // Re-enable button and show error
+                        if (deleteBtn) {
+                            deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Endgültig löschen';
+                            deleteBtn.disabled = false;
+                        }
+                        alert('Fehler beim Löschen des Eintrags. Bitte versuchen Sie es erneut.');
                     });
                 });
+            }
+            
+            // Real-time validation
+            const inputs = document.querySelectorAll('.field-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    clearValidation(this);
+                    
+                    if (this.checkValidity()) {
+                        showSuccess(this);
+                    } else if (this.value) {
+                        showError(this, 'Ungültiger Wert');
+                    }
+                });
                 
-                // Delete form submission
-                if (deleteForm) {
-                    deleteForm.addEventListener('submit', function() {
-                        confirmDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wird gelöscht...';
-                        confirmDeleteBtn.disabled = true;
+                input.addEventListener('blur', function() {
+                    if (this.required && !this.value) {
+                        showError(this, 'Dieses Feld ist erforderlich.');
+                    }
                     });
+            });
+            
+            // Auto-focus first input
+            if (checkInInput) {
+                checkInInput.focus();
+            }
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + S to save
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if (editForm && !saveBtn.disabled) {
+                        editForm.submit();
+                    }
+                }
+                
+                // Escape to hide delete section
+                if (e.key === 'Escape') {
+                    const deleteSection = document.getElementById('deleteSection');
+                    if (deleteSection && deleteSection.style.display !== 'none') {
+                        e.preventDefault();
+                        hideDeleteSection();
+                    }
+                }
+            });
+        });
+        
+        // Validation helpers
+        function showError(input, message) {
+            clearValidation(input);
+            input.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+            
+            const error = document.createElement('div');
+            error.className = 'field-error';
+            error.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            input.parentNode.appendChild(error);
+        }
+        
+        function showSuccess(input) {
+            clearValidation(input);
+            input.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+            
+            const success = document.createElement('div');
+            success.className = 'field-success';
+            success.innerHTML = '<i class="fas fa-check-circle"></i> Gültig';
+            input.parentNode.appendChild(success);
+        }
+        
+        function clearValidation(input) {
+            if (!input) return;
+            input.style.borderColor = '';
+            const existing = input.parentNode.querySelectorAll('.field-error, .field-success');
+            existing.forEach(el => el.remove());
+        }
+        
+        // Prevent form resubmission
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+        
+        // Communication with parent window (for popup mode)
+        function notifyParentAndClose() {
+            // Check if this window was opened as a popup
+            if (window.opener && !window.opener.closed) {
+                try {
+                    // Send message to parent window
+                    window.opener.postMessage({
+                        type: 'attendanceUpdated',
+                        timestamp: new Date().toISOString()
+                    }, window.location.origin);
+                    
+                    // Close this window after a short delay
+                    setTimeout(() => {
+                        window.close();
+                    }, 1000);
+                } catch (e) {
+                    console.log('Could not communicate with parent window:', e);
+                    // Fallback: just close the window
+                    setTimeout(() => {
+                        window.close();
+                    }, 2000);
                 }
             }
-            
-            // Track if mouse is being used for interaction
-            window.mouseDown = false;
-            document.body.addEventListener('mousedown', function() {
-                window.mouseDown = true;
-            });
-            document.body.addEventListener('keydown', function() {
-                window.mouseDown = false;
-            });
-        });
-        
-        function showDeleteModal() {
-            const modal = document.getElementById('delete-modal');
-            modal.style.display = 'block';
-            
-            // Add show class after a small delay to trigger transition
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
         }
         
-        function closeDeleteModal() {
-            const modal = document.getElementById('delete-modal');
-            modal.classList.remove('show');
-            
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-        
-        // Enhanced modal interaction
-        window.onclick = function(event) {
-            const modal = document.getElementById('delete-modal');
-            if (event.target == modal) {
-                closeDeleteModal();
+        // Check for success flash messages and notify parent
+        document.addEventListener('DOMContentLoaded', function() {
+            const successAlerts = document.querySelectorAll('.alert.success');
+            if (successAlerts.length > 0) {
+                // If there's a success message, notify parent and close
+                notifyParentAndClose();
             }
-        }
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeDeleteModal();
+            
+            // Add close window button if opened as popup
+            if (window.opener && !window.opener.closed) {
+                addCloseWindowButton();
             }
         });
+        
+        function addCloseWindowButton() {
+            const backNav = document.querySelector('.back-nav');
+            if (backNav) {
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'btn btn-ghost ml-2';
+                closeBtn.innerHTML = '<i class="fas fa-times"></i> Fenster schließen';
+                closeBtn.onclick = function() {
+                    window.close();
+                };
+                backNav.appendChild(closeBtn);
+            }
+        }
     </script>
 </body>
 </html>
+

@@ -1,18 +1,9 @@
 <!-- DSGVO-compliant cookie consent banner -->
-<div id="cookie-consent-banner" class="cookie-banner" style="display: none;">
-    <div class="cookie-content">
-        <h3>Cookie-Hinweis</h3>
-        <p>Diese Website verwendet nur technisch notwendige Cookies, um Ihnen die bestmögliche Funktionalität zu bieten. Wir speichern und verwenden:</p>
-        <ul>
-            <li>Session-Cookies für die Anmeldung und Sitzungsverwaltung</li>
-            <li>Keine Tracking- oder Marketing-Cookies</li>
-        </ul>
-        <p>Mit der Nutzung dieser Website erklären Sie sich mit der Verwendung dieser Cookies einverstanden. Weitere Informationen finden Sie in unserer <a href="/privacy_policy">Datenschutzerklärung</a>.</p>
-        
-        <div class="cookie-actions">
-            <button id="cookie-accept" class="btn-primary">Akzeptieren</button>
-            <button id="cookie-essential-only" class="btn-secondary">Nur notwendige Cookies</button>
-        </div>
+<div id="cookie-consent-banner" class="cookie-banner glass-card d-none text-center p-3 mb-3">
+    <p class="mb-2">Diese Website verwendet Cookies, um die Benutzerfreundlichkeit zu verbessern. Mit der Nutzung dieser Seite stimmen Sie der Verwendung von Cookies zu.</p>
+    <div class="d-flex justify-center gap-2">
+        <button id="accept-cookies" class="btn btn-primary">Akzeptieren</button>
+        <button id="decline-cookies" class="btn btn-secondary">Ablehnen</button>
     </div>
 </div>
     
@@ -30,7 +21,7 @@
         }
         
         // Handle accept button
-        document.getElementById('cookie-accept').addEventListener('click', function() {
+        document.getElementById('accept-cookies').addEventListener('click', function() {
             localStorage.setItem('cookie-consent', 'full');
             document.getElementById('cookie-consent-banner').style.display = 'none';
             
@@ -38,13 +29,13 @@
             logConsentToServer('full');
         });
         
-        // Handle essential only button
-        document.getElementById('cookie-essential-only').addEventListener('click', function() {
-            localStorage.setItem('cookie-consent', 'essential');
+        // Handle decline button
+        document.getElementById('decline-cookies').addEventListener('click', function() {
+            localStorage.setItem('cookie-consent', 'declined');
             document.getElementById('cookie-consent-banner').style.display = 'none';
             
             // If user is logged in, log the consent to server
-            logConsentToServer('essential');
+            logConsentToServer('declined');
         });
         
         // Function to log consent to server if user is logged in

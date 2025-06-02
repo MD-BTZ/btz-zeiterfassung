@@ -1,0 +1,242 @@
+/* 
+   CONSOLIDATED MENU FIX
+   Resolves dropdown menu conflicts in BTZ Zeiterfassung
+   Priority: Load this CSS file LAST to override conflicts
+*/
+
+/* ===========================
+   Z-INDEX HIERARCHY FIX
+   =========================== */
+:root {
+  --z-menu-backdrop: 999;
+  --z-menu-panel: 1000;
+  --z-menu-header: 1001;
+  --z-dropdown-menu: 1002;
+  --z-mobile-overlay: 1003;
+}
+
+/* ===========================
+   DROPDOWN MENU FIXES
+   =========================== */
+
+/* Ensure all dropdown menus have consistent positioning */
+.dropdown-menu,
+.menu-nav-item .dropdown-menu,
+.dropdown-container .dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  z-index: var(--z-dropdown-menu) !important;
+  min-width: 220px !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-10px) scale(0.95) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  
+  /* Glass morphism background */
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15) !important,
+    0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  
+  /* Reset any conflicting transforms */
+  margin-top: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Show dropdown on hover/focus/active */
+.menu-nav-item:hover .dropdown-menu,
+.menu-nav-item:focus-within .dropdown-menu,
+.dropdown-container:hover .dropdown-menu,
+.dropdown-container.active .dropdown-menu,
+.menu-nav-item.active .dropdown-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* ===========================
+   DROPDOWN ITEMS STYLING
+   =========================== */
+
+.dropdown-item,
+.dropdown-menu .menu-item,
+.dropdown-menu a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.7rem !important;
+  padding: 0.8rem 1.2rem !important;
+  color: #333 !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.dropdown-item:first-child {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none !important;
+  border-radius: 0 0 12px 12px !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #1d4ed8 !important;
+  transform: translateX(4px) !important;
+}
+
+/* ===========================
+   DROPDOWN ICONS
+   =========================== */
+
+.dropdown-icon,
+.menu-nav-link .dropdown-icon {
+  font-size: 0.8rem !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-left: 0.5rem !important;
+}
+
+.menu-nav-item:hover .dropdown-icon,
+.menu-nav-item:focus-within .dropdown-icon,
+.dropdown-container:hover .dropdown-icon,
+.dropdown-container.active .dropdown-icon,
+.menu-nav-item.active .dropdown-icon {
+  transform: rotate(180deg) !important;
+}
+
+/* ===========================
+   MOBILE DROPDOWN FIXES
+   =========================== */
+
+@media (max-width: 900px) {
+  /* Mobile dropdown positioning */
+  .dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin-top: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease, opacity 0.2s ease !important;
+  }
+  
+  .menu-nav-item.active .dropdown-menu,
+  .dropdown-container.active .dropdown-menu {
+    max-height: 500px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  .dropdown-item {
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 0.8rem 2rem !important;
+  }
+  
+  .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    transform: none !important;
+  }
+}
+
+/* ===========================
+   MENU PANEL Z-INDEX FIXES
+   =========================== */
+
+.menu-panel {
+  z-index: var(--z-menu-panel) !important;
+}
+
+.menu-header {
+  z-index: var(--z-menu-header) !important;
+}
+
+.menu-nav-container {
+  position: relative !important;
+}
+
+/* ===========================
+   GLASS MORPHISM OVERRIDES
+   =========================== */
+
+/* Override any glass morphism conflicts */
+.menu-nav-link::before {
+  z-index: -1 !important;
+}
+
+/* Ensure menu items don't get masked by glass effects */
+.menu-nav-item {
+  isolation: isolate !important;
+}
+
+/* ===========================
+   ANIMATION PERFORMANCE
+   =========================== */
+
+/* Optimize dropdown animations for better performance */
+.dropdown-menu,
+.dropdown-icon {
+  will-change: transform, opacity !important;
+  transform3d: translate3d(0, 0, 0) !important;
+}
+
+/* ===========================
+   ACCESSIBILITY FIXES
+   =========================== */
+
+/* Ensure focus states are visible */
+.menu-nav-link:focus,
+.dropdown-item:focus {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader support */
+.dropdown-menu[aria-hidden="true"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.dropdown-menu[aria-hidden="false"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ===========================
+   PREVENT CONFLICTS
+   =========================== */
+
+/* Override any conflicting styles from other CSS files */
+.menu-nav-item .dropdown-menu {
+  /* Reset any transform conflicts */
+  transform-origin: top center !important;
+}
+
+/* Ensure dropdowns don't get clipped */
+.menu-nav-container,
+.menu-navigation {
+  overflow: visible !important;
+}
+
+/* Fix any backdrop filter conflicts */
+.dropdown-menu {
+  isolation: isolate !important;
+}

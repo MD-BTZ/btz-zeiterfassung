@@ -1,18 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify, send_file, make_response
-from markupsafe import Markup
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify, make_response
 import sqlite3
 import os
 import logging
 from datetime import datetime, timedelta
 import pytz
 from flask_bcrypt import Bcrypt
-from functools import wraps
 import json
-import csv
-import io
-# Removed unused import: import datetime as dt
-from werkzeug.utils import secure_filename
-import traceback # Added for more detailed error logging
 
 # Configure logging
 logging.basicConfig(
@@ -23,12 +16,6 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
-# For PDF export
-try:
-    import pdfkit
-except ImportError:
-    pdfkit = None
 
 # Helper function to parse datetime strings
 def try_parse(date_string):
@@ -76,8 +63,10 @@ def get_duration(start_time, end_time):
         start = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
         end = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
         diff = end - start
-        hours = diff.seconds // 3600
-        minutes = (diff.seconds % 3600) // 60
+        # Calculate total seconds including days
+        total_seconds = int(diff.total_seconds())
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
         return f"{hours}:{minutes:02d}"
     except (ValueError, TypeError):
         return "-"
@@ -182,6 +171,19 @@ def check_and_fix_db_schema():
                 cursor.execute("ALTER TABLE breaks ADD COLUMN description TEXT")
                 db.commit()
                 print("Added description column successfully")
+            except sqlite3.Error as e:
+                print(f"Error adding column: {e}")
+        
+        # Check if the original_username column exists in deletion_requests table
+        cursor.execute("PRAGMA table_info(deletion_requests)")
+        deletion_columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'original_username' not in deletion_columns:
+            print("Adding original_username column to deletion_requests table...")
+            try:
+                cursor.execute("ALTER TABLE deletion_requests ADD COLUMN original_username TEXT")
+                db.commit()
+                print("Added original_username column successfully")
             except sqlite3.Error as e:
                 print(f"Error adding column: {e}")
         
@@ -403,11 +405,14 @@ def deletion_requests():
         return redirect(url_for('index'))
     
     db = get_db()
+    db.row_factory = sqlite3.Row  # Enable named column access
     cursor = db.cursor()
     
     # Get all deletion requests with user details
     cursor.execute('''
-        SELECT dr.id, dr.user_id, u.username, dr.request_date, dr.reason, dr.status, 
+        SELECT dr.id, dr.user_id, 
+               COALESCE(dr.original_username, u.username) as username, 
+               dr.request_date, dr.reason, dr.status, 
                dr.admin_notes, dr.processed_by, dr.processed_date,
                (SELECT COUNT(*) FROM attendance WHERE user_id = dr.user_id) as record_count
         FROM deletion_requests dr
@@ -424,17 +429,24 @@ def deletion_requests():
     ''')
     requests = cursor.fetchall()
     
+    # Debug: Print the fetched data
+    print(f"DEBUG: Found {len(requests)} deletion requests")
+    for i, req in enumerate(requests):
+        print(f"DEBUG: Request {i}: {dict(req)}")
+    
     # Get admin usernames for processed_by field
     admin_usernames = {}
     for req in requests:
-        if req[7]:  # If processed_by is not null
-            if req[7] not in admin_usernames:
-                cursor.execute('SELECT username FROM users WHERE id = ?', (req[7],))
+        if req['processed_by']:  # If processed_by is not null
+            if req['processed_by'] not in admin_usernames:
+                cursor.execute('SELECT username FROM users WHERE id = ?', (req['processed_by'],))
                 result = cursor.fetchone()
-                admin_usernames[req[7]] = result[0] if result else "Unknown"
+                admin_usernames[req['processed_by']] = result['username'] if result else "Unknown"
     
     message = request.args.get('message')
     message_type = request.args.get('message_type', 'info')
+    
+    print(f"DEBUG: Passing {len(requests)} requests to template")
     
     return render_template('deletion_requests.html', 
                           requests=requests, 
@@ -469,31 +481,34 @@ def process_deletion_request(request_id):
         
         user_id = deletion_request['user_id']
         
+        # Get the original username before anonymizing
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        user_record = cursor.fetchone()
+        original_username = user_record['username'] if user_record else f'user_{user_id}'
+        
         # Start transaction
         db.execute('BEGIN TRANSACTION')
         
         try:
-            # Update deletion request status
+            # Store the original username in the deletion request before anonymizing
             cursor.execute('''
                 UPDATE deletion_requests
                 SET status = 'completed', 
                     processed_by = ?, 
                     processed_date = ?,
-                    admin_notes = ?
+                    admin_notes = ?,
+                    original_username = ?
                 WHERE id = ?
-            ''', (admin_id, now, admin_notes, request_id))
+            ''', (admin_id, now, admin_notes, original_username, request_id))
             
             # Delete user's attendance data
             cursor.execute('DELETE FROM attendance WHERE user_id = ?', (user_id,))
             
-            # Optionally, you might want to anonymize the user rather than delete them
+            # Anonymize the user rather than delete them
             cursor.execute('''
                 UPDATE users 
                 SET username = 'deleted_user_' || id, 
-                    email = NULL, 
-                    full_name = 'Deleted User',
-                    password = 'DELETED', 
-                    last_login = NULL
+                    password = 'DELETED'
                 WHERE id = ?
             ''', (user_id,))
             
@@ -783,7 +798,6 @@ def add_user():
         else:
             return render_template('user_management.html', error=f'Fehler beim Anlegen des Benutzers: {str(e)}')
 
-@app.route('/user_datasheet/<int:user_id>')
 @app.route('/user_datasheet/<int:user_id>')
 def user_datasheet(user_id):
     """Generate a printable user data sheet"""
@@ -1496,6 +1510,8 @@ def add_manual_attendance():
     
     # Calculate billable minutes if checkout time is provided
     billable_minutes = None
+    has_auto_breaks = False
+    
     if check_out_datetime:
         check_out_dt = datetime.strptime(check_out_datetime, '%Y-%m-%d %H:%M:%S')
         duration_minutes = int((check_out_dt - check_in_dt).total_seconds() / 60)
@@ -1503,23 +1519,126 @@ def add_manual_attendance():
     
     # Insert new attendance record
     try:
+        # Begin transaction
+        conn.execute('BEGIN TRANSACTION')
+        
         if check_out_datetime:
             cursor.execute('''
-                INSERT INTO attendance (user_id, check_in, check_out, billable_minutes)
-                VALUES (?, ?, ?, ?)
-            ''', (user_id, check_in_datetime, check_out_datetime, billable_minutes))
+                INSERT INTO attendance (user_id, check_in, check_out, billable_minutes, has_auto_breaks)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (user_id, check_in_datetime, check_out_datetime, billable_minutes, has_auto_breaks))
         else:
             cursor.execute('''
-                INSERT INTO attendance (user_id, check_in)
-                VALUES (?, ?)
-            ''', (user_id, check_in_datetime))
+                INSERT INTO attendance (user_id, check_in, has_auto_breaks)
+                VALUES (?, ?, ?)
+            ''', (user_id, check_in_datetime, has_auto_breaks))
         
+        attendance_id = cursor.lastrowid
+        
+        # Process ArbZG-compliant breaks if both check-in and check-out are provided
+        if check_out_datetime:
+            # Get user break settings
+            cursor.execute('''
+                SELECT us.arbzg_breaks_enabled
+                FROM user_settings us
+                WHERE us.user_id = ?
+            ''', (user_id,))
+            
+            settings = cursor.fetchone()
+            
+            # Use system default settings if user has none
+            if not settings:
+                cursor.execute('''
+                    SELECT arbzg_breaks_enabled
+                    FROM user_settings
+                    WHERE user_id = 0
+                ''')
+                settings = cursor.fetchone()
+            
+            # Process ArbZG-compliant breaks if enabled
+            if settings and (settings['arbzg_breaks_enabled'] if 'arbzg_breaks_enabled' in settings else 1):
+                # Calculate total work duration in minutes
+                total_work_minutes = billable_minutes
+                
+                # Define required breaks per ArbZG
+                required_break_minutes = 0
+                break_desc = ""
+                
+                if total_work_minutes > 9 * 60:  # More than 9 hours
+                    required_break_minutes = 45
+                    break_desc = "Gesetzliche Pause (ArbZG §4) für Arbeitszeit über 9 Stunden"
+                elif total_work_minutes > 6 * 60:  # More than 6 hours
+                    required_break_minutes = 30
+                    break_desc = "Gesetzliche Pause (ArbZG §4) für Arbeitszeit über 6 Stunden"
+                
+                if required_break_minutes > 0:
+                    # Try to place break during lunchtime (12:00-13:00) or at middle of the day
+                    halfway_point = check_in_dt + (check_out_dt - check_in_dt) / 2
+                    lunch_start = check_in_dt.replace(hour=12, minute=0, second=0)
+                    lunch_end = check_in_dt.replace(hour=13, minute=0, second=0)
+                    
+                    # If lunch time is within the work period
+                    if check_in_dt <= lunch_end and check_out_dt >= lunch_start:
+                        break_start = max(check_in_dt, lunch_start)
+                        break_end = min(check_out_dt, break_start + timedelta(minutes=required_break_minutes))
+                        
+                        # Make sure break doesn't exceed lunch period
+                        if break_end > lunch_end:
+                            break_end = lunch_end
+                    else:
+                        # Place break at middle of the day
+                        break_start = halfway_point - timedelta(minutes=required_break_minutes / 2)
+                        break_end = break_start + timedelta(minutes=required_break_minutes)
+                        
+                        # Ensure break is within working hours
+                        if break_start < check_in_dt:
+                            break_start = check_in_dt
+                            break_end = min(check_out_dt, break_start + timedelta(minutes=required_break_minutes))
+                        
+                        if break_end > check_out_dt:
+                            break_end = check_out_dt
+                            break_start = max(check_in_dt, break_end - timedelta(minutes=required_break_minutes))
+                    
+                    # Format for database
+                    break_start_str = break_start.strftime('%Y-%m-%d %H:%M:%S')
+                    break_end_str = break_end.strftime('%Y-%m-%d %H:%M:%S')
+                    
+                    # Add the break
+                    cursor.execute("""
+                        INSERT INTO breaks (attendance_id, start_time, end_time, duration_minutes,
+                                        is_excluded_from_billing, is_auto_detected, description)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (attendance_id, break_start_str, break_end_str, required_break_minutes,
+                        1, 1, break_desc))
+                    
+                    # Adjust billable minutes
+                    billable_minutes -= required_break_minutes
+                    has_auto_breaks = True
+                    
+                    # Update the attendance record with adjusted billable minutes and auto breaks flag
+                    cursor.execute('''
+                        UPDATE attendance
+                        SET billable_minutes = ?, has_auto_breaks = ?
+                        WHERE id = ?
+                    ''', (billable_minutes, has_auto_breaks, attendance_id))
+        
+        # Commit transaction
         conn.commit()
         conn.close()
-        flash('Anwesenheitsaufzeichnung erfolgreich hinzugefügt', 'success')
+        
+        # Format the work time for display (hours:minutes) if applicable
+        if check_out_datetime and billable_minutes is not None:
+            hours = billable_minutes // 60
+            minutes = billable_minutes % 60
+            work_time = f"{hours}:{minutes:02d}"
+            flash(f'Anwesenheitsaufzeichnung erfolgreich hinzugefügt. Arbeitszeit: {work_time} Stunden', 'success')
+        else:
+            flash('Anwesenheitsaufzeichnung erfolgreich hinzugefügt', 'success')
+        
         return redirect(url_for('index'))
     
     except sqlite3.Error as e:
+        conn.rollback()
         conn.close()
         flash(f'Fehler beim Hinzufügen der Aufzeichnung: {str(e)}', 'error')
         return redirect(url_for('manual_attendance'))
@@ -1596,14 +1715,25 @@ def get_attendance_status():
     # Get current date in the application's timezone
     today = datetime.now(pytz.timezone(TIMEZONE)).strftime('%Y-%m-%d')
     
-    # Check if checked in today
+    # Check for active check-in (no check_out time)
     cursor.execute('''
         SELECT * FROM attendance
         WHERE user_id = ? AND date(check_in) = ?
+        AND check_out IS NULL
         ORDER BY id DESC LIMIT 1
     ''', (user_id, today))
     
-    attendance_record = cursor.fetchone()
+    active_record = cursor.fetchone()
+    
+    # Also get the most recent completed record for today
+    cursor.execute('''
+        SELECT * FROM attendance
+        WHERE user_id = ? AND date(check_in) = ?
+        AND check_out IS NOT NULL
+        ORDER BY id DESC LIMIT 1
+    ''', (user_id, today))
+    
+    completed_record = cursor.fetchone()
     
     result = {
         'is_checked_in': False,
@@ -1612,13 +1742,17 @@ def get_attendance_status():
         'check_out_time': None
     }
     
-    if attendance_record:
+    if active_record:
+        # User is currently checked in (active session)
         result['is_checked_in'] = True
-        result['check_in_time'] = attendance_record['check_in']
-        
-        if attendance_record['check_out']:
-            result['is_checked_out'] = True
-            result['check_out_time'] = attendance_record['check_out']
+        result['check_in_time'] = active_record['check_in']
+        result['is_checked_out'] = False
+    elif completed_record:
+        # User has completed a session today but is not currently checked in
+        result['is_checked_in'] = False
+        result['is_checked_out'] = True
+        result['check_in_time'] = completed_record['check_in']
+        result['check_out_time'] = completed_record['check_out']
     
     conn.close()
     return jsonify(result)
@@ -1662,7 +1796,7 @@ def checkin():
     # Insert check-in record
     cursor.execute('''
         INSERT INTO attendance (user_id, check_in, has_auto_breaks)
-        VALUES (?, ?, ?)
+                VALUES (?, ?, ?)
     ''', (user_id, check_in_time, True))
     
     conn.commit()
@@ -2200,58 +2334,63 @@ def generate_report():
     month = request.form.get('month', '')
     entire_period = request.form.get('entire_period', 'false')
     
-    # If admin is generating a report for a specific user, redirect to report_auth
-    if user_id and session.get('admin_logged_in') and user_id != session.get('username'):
-        return redirect(url_for('report_auth', username=user_id, date=date, week=week, month=month, entire_period=entire_period))
+    # Check if this is an AJAX request
+    is_ajax_request = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
-    # If it's a regular user or admin viewing their own report
-    username = session.get('username')
-    return redirect(url_for('user_report', username=username, date=date, week=week, month=month, entire_period=entire_period))
+    # Build the user_report URL
+    if user_id and session.get('admin_logged_in'):
+        # Admin accessing another user's report
+        username = user_id
+    else:
+        # Regular user or admin viewing their own report
+        username = session.get('username')
+    
+    # Build URL with parameters
+    params = []
+    if date:
+        params.append(f'date={date}')
+    if week:
+        params.append(f'week={week}')
+    if month:
+        params.append(f'month={month}')
+    if entire_period == 'true':
+        params.append('entire_period=1')
+    
+    url = f'/user_report/{username}'
+    if params:
+        url += '?' + '&'.join(params)
+    
+    if is_ajax_request:
+        # Return JSON response for AJAX requests (modal loading)
+        return jsonify({
+            'success': True,
+            'url': url,
+            'username': username
+        })
+    else:
+        # For non-AJAX requests, redirect to user_report (this will be caught by the modal-only check)
+        return redirect(url)
 
 @app.route('/report_auth/<username>', methods=['GET', 'POST'])
 def report_auth(username):
+    # This route is now deprecated but kept for backward compatibility
+    # Redirect directly to user_report without authentication
     if not session.get('username') or not session.get('admin_logged_in'):
         flash('Unauthorized access', 'error')
         return redirect(url_for('index'))
     
-    if request.method == 'POST':
-        password = request.form.get('password')
-        
-        # Verify admin password
-        with sqlite3.connect(DATABASE) as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute('SELECT password FROM users WHERE username = ?', (session.get('username'),))
-            user = cursor.fetchone()
-            
-            if user and bcrypt.check_password_hash(user['password'], password):
-                date = request.form.get('date', '')
-                week = request.form.get('week', '')
-                month = request.form.get('month', '')
-                entire_period = request.form.get('entire_period', 'false')
-                
-                return redirect(url_for('user_report', 
-                                       username=username,
-                                       date=date,
-                                       week=week,
-                                       month=month,
-                                       entire_period=entire_period,
-                                       auth='1'))
-            else:
-                flash('Incorrect password', 'error')
+    # Get parameters and redirect directly to user_report
+    date = request.args.get('date', '') or request.form.get('date', '')
+    week = request.args.get('week', '') or request.form.get('week', '')
+    month = request.args.get('month', '') or request.form.get('month', '')
+    entire_period = request.args.get('entire_period', 'false') or request.form.get('entire_period', 'false')
     
-    # For GET requests, render the template with parameters
-    date = request.args.get('date', '')
-    week = request.args.get('week', '')
-    month = request.args.get('month', '')
-    entire_period = request.args.get('entire_period', 'false')
-    
-    return render_template('report_auth.html',
-                          username=username,
-                          date=date,
-                          week=week,
-                          month=month,
-                          entire_period=entire_period)
+    return redirect(url_for('user_report', 
+                           username=username,
+                           date=date,
+                           week=week,
+                           month=month,
+                           entire_period=entire_period))
 
 @app.route('/user_report/<username>', methods=['GET', 'POST'])
 def user_report(username):
@@ -2264,15 +2403,33 @@ def user_report(username):
         flash('Unauthorized access', 'error')
         return redirect(url_for('index'))
     
-    # If admin accessing another user's report without authorization
-    if username != session.get('username') and session.get('admin_logged_in') and request.args.get('auth') != '1' and request.method == 'GET':
-        # Redirect to auth page
-        return redirect(url_for('report_auth', 
-                               username=username,
-                               date=request.args.get('date', ''),
-                               week=request.args.get('week', ''),
-                               month=request.args.get('month', ''),
-                               entire_period=request.args.get('entire_period', 'false')))
+    # MODAL ONLY: Check if this is an AJAX request for modal loading
+    # If it's a direct browser navigation, redirect to appropriate dashboard
+    is_ajax_request = (
+        request.headers.get('X-Requested-With') == 'XMLHttpRequest' or
+        'application/json' in request.headers.get('Accept', '') or
+        request.headers.get('Sec-Fetch-Dest') == 'empty' or
+        request.headers.get('Sec-Fetch-Mode') == 'cors' or
+        'text/html' not in request.headers.get('Accept', '')
+    )
+    
+    # Log the request for debugging
+    logging.info(f"user_report request - Username: {username}, Method: {request.method}")
+    logging.info(f"Headers: X-Requested-With={request.headers.get('X-Requested-With')}, Accept={request.headers.get('Accept')}")
+    logging.info(f"Sec-Fetch-Dest={request.headers.get('Sec-Fetch-Dest')}, Sec-Fetch-Mode={request.headers.get('Sec-Fetch-Mode')}")
+    logging.info(f"Is AJAX: {is_ajax_request}")
+    
+    # For GET requests from browsers (not AJAX), redirect to dashboard
+    if not is_ajax_request and request.method == 'GET':
+        # Direct browser navigation - redirect to appropriate dashboard
+        if session.get('admin_logged_in'):
+            flash('Berichte können nur über das Dashboard geöffnet werden.', 'info')
+            return redirect(url_for('admin'))
+        else:
+            flash('Berichte können nur über das Dashboard geöffnet werden.', 'info')
+            return redirect(url_for('index'))
+    
+    # Remove password authentication requirement - allow direct access for admins
     
     # Get parameters
     date = request.args.get('date', '') if request.method == 'GET' else request.form.get('date', '')
@@ -2656,6 +2813,96 @@ def get_user_password(user_id):
         logging.error(f"Error retrieving password for user {user_id}: {str(e)}")
         return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
     # Note: No finally block needed as db connection is handled by Flask's teardown_appcontext
+
+@app.route('/api/user_datasheet/<int:user_id>')
+def api_user_datasheet(user_id):
+    """Get user datasheet data as JSON for popup modal"""
+    if not session.get('username'):
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    # Connect to database
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    try:
+        # Get the temp password from the database
+        cursor.execute('SELECT temp_password FROM temp_passwords WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        
+        temp_password = result['temp_password'] if result else None
+        
+        if not temp_password:
+            return jsonify({'error': 'Datenblatt ist nicht mehr verfügbar'}), 404
+        
+        # Get user information
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({'error': 'Benutzer nicht gefunden'}), 404
+        
+        # Create data for the response
+        username = user['username']
+        creation_date = datetime.now().strftime("%d.%m.%Y %H:%M")
+        current_date = datetime.now().strftime("%d.%m.%Y")
+        
+        # Get the base URL for login
+        if request.host.startswith('localhost') or request.host.startswith('127.0.0.1'):
+            login_url = f"http://{request.host}"
+        else:
+            login_url = f"https://{request.host}"
+        
+        # Delete the temp password after use (one-time use)
+        cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+        conn.commit()
+        
+        return jsonify({
+            'success': True,
+            'username': username,
+            'password': temp_password,
+            'creation_date': creation_date,
+            'current_date': current_date,
+            'login_url': login_url
+        })
+    
+    except Exception as e:
+        logging.error(f"Error getting datasheet data: {str(e)}")
+        return jsonify({'error': f'Fehler beim Laden der Daten: {str(e)}'}), 500
+    finally:
+        conn.close()
+
+@app.route('/my_credentials')
+def my_credentials():
+    """Show user's own credentials page"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    user_id = session.get('user_id')
+    username = session.get('username')
+    
+    if not user_id or not username:
+        flash('Benutzerinformationen nicht gefunden', 'error')
+        return redirect(url_for('index'))
+    
+    # Get the base URL for login
+    if request.host.startswith('localhost') or request.host.startswith('127.0.0.1'):
+        login_url = f"http://{request.host}"
+    else:
+        login_url = f"https://{request.host}"
+    
+    # Get current date
+    current_date = datetime.now().strftime("%d.%m.%Y")
+    
+    return render_template('my_credentials.html',
+                         username=username,
+                         user_id=user_id,
+                         login_url=login_url,
+                         current_date=current_date)
 
 if __name__ == '__main__':
     print("Initializing BTZ-Zeiterfassung application...")

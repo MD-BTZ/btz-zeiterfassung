@@ -3,25 +3,26 @@
 <head>
     <title>Systemweite Pauseneinstellungen - Admin</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/breaks.css">
+
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script></head>
-<body>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
     
     {% if not session.get('admin_logged_in') %}
-        <div class="main-card card-style">
-            <div class="access-denied">
-                Zugriff verweigert. Diese Seite ist nur für Administratoren zugänglich.
+        <div class="glass-container">
+            <div class="glass-card access-denied">
+                <h2><i class="fas fa-lock"></i> Zugriff verweigert</h2>
+                <p>Diese Seite ist nur für Administratoren zugänglich.</p>
             </div>
         </div>
     {% else %}
-    <div class="main-card card-style">
-        <h1>Systemweite Pauseneinstellungen</h1>
+    <div class="glass-container main-card">
+        <h1><i class="fas fa-cog"></i> Systemweite Pauseneinstellungen</h1>
         
-        <div class="break-settings-container">
-            <h2>Automatische Pausenerkennung</h2>
+        <div class="glass-card break-settings-container">
+            <h2><i class="fas fa-robot"></i> Automatische Pausenerkennung</h2>
             
             <form action="/update_user_settings" method="post" class="settings-form">
                 <div class="setting-group">
@@ -30,7 +31,7 @@
                         <span>Automatische Pausenerkennung aktivieren</span>
                     </label>
                     
-                    <div id="threshold-container" {% if not settings or not settings.auto_break_detection %}style="display: none;"{% endif %}>
+                    <div id="threshold-container" class="threshold-container{% if not settings or not settings.auto_break_detection %} hidden{% endif %}">
                         <p>
                             Pausen automatisch erkennen, wenn Mitarbeiter länger als
                             <span id="threshold-value">{{ settings.auto_break_threshold if settings else 30 }}</span>

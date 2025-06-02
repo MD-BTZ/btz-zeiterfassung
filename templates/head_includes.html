@@ -1,21 +1,21 @@
 <!-- Common head includes for all pages -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1976d2">
+<meta name="theme-color" content="#667eea">
+<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACAABAAGnRwxcAAAAAElFTkSuQmCC">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer">
-<!-- CSS Architecture -->
-<link rel="stylesheet" href="/static/css/variables.css">
-<link rel="stylesheet" href="/static/css/base.css">
-<link rel="stylesheet" href="/static/css/components.css">
-<link rel="stylesheet" href="/static/css/main.css">
-<!-- Legacy CSS files - will be phased out -->
-<link rel="stylesheet" href="/static/style.css">
-<link rel="stylesheet" href="/static/icon-fix.css">
-<link rel="stylesheet" href="/static/group-menu.css">
-<link rel="stylesheet" href="/static/dropdown-menu.css">
-<link rel="stylesheet" href="/static/content-fix.css">
-<link rel="stylesheet" href="/static/page-layout-fix.css">
-<script src="/static/dropdown-menu.js" defer></script>
+<!-- Authentication wrapper to prevent 401 errors -->
+<script src="{{ url_for('static', filename='auth-wrapper.js') }}"></script>
+<!-- Universal Glass Morphism System - Primary Styling -->
+<link rel="stylesheet" href="{{ url_for('static', filename='universal-glass-morphism.css') }}">
+<!-- Modern Menu System -->
+<script src="/static/modern-menu.js" defer></script>
+<!-- Glass Morphism Animation System -->
+<script src="/static/glass-morphism-animations.js" defer></script>
+<!-- CONSOLIDATED MENU FIX - Load last to override all conflicts -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/menu-fix-consolidated.css') }}">
+<!-- Consolidated Dropdown Fix JavaScript - Load last to ensure proper functionality -->
+<script src="{{ url_for('static', filename='js/dropdown-fix-consolidated.js') }}" defer></script>
 <script>
 // Check if Font Awesome loaded properly
 document.addEventListener('DOMContentLoaded', function() {

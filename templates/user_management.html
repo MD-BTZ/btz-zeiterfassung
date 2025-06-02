@@ -3,87 +3,1541 @@
 <head>
     <title>Benutzerverwaltung</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/css/user-management.css">
-  
+    <style>
+        /* ============================================================================
+           USER MANAGEMENT SPECIFIC STYLES
+           ============================================================================ */
+        
+        /* Page Layout */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+        
+        /* Header Section */
+        .admin-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .admin-header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .admin-header h1 i {
+            color: var(--primary-color);
+            -webkit-text-fill-color: var(--primary-color);
+        }
+        
+        .admin-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* Section Cards */
+        .user-creation-section,
+        .consent-management-section,
+        .users-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--glass-shadow-medium);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+        
+        .user-creation-section::before,
+        .consent-management-section::before,
+        .users-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+            opacity: 0.8;
+        }
+        
+        .user-creation-section:hover,
+        .consent-management-section:hover,
+        .users-section:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glass-shadow-heavy);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Section Headers */
+        .section-header,
+        .user-creation-section h2,
+        .consent-management-section h2,
+        .users-section h2 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .section-header i,
+        .user-creation-section h2 i,
+        .consent-management-section h2 i,
+        .users-section h2 i {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+        
+        /* Form Styling */
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-lg);
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .form-section label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .form-section label i {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .input-field::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        
+        /* Button Styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Button Groups */
+        .button-group {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .button-container {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+            flex-wrap: wrap;
+        }
+        
+        /* Consent Management */
+        .consent-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: var(--space-md);
+            align-items: end;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .consent-select-user,
+        .consent-select-status {
+            min-width: 200px;
+        }
+        
+        .consent-button {
+            white-space: nowrap;
+        }
+        
+        .consent-info {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .consent-info-margin {
+            margin-bottom: var(--space-md);
+        }
+        
+        .consent-info-inline {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-left: var(--space-sm);
+        }
+        
+        .consent-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .consent-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Table Styling */
+        .table-responsive {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--glass-shadow-medium);
+        }
+        
+        #users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+        
+        #users-table th {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+            padding: var(--space-lg) var(--space-md);
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        
+        #users-table td {
+            padding: var(--space-lg) var(--space-md);
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            vertical-align: middle;
+        }
+        
+        #users-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        #users-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Badge System */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+        
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .badge-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .badge-neutral {
+            background: rgba(107, 114, 128, 0.1);
+            color: #374151;
+            border-color: rgba(107, 114, 128, 0.3);
+        }
+        
+        .badge-dot {
+            font-size: 1rem;
+        }
+        
+        /* Feedback Messages */
+        .feedback-message {
+            margin-top: var(--space-md);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            font-weight: 500;
+        }
+        
+        .feedback-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .feedback-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .flash-message {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+        }
+        
+        .flash-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Modal System */
+        .modal-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(8px);
+            z-index: 10000 !important;
+            display: none !important;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            max-width: 95vw;
+            max-height: 90vh;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .modal-content h3 {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            margin: 0;
+            padding: var(--space-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .modal-form {
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        
+        .modal-form-field {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        
+        .modal-form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .modal-form-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .admin-container {
+                padding: var(--space-md);
+            }
+            
+            .user-creation-section,
+            .consent-management-section,
+            .users-section {
+                padding: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .consent-form-row {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+            
+            .consent-select-user,
+            .consent-select-status {
+                min-width: auto;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            #users-table {
+                font-size: 0.9rem;
+            }
+            
+            #users-table th,
+            #users-table td {
+                padding: var(--space-md) var(--space-sm);
+            }
+            
+            .modal-overlay {
+                padding: var(--space-md);
+            }
+            
+            .modal-content {
+                max-width: 100%;
+                border-radius: var(--radius-lg);
+            }
+            
+            .modal-content h3 {
+                padding: var(--space-lg);
+                font-size: 1.2rem;
+            }
+            
+            .modal-form {
+                padding: var(--space-lg);
+            }
+            
+            .modal-form-actions {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-container {
+                padding: var(--space-sm);
+            }
+            
+            .user-creation-section,
+            .consent-management-section,
+            .users-section {
+                padding: var(--space-md);
+            }
+            
+            .section-header,
+            .user-creation-section h2,
+            .consent-management-section h2,
+            .users-section h2 {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-sm);
+                font-size: 1.3rem;
+            }
+            
+            #users-table th,
+            #users-table td {
+                padding: var(--space-sm);
+                font-size: 0.85rem;
+            }
+            
+            .modal-overlay {
+                padding: var(--space-sm);
+            }
+            
+            .modal-content h3 {
+                padding: var(--space-md);
+                font-size: 1.1rem;
+            }
+            
+            .modal-form {
+                padding: var(--space-md);
+            }
+        }
+        
+        /* Datasheet Modal System */
+        .datasheet-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: var(--space-lg);
+            padding-top: 80px; /* Account for fixed navigation */
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .datasheet-modal-overlay.active {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .datasheet-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            max-height: calc(100vh - 120px); /* Account for padding and navigation */
+            width: 100%;
+            max-width: 800px;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+            margin-bottom: var(--space-lg); /* Add bottom margin for scrolling */
+        }
+        
+        .datasheet-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .datasheet-modal-overlay.active .datasheet-modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .datasheet-modal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            padding: var(--space-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .datasheet-modal-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .datasheet-modal-title i {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+        
+        .datasheet-modal-close {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+        
+        .datasheet-modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .datasheet-modal-body {
+            padding: var(--space-xl);
+        }
+        
+        .datasheet-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .datasheet-info-card {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        
+        .datasheet-info-card h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+        
+        .datasheet-info-card h3 i {
+            color: var(--primary-color);
+        }
+        
+        .datasheet-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .datasheet-data-table th {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+            padding: var(--space-md);
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            width: 40%;
+        }
+        
+        .datasheet-data-table td {
+            padding: var(--space-md);
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+        
+        .datasheet-data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .datasheet-password {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .datasheet-notice {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin: var(--space-lg) 0;
+            color: #92400e;
+        }
+        
+        .datasheet-notice h4 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+            color: #92400e;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .datasheet-notice h4 i {
+            color: #f59e0b;
+        }
+        
+        .datasheet-qr-section {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .datasheet-qr-code {
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: var(--space-md) 0;
+        }
+        
+        .datasheet-qr-caption {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .datasheet-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            padding: var(--space-xl);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .datasheet-print-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+            justify-content: center;
+        }
+        
+        .datasheet-print-btn.browser-print {
+            background: linear-gradient(135deg, var(--secondary-color), #4b5563);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+        
+        .datasheet-print-btn.pdf-print {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .datasheet-print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .datasheet-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .datasheet-loading i {
+            margin-right: var(--space-md);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design for Datasheet Modal */
+        @media (max-width: 768px) {
+            .datasheet-modal-overlay {
+                padding: var(--space-md);
+                padding-top: 70px; /* Account for smaller mobile navigation */
+            }
+            
+            .datasheet-modal-content {
+                max-width: 100%;
+                max-height: calc(100vh - 90px); /* Adjust for mobile navigation */
+                border-radius: var(--radius-lg);
+                margin: 0; /* Remove margin on mobile for better space usage */
+            }
+            
+            .datasheet-modal-header {
+                padding: var(--space-lg);
+            }
+            
+            .datasheet-modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .datasheet-modal-body {
+                padding: var(--space-lg);
+            }
+            
+            .datasheet-info-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .datasheet-actions {
+                flex-direction: column;
+                padding: var(--space-lg);
+            }
+            
+            .datasheet-print-btn {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .datasheet-modal-overlay {
+                padding: var(--space-sm);
+                padding-top: 60px; /* Account for smaller mobile navigation */
+            }
+            
+            .datasheet-modal-content {
+                max-height: calc(100vh - 80px); /* Adjust for very small screens */
+            }
+            
+            .datasheet-modal-header {
+                padding: var(--space-md);
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+            
+            .datasheet-modal-title {
+                font-size: 1.2rem;
+            }
+            
+            .datasheet-modal-body {
+                padding: var(--space-md);
+            }
+            
+            .datasheet-data-table th,
+            .datasheet-data-table td {
+                padding: var(--space-sm);
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Password Change Modal System */
+        .password-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: var(--space-lg);
+            padding-top: 80px; /* Account for fixed navigation */
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .password-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .password-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            max-height: calc(100vh - 120px);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .password-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .password-modal-overlay.active .password-modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .password-modal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            padding: var(--space-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .password-modal-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .password-modal-title i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .password-modal-close {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .password-modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .password-modal-body {
+            padding: var(--space-xl);
+        }
+        
+        .password-form-group {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .password-form-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .password-form-label i {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+        }
+        
+        .password-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            padding-right: 45px; /* Space for toggle button */
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .password-strength {
+            margin-top: var(--space-sm);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .password-strength.weak {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .password-strength.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: #92400e;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .password-strength.strong {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .password-mismatch {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-top: var(--space-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .password-modal-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+            padding: var(--space-xl);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .password-modal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .password-modal-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .password-modal-btn:hover::before {
+            left: 100%;
+        }
+        
+        .password-modal-btn.cancel {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+        
+        .password-modal-btn.cancel:hover {
+            background: rgba(107, 114, 128, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .password-modal-btn.submit {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .password-modal-btn.submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .password-modal-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .password-modal-btn:disabled:hover {
+            transform: none !important;
+        }
+        
+        /* Loading state */
+        .password-modal-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .password-modal-loading.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .password-modal-loading i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Responsive Design for Password Modal */
+        @media (max-width: 768px) {
+            .password-modal-overlay {
+                padding: var(--space-md);
+                padding-top: 70px;
+            }
+            
+            .password-modal-content {
+                max-width: 100%;
+                border-radius: var(--radius-lg);
+            }
+            
+            .password-modal-header {
+                padding: var(--space-lg);
+            }
+            
+            .password-modal-title {
+                font-size: 1.2rem;
+            }
+            
+            .password-modal-body {
+                padding: var(--space-lg);
+            }
+            
+            .password-modal-actions {
+                flex-direction: column;
+                padding: var(--space-lg);
+            }
+            
+            .password-modal-btn {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .password-modal-overlay {
+                padding: var(--space-sm);
+                padding-top: 60px;
+            }
+            
+            .password-modal-header {
+                padding: var(--space-md);
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+            
+            .password-modal-title {
+                font-size: 1.1rem;
+            }
+            
+            .password-modal-body {
+                padding: var(--space-md);
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
-    <div class="main-card card-style">
-        <h1>Benutzerverwaltung</h1>
+    
+    <main class="glass-container">
+        <div class="admin-container">
+            <!-- Page Header -->
+            <div class="admin-header">
+                <h1>
+                    <i class="fas fa-users"></i>
+                    Benutzerverwaltung
+                </h1>
+                <p>Verwalten Sie Benutzerkonten, Berechtigungen und Datenschutzeinstellungen</p>
+            </div>
+            
+            <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+                        <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                            {{ message|safe }}
+                        </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         
-        <section class="user-creation-section">
-            <h2 id="add-user-section">Benutzerkonto anlegen</h2>
+            <!-- User Creation Section -->
+            <section class="user-creation-section">
+                <h2 id="add-user-section">
+                    <i class="fas fa-user-plus"></i>
+                    Benutzerkonto anlegen
+                </h2>
+                
         {% if error %}
         <div class="feedback-error">
             {{ error }}
         </div>
         {% endif %}
-        <form id="add-user-form" action="/add_user" method="post" class="form-section">
-            <label for="username">Benutzername:</label>
-            <input type="text" id="username" name="username" required class="input-field">
-            <label for="password">Passwort:</label>
-            <input type="password" id="password" name="password" required class="input-field">
-            <label for="confirm_password">Passwort bestätigen:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required class="input-field">
-            <div id="password-add-mismatch" class="feedback-error" style="display:none;">
+                
+                <form id="add-user-form" action="/add_user" method="post" class="form-section" onsubmit="return handleAddUserSubmit(event)">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i>
+                            Benutzername
+                        </label>
+                        <input type="text" id="username" name="username" required class="input-field" placeholder="Eindeutigen Benutzernamen eingeben">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Passwort
+                        </label>
+                        <input type="password" id="password" name="password" required class="input-field" placeholder="Sicheres Passwort eingeben">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm_password">
+                            <i class="fas fa-lock"></i>
+                            Passwort bestätigen
+                        </label>
+                        <input type="password" id="confirm_password" name="confirm_password" required class="input-field" placeholder="Passwort wiederholen">
+                    </div>
+                    
+            <div id="password-add-mismatch" class="feedback-error hidden">
                 Die Passwörter stimmen nicht überein.
             </div>
-            <button type="submit" class="btn btn-success">Benutzer anlegen</button>
+                    
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus"></i>
+                        Benutzer anlegen
+                    </button>
         </form>
-        <div id="add-user-feedback" class="feedback-message" style="display:none;"></div>
-        <div id="delete-user-feedback" class="feedback-message" style="display:none;"></div>
+                
+        <div id="add-user-feedback" class="feedback-message hidden"></div>
+        <div id="delete-user-feedback" class="feedback-message hidden"></div>
         </section>
         
         <!-- Consent Management Section -->
         <section class="consent-management-section">
-            <h2>Verwaltung der Einwilligung zur Datenverarbeitung</h2>
-        <div id="consent-feedback" class="feedback-message" style="display:none;"></div>
+                <h2>
+                    <i class="fas fa-shield-alt"></i>
+                    Verwaltung der Einwilligung zur Datenverarbeitung
+                </h2>
+                
+        <div id="consent-feedback" class="feedback-message hidden"></div>
+                
         <form id="consent-form" class="form-section">
-            <p class="consent-info" style="margin-bottom: 1em;">Verwaltung der Einwilligung zur Verarbeitung personenbezogener Daten:</p>
+                    <div class="consent-info consent-info-margin">
+                        <p><strong>Verwaltung der Einwilligung zur Verarbeitung personenbezogener Daten:</strong></p>
+                        <p>Hier können Sie die Datenschutzeinstellungen für jeden Benutzer verwalten und deren Einwilligung zur Datenverarbeitung dokumentieren.</p>
+                    </div>
+                    
             <div class="consent-form-row">
+                        <div class="form-group">
+                            <label for="consent-user-id">
+                                <i class="fas fa-user"></i>
+                                Benutzer auswählen
+                            </label>
                 <select id="consent-user-id" name="user_id" class="input-field consent-select-user">
                     <option value="" selected disabled>Benutzer auswählen</option>
                     {% for user in users %}
                     <option value="{{ user[0] }}">{{ user[1] }}</option>
                     {% endfor %}
                 </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="consent-status">
+                                <i class="fas fa-check-circle"></i>
+                                Einwilligungsstatus
+                            </label>
                 <select id="consent-status" name="consent_status" class="input-field consent-select-status">
                     <option value="granted">Einwilligung erteilt</option>
                     <option value="declined">Einwilligung verweigert</option>
                 </select>
-                <button type="submit" id="update-consent-btn" class="btn btn-success consent-button">Einwilligung aktualisieren</button>
             </div>
+                        
+                        <div class="form-group">
+                            <label style="opacity: 0;">Aktion</label>
+                            <button type="submit" id="update-consent-btn" class="btn btn-success consent-button">
+                                <i class="fas fa-save"></i>
+                                Einwilligung aktualisieren
+                            </button>
+                        </div>
+                    </div>
+                    
             <div class="consent-info">
-                <p>Verarbeitete Daten umfassen Anwesenheitsaufzeichnungen und Benutzerinformationen.</p>
+                        <p><strong>Hinweise zur Datenverarbeitung:</strong></p>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                            <li>Verarbeitete Daten umfassen Anwesenheitsaufzeichnungen und Benutzerinformationen</li>
+                            <li>Die Einwilligung kann jederzeit widerrufen werden</li>
+                            <li>Bei Verweigerung werden nur notwendige Daten zur Systemfunktion gespeichert</li>
+                        </ul>
                 <p>Weitere Informationen finden Sie in unserer <a href="/privacy_policy" class="consent-link">Datenschutzerklärung</a>.</p>
             </div>
         </form>
         </section>
         
+            <!-- Users Table Section -->
         <section class="users-section">
-            <h2>Alle Benutzer</h2>
+                <h2>
+                    <i class="fas fa-table"></i>
+                    Alle Benutzer
+                </h2>
+                
             <div class="table-responsive">
                 <table id="users-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Benutzername</th>
-                        <th>Einwilligungsstatus</th>
-                        <th>Aktionen</th>
+                                <th>
+                                    <i class="fas fa-hashtag"></i>
+                                    ID
+                                </th>
+                                <th>
+                                    <i class="fas fa-user"></i>
+                                    Benutzername
+                                </th>
+                                <th>
+                                    <i class="fas fa-shield-alt"></i>
+                                    Einwilligungsstatus
+                                </th>
+                                <th>
+                                    <i class="fas fa-cogs"></i>
+                                    Aktionen
+                                </th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
                     <tr data-user-id="{{ user[0] }}">
-                        <td>{{ user[0] }}</td>
-                        <td>{{ user[1] }}</td>                    <td class="consent-status" data-user-id="{{ user[0] }}">
+                                <td><strong>{{ user[0] }}</strong></td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="fas fa-user-circle" style="color: var(--primary-color);"></i>
+                                        <strong>{{ user[1] }}</strong>
+                                    </div>
+                                </td>
+                                <td class="consent-status" data-user-id="{{ user[0] }}">
                         {% if user['consent_status'] == 'granted' %}
                             <span class="badge badge-success">
                                 <span class="badge-dot">●</span> Einwilligung erteilt
@@ -100,8 +1554,14 @@
                     </td>
                         <td>
                             <div class="button-group">
-                                <button class="change-password-btn btn btn-primary" data-user-id="{{ user[0] }}" data-username="{{ user[1] }}">Passwort ändern</button>
-                                <button class="delete-user-btn btn btn-danger" data-user-id="{{ user[0] }}">Löschen</button>
+                                        <button class="change-password-btn btn btn-primary" data-user-id="{{ user[0] }}" data-username="{{ user[1] }}">
+                                            <i class="fas fa-key"></i>
+                                            Passwort ändern
+                                        </button>
+                                        <button class="delete-user-btn btn btn-danger" data-user-id="{{ user[0] }}">
+                                            <i class="fas fa-trash"></i>
+                                            Löschen
+                                        </button>
                             </div>
                         </td>
                     </tr>
@@ -111,34 +1571,187 @@
         </div>
         </section>
         
-        <!-- Modal für Passwortänderung -->
-        <div id="password-modal" class="modal-overlay">
-            <div class="modal-content">
-                <h3><span id="modal-title">Passwort ändern für </span><span id="password-change-username"></span></h3>
-                <form id="password-change-form" class="modal-form">
+            <!-- Password Change Modal -->
+            <div id="password-modal" class="password-modal-overlay">
+                <div class="password-modal-content">
+                    <div class="password-modal-loading" id="password-modal-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    
+                    <div class="password-modal-header">
+                        <h2 class="password-modal-title">
+                            <i class="fas fa-key"></i>
+                            <span>Passwort ändern für </span>
+                            <span id="password-change-username" style="color: var(--primary-color);"></span>
+                        </h2>
+                        <button class="password-modal-close" id="close-password-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="password-modal-body">
+                        <form id="password-change-form">
                     <input type="hidden" id="password-change-user-id">
-                    <input type="hidden" id="modal-action" value="change">
-                    <div class="modal-form-field">
-                        <label for="new-password" class="modal-form-label">Neues Passwort:</label>
-                        <input type="password" id="new-password" name="new_password" required class="input-field">
+                            
+                            <div class="password-form-group">
+                                <label class="password-form-label" for="new-password">
+                                    <i class="fas fa-lock"></i>
+                                    Neues Passwort
+                                </label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="new-password" name="new_password" required 
+                                           class="password-input" placeholder="Neues sicheres Passwort eingeben">
+                                    <button type="button" class="password-toggle" data-target="new-password">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                     </div>
-                    <div class="modal-form-field">
-                        <label for="confirm-password" class="modal-form-label">Passwort bestätigen:</label>
-                        <input type="password" id="confirm-password" name="confirm_password" required class="input-field">
+                                <div id="password-strength" class="password-strength" style="display: none;"></div>
                     </div>
-                    <div id="password-mismatch" class="feedback-error" style="display:none;">
-                        Die Passwörter stimmen nicht überein.
+                            
+                            <div class="password-form-group">
+                                <label class="password-form-label" for="confirm-password">
+                                    <i class="fas fa-lock"></i>
+                                    Passwort bestätigen
+                                </label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="confirm-password" name="confirm_password" required 
+                                           class="password-input" placeholder="Neues Passwort wiederholen">
+                                    <button type="button" class="password-toggle" data-target="confirm-password">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                     </div>
-                    <div class="modal-form-actions">
-                        <button type="button" id="cancel-password-change" class="btn btn-secondary modal-action-cancel">Abbrechen</button>
-                        <button type="submit" class="btn btn-success">Passwort ändern</button>
+                            </div>
+                            
+                            <div id="password-mismatch" class="password-mismatch" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Die Passwörter stimmen nicht überein.
                     </div>
                 </form>
+                    </div>
+                    
+                    <div class="password-modal-actions">
+                        <button type="button" id="cancel-password-change" class="password-modal-btn cancel">
+                            <i class="fas fa-times"></i>
+                            Abbrechen
+                        </button>
+                        <button type="submit" id="submit-password-change" class="password-modal-btn submit">
+                            <i class="fas fa-save"></i>
+                            Passwort ändern
+                        </button>
+                    </div>
             </div>
         </div>
         
+            <!-- Datasheet Modal -->
+            <div id="datasheet-modal" class="datasheet-modal-overlay">
+                <div class="datasheet-modal-content">
+                    <div class="datasheet-modal-header">
+                        <h2 class="datasheet-modal-title">
+                            <i class="fas fa-id-card"></i>
+                            BTZ Zeiterfassung - Benutzerdaten
+                        </h2>
+                        <button class="datasheet-modal-close" id="close-datasheet-modal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="datasheet-modal-body" id="datasheet-content">
+                        <!-- Content will be loaded dynamically -->
+                        <div class="datasheet-loading-placeholder" style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <p style="margin-top: 1rem; color: var(--text-secondary);">Datenblatt wird geladen...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="datasheet-actions">
+                        <button class="datasheet-print-btn browser-print" id="datasheet-browser-print">
+                            <i class="fas fa-print"></i>
+                            Im Browser drucken
+                        </button>
+                        <button class="datasheet-print-btn pdf-print" id="datasheet-pdf-print">
+                            <i class="fas fa-file-pdf"></i>
+                            PDF erstellen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- External Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script>
         // Password functions removed as requested
+    
+    // Handle add user form submission
+    function handleAddUserSubmit(event) {
+        event.preventDefault();
+        
+        var form = document.getElementById('add-user-form');
+        
+        // Überprüfe, ob die Passwörter übereinstimmen
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirm_password').value;
+        var passwordMismatch = document.getElementById('password-add-mismatch');
+        
+        if (password !== confirmPassword) {
+            passwordMismatch.classList.remove('hidden');
+            return false; // Stoppe die Formularübermittlung
+        }
+        
+        passwordMismatch.classList.add('hidden');
+        var formData = new FormData(form);
+        var feedback = document.getElementById('add-user-feedback');
+        
+        fetch('/add_user', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            feedback.style.display = 'block';
+            feedback.classList.remove('hidden');
+            
+            if (data.success) {
+                // Zeige Erfolgsmeldung mit Popup-Button zum Datenblatt
+                feedback.innerHTML = `
+                    <div class="feedback-success">
+                        ${data.message}
+                        <div class="button-container">
+                            <button onclick="openDatasheetPopup('${data.datasheet_url}', '${data.username}')" class="btn btn-primary">
+                                <i class="fas fa-id-card"></i> Datenblatt anzeigen
+                            </button>
+                            <span class="consent-info consent-info-inline">(Zugangsdaten im Popup anzeigen)</span>
+                        </div>
+                    </div>
+                `;
+                
+                var usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
+                var newRow = usersTable.insertRow();
+                var userId = data.user_id;
+                var username = data.username;
+                newRow.setAttribute('data-user-id', userId);
+                newRow.innerHTML = `<td><strong>${userId}</strong></td><td><div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-user-circle" style="color: var(--primary-color);"></i><strong>${username}</strong></div></td><td class="consent-status" data-user-id="${userId}"><span class="badge badge-neutral"><span class="badge-dot">○</span> Nicht festgelegt</span></td><td><div class="button-group"><button class='change-password-btn btn btn-primary' data-user-id='${userId}' data-username='${username}'><i class="fas fa-key"></i>Passwort ändern</button><button class='delete-user-btn btn btn-danger' data-user-id='${userId}'><i class="fas fa-trash"></i>Löschen</button></div></td>`;
+                form.reset();
+                
+                // Reattach event listeners to newly added buttons
+                initializeButtonEventHandlers();
+            } else {
+                // Zeige Fehlermeldung
+                feedback.innerHTML = `<div class="feedback-error">${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error('AJAX error:', error);
+            feedback.style.display = 'block';
+            feedback.classList.remove('hidden');
+            feedback.innerHTML = `<div class="feedback-error">Fehler beim Hinzufügen des Benutzers.</div>`;
+        });
+        
+        return false; // Prevent default form submission
+    }
         
         // Global function definition for password changing
         function handleChangePasswordBtn(btn) {
@@ -172,12 +1785,16 @@
             modalTitle.textContent = 'Passwort ändern für ';
             newPassword.value = '';
             confirmPassword.value = '';
-            passwordMismatch.style.display = 'none';
+        passwordMismatch.classList.add('hidden');
             
-            // Show the relevant section
-            passwordChangeForm.style.display = 'block';
+        // Show the modal properly
+        passwordModal.classList.add('active');
+    }
             
-            passwordModal.style.display = 'block';
+    // Function to hide the modal
+    function hidePasswordModal() {
+        var passwordModal = document.getElementById('password-modal');
+        passwordModal.classList.remove('active');
         }
         
         // Function to initialize all button event handlers
@@ -191,8 +1808,6 @@
                     handleChangePasswordBtn(this);
                 });
             });
-            
-            // Print password functionality removed as requested
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -239,67 +1854,6 @@
                 }
             });
 
-            // AJAX add user
-            document.getElementById('add-user-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                var form = this;
-                
-                // Überprüfe, ob die Passwörter übereinstimmen
-                var password = document.getElementById('password').value;
-                var confirmPassword = document.getElementById('confirm_password').value;
-                var passwordMismatch = document.getElementById('password-add-mismatch');
-                
-                if (password !== confirmPassword) {
-                    passwordMismatch.style.display = 'block';
-                    return; // Stoppe die Formularübermittlung
-                }
-                
-                passwordMismatch.style.display = 'none';
-                var formData = new FormData(form);
-                var feedback = document.getElementById('add-user-feedback');
-                fetch('/add_user', {
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    feedback.style.display = 'block';
-                    
-                    if (data.success) {
-                        // Zeige Erfolgsmeldung mit Link zum Datenblatt
-                        feedback.innerHTML = `
-                            <div class="feedback-success">
-                                ${data.message}
-                                <div class="button-container">
-                                    <a href="${data.datasheet_url}" target="_blank" class="btn btn-primary">
-                                        <i class="fas fa-print"></i> Datenblatt öffnen
-                                    </a>
-                                    <span class="consent-info" style="margin-left: 10px;">(Zum Ausdrucken im neuen Tab)</span>
-                                </div>
-                            </div>
-                        `;
-                        
-                        var usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
-                        var newRow = usersTable.insertRow();
-                        var userId = data.user_id;
-                        var username = data.username;
-                        newRow.setAttribute('data-user-id', userId);
-                        newRow.innerHTML = `<td>${userId}</td><td>${username}</td><td class="consent-status" data-user-id="${userId}"><span class="badge badge-neutral"><span class="badge-dot">○</span> Nicht festgelegt</span></td><td><div class="button-group"><button class='change-password-btn btn btn-primary' data-user-id='${userId}' data-username='${username}'>Passwort ändern</button><button class='delete-user-btn btn btn-danger' data-user-id='${userId}'>Löschen</button></div></td>`;
-                        form.reset();
-                        
-                        // Reattach event listeners to newly added buttons
-                        initializeButtonEventHandlers();
-                    } else {
-                        // Zeige Fehlermeldung
-                        feedback.innerHTML = `<div class="feedback-error">${data.message}</div>`;
-                    }
-                })
-                .catch(() => {
-                    feedback.style.display = 'block';
-                    feedback.innerHTML = `<div class="feedback-error">Fehler beim Hinzufügen des Benutzers.</div>`;
-                });
-            });
             // AJAX update consent
             document.getElementById('consent-form').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -348,110 +1902,677 @@
                 });
             });
 
-            // Passwort-Änderung Modal
-            const passwordModal = document.getElementById('password-modal');
-            const passwordChangeForm = document.getElementById('password-change-form');
-            const cancelPasswordChange = document.getElementById('cancel-password-change');
-            const passwordChangeUsername = document.getElementById('password-change-username');
-            const passwordChangeUserId = document.getElementById('password-change-user-id');
-            const modalAction = document.getElementById('modal-action');
-            const modalTitle = document.getElementById('modal-title');
-            const newPassword = document.getElementById('new-password');
-            const confirmPassword = document.getElementById('confirm-password');
-            const passwordMismatch = document.getElementById('password-mismatch');
+        // Global click handler for all buttons
+        document.body.addEventListener('click', function(event) {
+            let target = event.target;
             
-            // Event handlers are now set in the initializeButtonEventHandlers function
-            
-            // Password print functionality removed as requested
-            
-            // Schließen des Modals bei Klick auf "Abbrechen"
-            cancelPasswordChange.addEventListener('click', function() {
-                passwordModal.style.display = 'none';
-            });
-            
-            // Schließen des Modals, wenn außerhalb geklickt wird
-            window.addEventListener('click', function(event) {
-                if (event.target === passwordModal) {
-                    passwordModal.style.display = 'none';
+            // Find the actual button element if we clicked on a child element
+            while (target && target !== document) {
+                if (target.tagName === 'BUTTON') {
+                    break;
                 }
-            });
+                target = target.parentNode;
+            }
+            
+            if (!target || target === document) return;
+            
+            // Handle change password button clicks
+            if (target.classList.contains('change-password-btn')) {
+                event.preventDefault();
+                handleChangePasswordBtn(target);
+            }
+        });
+    });
 
-            // Event-Listener für das Passwort-Änderungsformular
-            passwordChangeForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+    // Datasheet Modal System
+    class DatasheetModal {
+        constructor() {
+            this.modal = document.getElementById('datasheet-modal');
+            this.closeBtn = document.getElementById('close-datasheet-modal');
+            this.content = document.getElementById('datasheet-content');
+            this.browserPrintBtn = document.getElementById('datasheet-browser-print');
+            this.pdfPrintBtn = document.getElementById('datasheet-pdf-print');
+            this.currentDatasheetData = null;
+            
+            this.init();
+        }
+        
+        init() {
+            // Close button handler
+            this.closeBtn.addEventListener('click', () => this.close());
+            
+            // Close on overlay click
+            this.modal.addEventListener('click', (e) => {
+                if (e.target === this.modal) {
+                    this.close();
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+                    this.close();
+                }
+            });
+            
+            // Print handlers
+            this.browserPrintBtn.addEventListener('click', () => this.printBrowser());
+            this.pdfPrintBtn.addEventListener('click', () => this.generatePDF());
+        }
+        
+        async open(datasheetUrl, username) {
+            try {
+                this.modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
                 
-                // Überprüfe, ob die Passwörter übereinstimmen
-                const newPasswordValue = newPassword.value;
-                const confirmPasswordValue = confirmPassword.value;
+                // Show loading state
+                this.showLoading();
                 
-                if (newPasswordValue !== confirmPasswordValue) {
-                    passwordMismatch.style.display = 'block';
-                    return; // Stoppe die Formularübermittlung, wenn Passwörter nicht übereinstimmen
+                // Extract user ID from the datasheet URL
+                const userIdMatch = datasheetUrl.match(/\/user_datasheet\/(\d+)/);
+                if (!userIdMatch) {
+                    throw new Error('Invalid datasheet URL');
                 }
                 
-                // Passwörter stimmen überein, sende das Formular ab
-                passwordMismatch.style.display = 'none';
-                const userId = passwordChangeUserId.value;
+                const userId = userIdMatch[1];
+                const apiUrl = `/api/user_datasheet/${userId}`;
                 
-                fetch('/reset_password/' + userId, {
+                // Fetch datasheet data from JSON API
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Failed to load datasheet');
+                }
+                
+                // Store the data
+                this.currentDatasheetData = data;
+                
+                // Render the datasheet content
+                this.renderDatasheet(data);
+                
+            } catch (error) {
+                console.error('Error loading datasheet:', error);
+                this.showError(error.message || 'Fehler beim Laden des Datenblatts');
+            }
+        }
+        
+        renderDatasheet(data) {
+            const content = `
+                <div class="datasheet-info-grid">
+                    <div class="datasheet-info-card">
+                        <h3>
+                            <i class="fas fa-user"></i>
+                            Zugangsdaten
+                        </h3>
+                        <table class="datasheet-data-table">
+                            <tr>
+                                <th>Benutzername</th>
+                                <td><strong>${data.username}</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Passwort</th>
+                                <td><span class="datasheet-password">${data.password}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Erstellungsdatum</th>
+                                <td>${data.creation_date}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="datasheet-info-card">
+                        <h3>
+                            <i class="fas fa-qrcode"></i>
+                            Mobiler Zugriff
+                        </h3>
+                        <div class="datasheet-qr-section">
+                            <p><strong>Login-URL:</strong></p>
+                            <p style="word-break: break-all; margin: 0.5rem 0;">${data.login_url}</p>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.login_url)}" 
+                                 alt="QR-Code für Login" class="datasheet-qr-code">
+                            <p class="datasheet-qr-caption">QR-Code für mobilen Zugriff</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="datasheet-notice">
+                    <h4>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Wichtige Sicherheitshinweise
+                    </h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li>Bitte ändern Sie Ihr Passwort nach der ersten Anmeldung</li>
+                        <li>Bewahren Sie diese Information sicher auf</li>
+                        <li>Teilen Sie Ihre Zugangsdaten nicht mit anderen Personen</li>
+                        <li>Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</li>
+                    </ul>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem; padding: 1rem; background: rgba(255, 255, 255, 0.5); border-radius: var(--radius-md); border: 1px solid rgba(255, 255, 255, 0.3);">
+                    <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                        <strong>BTZ Zeiterfassung</strong> | Erstellt am ${data.current_date}
+                    </p>
+                </div>
+            `;
+            
+            this.content.innerHTML = content;
+        }
+        
+        showLoading() {
+            this.content.innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem;">Datenblatt wird geladen...</p>
+                </div>
+            `;
+        }
+        
+        showError(message) {
+            this.content.innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger-color); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--danger-color); font-size: 1.1rem;">${message}</p>
+                    <button class="btn btn-secondary" onclick="window.datasheetModal.close()" style="margin-top: 1rem;">
+                        <i class="fas fa-times"></i>
+                        Schließen
+                    </button>
+                </div>
+            `;
+        }
+        
+        close() {
+            this.modal.classList.remove('active');
+            document.body.style.overflow = '';
+            this.currentDatasheetData = null;
+        }
+        
+        printBrowser() {
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            const printContent = this.generatePrintableContent();
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>BTZ Zeiterfassung - Benutzerdaten</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px; 
+                            color: #333; 
+                        }
+                        .header { 
+                            text-align: center; 
+                            margin-bottom: 30px; 
+                            border-bottom: 2px solid #3b82f6; 
+                            padding-bottom: 20px; 
+                        }
+                        .data-table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin: 20px 0; 
+                        }
+                        .data-table th, .data-table td { 
+                            border: 1px solid #ddd; 
+                            padding: 12px; 
+                            text-align: left; 
+                        }
+                        .data-table th { 
+                            background-color: #f8f9fa; 
+                            font-weight: bold; 
+                        }
+                        .password { 
+                            font-family: 'Courier New', monospace; 
+                            font-weight: bold; 
+                            background-color: #e8f5e9; 
+                            padding: 4px 8px; 
+                            border-radius: 4px; 
+                        }
+                        .notice { 
+                            background-color: #fff3cd; 
+                            border: 1px solid #ffeaa7; 
+                            border-radius: 4px; 
+                            padding: 15px; 
+                            margin: 20px 0; 
+                        }
+                        .qr-section { 
+                            text-align: center; 
+                            margin: 20px 0; 
+                        }
+                        .footer { 
+                            text-align: center; 
+                            margin-top: 30px; 
+                            font-size: 0.9em; 
+                            color: #666; 
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${printContent}
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            
+            // Wait for content to load, then print
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+        
+        generatePrintableContent() {
+            if (!this.currentDatasheetData) return '';
+            
+            const data = this.currentDatasheetData;
+            return `
+                <div class="header">
+                    <h1>BTZ Zeiterfassung - Benutzerdaten</h1>
+                    <p>Zugangsdaten für das Zeiterfassungssystem</p>
+                </div>
+                
+                <table class="data-table">
+                    <tr>
+                        <th>Benutzername</th>
+                        <td><strong>${data.username}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Passwort</th>
+                        <td><span class="password">${data.password}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Erstellungsdatum</th>
+                        <td>${data.creation_date}</td>
+                    </tr>
+                    <tr>
+                        <th>Login-URL</th>
+                        <td>${data.login_url}</td>
+                    </tr>
+                </table>
+                
+                <div class="notice">
+                    <h3>Wichtige Sicherheitshinweise:</h3>
+                    <ul>
+                        <li>Bitte ändern Sie Ihr Passwort nach der ersten Anmeldung</li>
+                        <li>Bewahren Sie diese Information sicher auf</li>
+                        <li>Teilen Sie Ihre Zugangsdaten nicht mit anderen Personen</li>
+                        <li>Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</li>
+                    </ul>
+                </div>
+                
+                <div class="qr-section">
+                    <h3>QR-Code für mobilen Zugriff:</h3>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.login_url)}" 
+                         alt="QR-Code für Login">
+                </div>
+                
+                <div class="footer">
+                    <p><strong>BTZ Zeiterfassung</strong> | Erstellt am ${data.current_date}</p>
+                </div>
+            `;
+        }
+        
+        async generatePDF() {
+            if (!this.currentDatasheetData) return;
+            
+            // Show loading overlay
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'datasheet-loading';
+            loadingOverlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i>PDF wird erstellt...';
+            document.body.appendChild(loadingOverlay);
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                // Create a temporary container for PDF content
+                const tempContainer = document.createElement('div');
+                tempContainer.style.position = 'absolute';
+                tempContainer.style.left = '-9999px';
+                tempContainer.style.width = '800px';
+                tempContainer.style.background = 'white';
+                tempContainer.style.padding = '20px';
+                tempContainer.innerHTML = this.generatePrintableContent();
+                document.body.appendChild(tempContainer);
+                
+                // Generate PDF using html2canvas
+                const canvas = await html2canvas(tempContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`BTZ-Zeiterfassung_Zugangsdaten_${this.currentDatasheetData.username}.pdf`);
+                
+                // Clean up
+                document.body.removeChild(tempContainer);
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Fehler beim Erstellen der PDF-Datei');
+            } finally {
+                document.body.removeChild(loadingOverlay);
+            }
+        }
+    }
+    
+    // Initialize datasheet modal
+    window.datasheetModal = new DatasheetModal();
+    
+    // Function to open datasheet popup
+    function openDatasheetPopup(datasheetUrl, username) {
+        window.datasheetModal.open(datasheetUrl, username);
+    }
+    
+    // Password Change Modal System
+    class PasswordChangeModal {
+        constructor() {
+            this.modal = document.getElementById('password-modal');
+            this.closeBtn = document.getElementById('close-password-modal');
+            this.cancelBtn = document.getElementById('cancel-password-change');
+            this.submitBtn = document.getElementById('submit-password-change');
+            this.form = document.getElementById('password-change-form');
+            this.loading = document.getElementById('password-modal-loading');
+            this.usernameSpan = document.getElementById('password-change-username');
+            this.userIdInput = document.getElementById('password-change-user-id');
+            this.newPasswordInput = document.getElementById('new-password');
+            this.confirmPasswordInput = document.getElementById('confirm-password');
+            this.passwordMismatch = document.getElementById('password-mismatch');
+            this.passwordStrength = document.getElementById('password-strength');
+            
+            this.init();
+        }
+        
+        init() {
+            // Close button handlers
+            this.closeBtn.addEventListener('click', () => this.close());
+            this.cancelBtn.addEventListener('click', () => this.close());
+            
+            // Close on overlay click
+            this.modal.addEventListener('click', (e) => {
+                if (e.target === this.modal) {
+                    this.close();
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+                    this.close();
+                }
+            });
+            
+            // Form submission
+            this.submitBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.handleSubmit();
+            });
+            
+            // Password visibility toggles
+            document.querySelectorAll('.password-toggle').forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.togglePasswordVisibility(toggle);
+                });
+            });
+            
+            // Password strength checking
+            this.newPasswordInput.addEventListener('input', () => {
+                this.checkPasswordStrength();
+                this.checkPasswordMatch();
+            });
+            
+            // Password match checking
+            this.confirmPasswordInput.addEventListener('input', () => {
+                this.checkPasswordMatch();
+            });
+            
+            // Real-time validation
+            [this.newPasswordInput, this.confirmPasswordInput].forEach(input => {
+                input.addEventListener('blur', () => this.validateForm());
+            });
+        }
+        
+        open(userId, username) {
+            this.userIdInput.value = userId;
+            this.usernameSpan.textContent = username;
+            this.resetForm();
+            this.modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Focus on first input
+            setTimeout(() => {
+                this.newPasswordInput.focus();
+            }, 300);
+        }
+        
+        close() {
+            this.modal.classList.remove('active');
+            document.body.style.overflow = '';
+            this.resetForm();
+        }
+        
+        resetForm() {
+            this.form.reset();
+            this.passwordMismatch.style.display = 'none';
+            this.passwordStrength.style.display = 'none';
+            this.submitBtn.disabled = false;
+            this.hideLoading();
+            
+            // Reset password visibility
+            document.querySelectorAll('.password-toggle').forEach(toggle => {
+                const targetId = toggle.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input) {
+                    input.type = 'password';
+                    toggle.querySelector('i').className = 'fas fa-eye';
+                }
+            });
+        }
+        
+        togglePasswordVisibility(toggle) {
+            const targetId = toggle.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = toggle.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+        
+        checkPasswordStrength() {
+            const password = this.newPasswordInput.value;
+            
+            if (password.length === 0) {
+                this.passwordStrength.style.display = 'none';
+                return;
+            }
+            
+            let strength = 0;
+            let feedback = [];
+            
+            // Length check
+            if (password.length >= 8) strength++;
+            else feedback.push('mindestens 8 Zeichen');
+            
+            // Uppercase check
+            if (/[A-Z]/.test(password)) strength++;
+            else feedback.push('Großbuchstaben');
+            
+            // Lowercase check
+            if (/[a-z]/.test(password)) strength++;
+            else feedback.push('Kleinbuchstaben');
+            
+            // Number check
+            if (/\d/.test(password)) strength++;
+            else feedback.push('Zahlen');
+            
+            // Special character check
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+            else feedback.push('Sonderzeichen');
+            
+            this.passwordStrength.style.display = 'block';
+            
+            if (strength <= 2) {
+                this.passwordStrength.className = 'password-strength weak';
+                this.passwordStrength.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Schwach - Benötigt: ${feedback.join(', ')}`;
+            } else if (strength <= 3) {
+                this.passwordStrength.className = 'password-strength medium';
+                this.passwordStrength.innerHTML = `<i class="fas fa-exclamation-circle"></i> Mittel - Empfohlen: ${feedback.join(', ')}`;
+            } else {
+                this.passwordStrength.className = 'password-strength strong';
+                this.passwordStrength.innerHTML = `<i class="fas fa-check-circle"></i> Stark - Sicheres Passwort`;
+            }
+        }
+        
+        checkPasswordMatch() {
+            const newPassword = this.newPasswordInput.value;
+            const confirmPassword = this.confirmPasswordInput.value;
+            
+            if (confirmPassword.length === 0) {
+                this.passwordMismatch.style.display = 'none';
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                this.passwordMismatch.style.display = 'block';
+                return false;
+            } else {
+                this.passwordMismatch.style.display = 'none';
+                return true;
+            }
+        }
+        
+        validateForm() {
+            const newPassword = this.newPasswordInput.value;
+            const confirmPassword = this.confirmPasswordInput.value;
+            
+            const isValid = newPassword.length >= 6 && 
+                           confirmPassword.length >= 6 && 
+                           this.checkPasswordMatch();
+            
+            this.submitBtn.disabled = !isValid;
+            return isValid;
+        }
+        
+        showLoading() {
+            this.loading.classList.add('active');
+            this.submitBtn.disabled = true;
+        }
+        
+        hideLoading() {
+            this.loading.classList.remove('active');
+        }
+        
+        async handleSubmit() {
+            if (!this.validateForm()) {
+                return;
+            }
+            
+            const userId = this.userIdInput.value;
+            const newPassword = this.newPasswordInput.value;
+            const confirmPassword = this.confirmPasswordInput.value;
+            
+            this.showLoading();
+            
+            try {
+                const response = await fetch(`/reset_password/${userId}`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest' 
                     },
-                    body: JSON.stringify({ new_password: newPasswordValue, confirm_password: confirmPasswordValue })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const feedback = document.getElementById('delete-user-feedback');
-                    feedback.style.display = 'block';
-                    const message = data.message || (data.success ? 'Passwort erfolgreich geändert.' : 'Fehler beim Ändern des Passworts.');
-                    if (data.success) {
-                        feedback.innerHTML = `<div class="feedback-success">${message}</div>`;
-                    } else {
-                        feedback.innerHTML = `<div class="feedback-error">${message}</div>`;
-                    }
-                    
-                    if (data.success) {
-                        passwordModal.style.display = 'none';
-                    }
-                })
-                .catch(() => {
-                    const feedback = document.getElementById('delete-user-feedback');
-                    feedback.style.display = 'block';
-                    feedback.innerHTML = `<div class="feedback-error">Fehler beim Ändern des Passworts.</div>`;
+                    body: JSON.stringify({ 
+                        new_password: newPassword, 
+                        confirm_password: confirmPassword 
+                    })
                 });
-            });
+                
+                const data = await response.json();
+                
+                    if (data.success) {
+                    this.showSuccessMessage(data.message, data.datasheet_url);
+                    this.close();
+                    } else {
+                    this.showErrorMessage(data.message || 'Fehler beim Ändern des Passworts.');
+                }
+                
+            } catch (error) {
+                console.error('Error changing password:', error);
+                this.showErrorMessage('Netzwerkfehler beim Ändern des Passworts.');
+            } finally {
+                this.hideLoading();
+            }
+        }
+        
+        showSuccessMessage(message, datasheetUrl = null) {
+                    const feedback = document.getElementById('delete-user-feedback');
+                    feedback.style.display = 'block';
+            feedback.classList.remove('hidden');
             
-            // Schließen des Modals, wenn außerhalb geklickt wird
-            window.addEventListener('click', function(event) {
-                if (event.target == passwordModal) {
-                    passwordModal.style.display = 'none';
-                }
-            });
-
-            // Global click handler for all buttons
-            document.body.addEventListener('click', function(event) {
-                let target = event.target;
-                
-                // Find the actual button element if we clicked on a child element
-                while (target && target !== document) {
-                    if (target.tagName === 'BUTTON') {
-                        break;
-                    }
-                    target = target.parentNode;
-                }
-                
-                if (!target || target === document) return;
-                
-                // Handle change password button clicks
-                if (target.classList.contains('change-password-btn')) {
-                    event.preventDefault();
-                    handleChangePasswordBtn(target);
-                }
-            });
-        });
+            let feedbackContent = `<div class="feedback-success">${message}`;
+            
+            if (datasheetUrl) {
+                feedbackContent += `
+                    <div class="button-container">
+                        <button onclick="openDatasheetPopup('${datasheetUrl}', '${this.usernameSpan.textContent}')" class="btn btn-primary">
+                            <i class="fas fa-id-card"></i> Neues Datenblatt anzeigen
+                        </button>
+                        <span class="consent-info consent-info-inline">(Neue Zugangsdaten im Popup anzeigen)</span>
+                    </div>
+                `;
+            }
+            
+            feedbackContent += `</div>`;
+            feedback.innerHTML = feedbackContent;
+        }
+        
+        showErrorMessage(message) {
+            const feedback = document.getElementById('delete-user-feedback');
+            feedback.style.display = 'block';
+            feedback.classList.remove('hidden');
+            feedback.innerHTML = `<div class="feedback-error">${message}</div>`;
+        }
+    }
+    
+    // Initialize password modal
+    window.passwordChangeModal = new PasswordChangeModal();
+    
+    // Updated function to handle password change button clicks
+    function handleChangePasswordBtn(btn) {
+        if (!btn) {
+            console.error('Button element is required');
+            return;
+        }
+        
+        const userId = btn.getAttribute('data-user-id');
+        const username = btn.getAttribute('data-username');
+        
+        if (!userId || !username) {
+            console.error('Button is missing data attributes: data-user-id or data-username');
+            return;
+        }
+        
+        window.passwordChangeModal.open(userId, username);
+    }
         </script>
-    </div>
 </body>
 </html>

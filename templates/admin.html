@@ -1,281 +1,1240 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Admin Panel</title>
+    <title>BTZ Zeiterfassung - Admin Panel</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/breaks.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- External Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Modal/Popup styles */
-        #breaks-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            overflow: auto;
-            padding: 0 10px;
-            box-sizing: border-box;
+        /* Admin Panel Styles with Modern Glass Morphism */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
         }
         
-        .modal-content {
-            position: relative;
-            background-color: #fff;
-            margin: 10vh auto;
-            padding: 0;
-            width: 95%;
-            max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            animation: modalFadeIn 0.3s;
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
         
-        @keyframes modalFadeIn {
-            from {opacity: 0; transform: translateY(-30px);}
-            to {opacity: 1; transform: translateY(0);}
-        }
-        
-        .modal-header {
-            padding: 15px 20px;
-            background: linear-gradient(to right, #1976d2, #2196f3);
-            color: white;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+        .admin-header h1 {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
         }
         
-        .modal-title {
+        .admin-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        /* Section Cards */
+        .admin-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .section-header h2 {
             margin: 0;
-            font-size: 1.3em;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
         }
         
-        .modal-title-icon {
-            margin-right: 10px;
+        .section-header i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
         }
         
-        .modal-close {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
+        /* Report Generation Section */
+        .report-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
         
-        .modal-close:hover {
-            color: #f0f0f0;
-        }
-        
-        .modal-body {
-            padding: 20px;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-        
-        /* Responsive styles for modal */
-        @media (max-width: 768px) {
-            .modal-content {
-                width: 98%;
-                margin: 5vh auto;
-            }
-            
-            .modal-body {
-                padding: 15px 10px;
-                max-height: 80vh;
-            }
-            
-            .modal-header {
-                padding: 12px 15px;
-            }
-            
-            .modal-title {
-                font-size: 1.1em;
-            }
-        }
-
-        /* Filtering styles */
-        .filtering-options {
+        .form-group {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            background: #f7f9fb;
-            padding: 15px;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-label i {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            border: 1px solid #e0e4e8;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
         
-        .filter-form {
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Checkbox styling */
+        .checkbox-group {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-group:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        /* Multi-select container */
+        .multi-select {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .multi-select .form-input {
             flex: 1;
         }
         
-        .filter-group {
+        /* Date range inputs */
+        .date-range {
             display: flex;
-            flex-direction: column;
-            min-width: 180px;
+            align-items: center;
+            gap: 0.75rem;
         }
         
-        .filter-label, .sort-label {
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            color: #444;
+        .date-range .form-input {
+            flex: 1;
+        }
+        
+        .date-separator {
+            color: var(--text-muted);
             font-weight: 500;
+        }
+        
+        /* Buttons */
+        .btn-admin {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-admin:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .filter-header i {
+            color: var(--primary-color);
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Enhanced form styling for filters */
+        .filter-section .form-group {
+            position: relative;
+        }
+        
+        .filter-section .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+        
+        .filter-section .form-label i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .filter-section .form-input {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #1e40af;
+            font-weight: 500;
+        }
+        
+        .filter-section .form-input:focus {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        
+        .filter-section .form-input option {
+            background: white;
+            color: #1e40af;
+        }
+        
+        /* Date range specific styling */
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .date-range .form-input {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .date-separator {
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        /* Filter button styling */
+        .filter-actions .btn-admin {
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .filter-actions .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .filter-actions .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+        
+        /* Results info enhanced styling */
+        .results-info {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+        }
+        
+        .results-info i {
+            color: #059669;
+            font-size: 1.1rem;
+        }
+        
+        .results-info.hidden {
+            display: none;
+        }
+        
+        /* Filter responsive improvements */
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .filter-actions {
+                justify-content: stretch;
+            flex-direction: column;
+            }
+            
+            .filter-actions .btn-admin {
+            width: 100%;
+            }
+            
+            .date-range {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+            
+            .date-range .form-input {
+                min-width: auto;
+            }
+            
+            .date-separator {
+                text-align: center;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .filter-section {
+                padding: 1rem;
+            }
+            
+            .filter-header {
+                font-size: 1rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.25rem;
+            }
+            
+            .filter-section .form-label {
+                font-size: 0.85rem;
+            }
+            
+            .filter-section .form-input {
+                font-size: 0.9rem;
+                padding: 0.6rem 0.8rem;
+            }
+        }
+        
+        /* Table Styling */
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+        
+        .attendance-table th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+        }
+        
+        .attendance-table td {
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+        
+        .attendance-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .attendance-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table-icon {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        /* Break indicators */
+        .break-indicator {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+        
+        .show-breaks-btn {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.3s ease;
+        }
+        
+        .show-breaks-btn:hover {
+            color: #2563eb;
+        }
+        
+        .no-breaks {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        /* Modal System - Clean Implementation with Fallbacks */
+        .modal-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(8px);
+            z-index: 10000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Fallback for browsers that don't support the above */
+        .modal-overlay.active {
+            display: flex !important;
+        }
+        
+        .modal-container {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            max-width: 95vw;
+            max-height: 90vh;
+            width: 100%;
+            max-width: 1000px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .modal-overlay.active .modal-container {
+            transform: scale(1) translateY(0) !important;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-title i {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+        
+        .modal-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+        }
+        
+        .modal-close-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #dc2626;
+            transform: scale(1.1);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: calc(90vh - 120px);
+        }
+        
+        /* Loading State */
+        .modal-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .modal-loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: modalSpin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+        
+        @keyframes modalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal-loading-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* Error State */
+        .modal-error {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #dc2626;
+        }
+        
+        .modal-error i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            color: #dc2626;
+        }
+        
+        .modal-error h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+        }
+        
+        .modal-error p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+        
+        /* Empty State */
+        .modal-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        
+        .modal-empty i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            color: #9ca3af;
+        }
+        
+        .modal-empty h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Breaks Table in Modal */
+        .breaks-table-container {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .breaks-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+        
+        .breaks-table th {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+            padding: 1rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            font-size: 0.95rem;
+        }
+        
+        .breaks-table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        
+        .breaks-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .breaks-table tfoot {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+        }
+        
+        .breaks-table tfoot td {
+            border-bottom: none;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Break Type Badges */
+        .break-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+        
+        .break-badge.auto {
+            background: rgba(37, 99, 235, 0.1);
+            color: #1d4ed8;
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+        
+        .break-badge.arbzg {
+            background: rgba(34, 197, 94, 0.1);
+            color: #15803d;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .break-badge.lunch {
+            background: rgba(234, 88, 12, 0.1);
+            color: #c2410c;
+            border-color: rgba(234, 88, 12, 0.3);
+        }
+        
+        .break-badge.manual {
+            background: rgba(107, 114, 128, 0.1);
+            color: #374151;
+            border-color: rgba(107, 114, 128, 0.3);
+        }
+        
+        .break-badge i {
+            font-size: 0.9rem;
+        }
+        
+        /* Billing Status */
+        .billing-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .billing-status.billable {
+            color: #15803d;
+        }
+        
+        .billing-status.non-billable {
+            color: #dc2626;
+        }
+        
+        .billing-status i {
+            font-size: 1rem;
+        }
+        
+        /* Summary Section in Modal */
+        .breaks-summary {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .breaks-summary h4 {
+            margin: 0 0 1rem 0;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+        }
+        
+        .summary-item i {
+            font-size: 1.2rem;
+        }
+        
+        .summary-item .value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .summary-item .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Modal Design */
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: 0.5rem;
+            }
+            
+            .modal-container {
+                max-height: 95vh;
+                border-radius: 16px;
+            }
+            
+            .modal-header {
+                padding: 1.25rem 1.5rem;
+            }
+            
+            .modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .modal-body {
+                padding: 1.5rem;
+                max-height: calc(95vh - 100px);
+            }
+            
+            .breaks-table th,
+            .breaks-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .break-badge {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .modal-overlay {
+                padding: 0.25rem;
+            }
+            
+            .modal-container {
+                max-height: 98vh;
+                border-radius: 12px;
+            }
+            
+            .modal-header {
+                padding: 1rem;
+            flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .modal-title {
+                font-size: 1.2rem;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+                max-height: calc(98vh - 120px);
+            }
+            
+            .breaks-table th,
+            .breaks-table td {
+                padding: 0.5rem 0.4rem;
+                font-size: 0.85rem;
+            }
+            
+            .break-badge {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .modal-loading,
+            .modal-error,
+            .modal-empty {
+                padding: 2rem 1rem;
+            }
+        }
+        
+        /* Utility classes */
+        .hidden {
+            display: none !important;
         }
         
         .invisible {
             visibility: hidden;
         }
         
-        .date-range-inputs {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .text-center {
+            text-align: center;
         }
         
-        .date-separator {
-            font-size: 0.9em;
-            color: #444;
+        .mb-0 { margin-bottom: 0; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        
+        /* Modal Debug Styles - Aggressive overrides */
+        .modal-overlay.active {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 999999 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.8) !important;
         }
         
-        .filter-button {
-            padding: 0.6em 1em;
-            background: #f0f4f7;
-            border: 1px solid #d3d9e0;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95em;
-            transition: background-color 0.2s, border-color 0.2s;
+        .modal-overlay.active .modal-container {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: scale(1) translateY(0) !important;
+            background: white !important;
+            border: 2px solid #3b82f6 !important;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
         }
         
-        .filter-button:hover {
-            background: #e0e4e8;
-        }
-        
-        .filter-button.ready {
-            background: linear-gradient(to bottom, #42a5f5, #1976d2);
-            border-color: #1565c0;
-            color: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-        }
-        
-        .filter-button.ready:hover {
-            background: linear-gradient(to bottom, #2196f3, #0d47a1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        .clear-btn {
-            background: #f5f5f5;
-            color: #555;
-        }
-        
-        .clear-btn:hover {
-            background: #eaeaea;
-            border-color: #ccc;
-        }
-        
-        .sort-options {
-            display: flex;
-            flex-direction: column;
-            min-width: 220px;
-        }
-        
-        .filter-results-info {
-            margin-bottom: 15px;
-            padding: 8px 15px;
-            background: #e8f0fe;
-            border-radius: 6px;
-            font-size: 0.9em;
-            color: #333;
-        }
-        
-        .form-input {
-            padding: 0.6em;
-            background: #fff;
-            border: 1px solid #b0bec5;
-            border-radius: 6px;
-            font-size: 0.95em;
-            box-sizing: border-box;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        
-        .form-input:focus {
-            border-color: #64b5f6;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 0 0 3px rgba(33, 150, 243, 0.15);
-            outline: none;
-        }
-        
-        .form-icon {
-            margin-right: 5px;
-            color: #1976d2;
-        }
-        
-        .timeframe-label {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            height: 40px;
-            padding: 0.15em 0.5em;
-            border-radius: 6px;
-            background: #f0f4f7;
-            border: 1px solid #d3d9e0;
-            transition: background-color 0.2s;
-        }
-        
-        .timeframe-label input {
-            margin-right: 0.7em;
-            transform: scale(1.2);
-        }
-        
-        .timeframe-label span {
-            font-size: 0.95em;
-            color: #444;
-            white-space: nowrap;
-            user-select: none;
-        }
-        
-        .multi-select-container {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .date-picker-container {
+        /* Loading states */
+        .loading {
             position: relative;
-            width: 100%;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        /* Summary section */
+        .summary-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+        }
+        
+        .summary-section h3 {
+            margin: 0 0 1rem 0;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .admin-container {
+                padding: 0.5rem;
+            }
+            
+            .admin-section {
+                padding: 1.5rem;
+            }
         }
         
         @media (max-width: 768px) {
-            .filtering-options {
+            .admin-header h1 {
+                font-size: 2rem;
+            }
+            
+            .report-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .multi-select {
                 flex-direction: column;
             }
             
-            .filter-group, .sort-options {
-                min-width: 100%;
+            .attendance-table {
+                font-size: 0.9rem;
+            }
+            
+            .attendance-table th,
+            .attendance-table td {
+                padding: 0.5rem;
             }
         }
-    </style>
+        
+        @media (max-width: 480px) {
+            .admin-section {
+                padding: 1rem;
+            }
+            
+            .section-header {
+            flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .attendance-table th,
+            .attendance-table td {
+                padding: 0.25rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* ============================================================================
+           MODAL STYLES
+           ============================================================================ */
+        
+        /* User Report Modal Styles */
+        .report-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: var(--space-lg);
+            padding-top: 60px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .report-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .report-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            max-height: calc(100vh - 80px);
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .report-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .report-modal-overlay.active .report-modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .report-modal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            padding: var(--space-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .report-modal-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .report-modal-title i {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+        }
+        
+        .report-modal-close {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .report-modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .report-modal-body {
+            padding: var(--space-xl);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .report-modal-body .loading-content {
+            text-align: center;
+            padding: var(--space-xl);
+            color: var(--text-secondary);
+        }
+        
+        .report-modal-body .loading-content i {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design for Report Modal */
+        @media (max-width: 768px) {
+            .report-modal-overlay {
+                padding: var(--space-md);
+                padding-top: 40px;
+            }
+            
+            .report-modal-content {
+                max-width: 100%;
+                border-radius: var(--radius-lg);
+            }
+            
+            .report-modal-header {
+                padding: var(--space-lg);
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+            
+            .report-modal-title {
+                font-size: 1.5rem;
+            }
+            
+            .report-modal-body {
+                padding: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .report-modal-overlay {
+                padding: var(--space-sm);
+                padding-top: 20px;
+            }
+            
+            .report-modal-header {
+                padding: var(--space-md);
+            }
+            
+            .report-modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .report-modal-body {
+                padding: var(--space-md);
+            }
+        }
 
-    <script src="/static/mobile-menu.js" defer></script></head>
-<body>
+        /* ============================================================================
+           BREAKS MODAL STYLES
+           ============================================================================ */
+    </style>
+    <script src="/static/mobile-menu.js" defer></script>
+</head>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
-    <div class="main-card card-style">
-        <h1>Admin Panel</h1>
-        <h2 class="section-title">Bericht generieren</h2>
-        <form id="report-form" class="filtering-options">
-            <div class="filter-form">
+    
+    <main class="glass-container">
+        <div class="admin-container">
+            <!-- Page Header -->
+            <div class="admin-header">
+                <h1>
+                    <i class="fas fa-cogs"></i>
+                    Admin Panel
+                </h1>
+                <p>Verwalten Sie Benutzer, generieren Sie Berichte und überwachen Sie die Anwesenheit</p>
+            </div>
+            
+            <!-- Report Generation Section -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Bericht generieren</h2>
+                </div>
+                
+                <form id="report-form" class="report-form">
                 <!-- User Selection -->
-                <div class="filter-group">
-                    <label for="report-user-id" class="filter-label">
-                        <i class="fas fa-user form-icon"></i>User
+                    <div class="form-group">
+                        <label for="report-user-id" class="form-label">
+                            <i class="fas fa-user"></i>
+                            Benutzer
                     </label>
                     <select id="report-user-id" name="user_id" class="form-input" title="Wählen Sie einen Benutzer oder 'Alle Benutzer'">
                         <option value="" selected>Alle Benutzer</option>
@@ -286,41 +1245,41 @@
                 </div>
                 
                 <!-- Entire Timeframe Checkbox -->
-                <div class="filter-group">
-                    <label class="filter-label invisible">_</label>
-                    <label class="timeframe-label" title="Zeigt alle Daten für den ausgewählten Benutzer an (nur bei Benutzerauswahl)">
+                    <div class="form-group">
+                        <label class="form-label invisible">Optionen</label>
+                        <div class="checkbox-group" title="Zeigt alle Daten für den ausgewählten Benutzer an (nur bei Benutzerauswahl)">
                         <input type="checkbox" id="entire-timeframe">
-                        <span>Gesamter Zeitraum</span>
-                    </label>
+                            <label for="entire-timeframe">Gesamter Zeitraum</label>
+                        </div>
                 </div>
                 
                 <!-- Date Input -->
-                <div class="filter-group">
-                    <label for="report-date" class="filter-label">
-                        <i class="far fa-calendar-alt form-icon"></i>Datum
+                    <div class="form-group">
+                        <label for="report-date" class="form-label">
+                            <i class="far fa-calendar-alt"></i>
+                            Datum
                     </label>
                     <input type="date" id="report-date" name="date" class="form-input" title="Wählen Sie ein bestimmtes Datum für den Bericht">
                 </div>
                 
                 <!-- Week Picker -->
-                <div class="filter-group">
-                    <label for="week-picker" class="filter-label">
-                        <i class="fas fa-calendar-week form-icon"></i>Woche
+                    <div class="form-group">
+                        <label for="week-picker" class="form-label">
+                            <i class="fas fa-calendar-week"></i>
+                            Woche
                     </label>
-                    <div class="date-picker-container">
-                        <input type="text" id="week-picker" name="week" class="form-input" style="cursor: pointer;" placeholder="Woche wählen" readonly title="Wählen Sie eine Woche">
-                        <span id="selected-week-display" style="display:none;"></span>
+                        <input type="text" id="week-picker" name="week" class="form-input" placeholder="Woche wählen" readonly title="Wählen Sie eine Woche">
                         <input type="hidden" id="report-week" name="week">
-                    </div>
                 </div>
                 
                 <!-- Month Selection -->
-                <div class="filter-group">
-                    <label for="report-month-select" class="filter-label">
-                        <i class="far fa-calendar form-icon"></i>Monat
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="far fa-calendar"></i>
+                            Monat
                     </label>
-                    <div class="multi-select-container">
-                        <select id="report-month-select" class="form-input" style="min-width: 95px;" title="Wählen Sie einen Monat">
+                        <div class="multi-select">
+                            <select id="report-month-select" class="form-input" title="Wählen Sie einen Monat">
                             <option value="" selected disabled>Monat</option>
                             <option value="1">Jan</option>
                             <option value="2">Feb</option>
@@ -335,41 +1294,61 @@
                             <option value="11">Nov</option>
                             <option value="12">Dez</option>
                         </select>
-                        <select id="report-month-year" class="form-input" style="min-width: 75px;" title="Wählen Sie ein Jahr">
+                            <select id="report-month-year" class="form-input" title="Wählen Sie ein Jahr">
                             {% for year in range(2023, 2026) %}
                             <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
                             {% endfor %}
                         </select>
+                        </div>
                         <input type="hidden" id="report-month" name="month">
-                    </div>
                 </div>
                 
                 <!-- Generate Button -->
-                <div class="filter-group">
-                    <label class="filter-label invisible">_</label>
-                    <button type="button" id="generate-report-btn" class="filter-button" title="Bericht generieren">
-                        <i class="fas fa-file-alt btn-icon"></i><span>Bericht generieren</span>
+                    <div class="form-group">
+                        <label class="form-label invisible">Aktion</label>
+                        <button type="button" id="generate-report-btn" class="btn-admin" title="Bericht generieren">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Bericht generieren</span>
                     </button>
-                </div>
             </div>
         </form>
+                
+                <!-- Summary Results -->
         <div id="summary-result">
             {% if summary %}
-                <h3>Summary</h3>
+                        <div class="summary-section">
+                            <h3>
+                                <i class="fas fa-chart-pie"></i>
+                                Zusammenfassung
+                            </h3>
                 {{ summary|safe }}
+                        </div>
             {% endif %}
         </div>
+            </div>
+            
+            <!-- Attendance Overview Section -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <i class="fas fa-table"></i>
         <h2>Anwesenheitsübersicht</h2>
-        
-        <!-- Filtering options -->
-        <div class="filtering-options">
-            <div class="filter-form">
+                </div>
+                
+                <!-- Filtering Section -->
+                <div class="filter-section">
+                    <div class="filter-header">
+                        <i class="fas fa-filter"></i>
+                        <span>Filter & Sortierung</span>
+                    </div>
+                    
+                    <div class="filter-grid">
                 <!-- Date range filter -->
-                <div class="filter-group">
-                    <label for="filter-start-date" class="filter-label">
-                        <i class="far fa-calendar-alt form-icon"></i>Zeitraum
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="far fa-calendar-alt"></i>
+                                Zeitraum
                     </label>
-                    <div class="date-range-inputs">
+                            <div class="date-range">
                         <input type="date" id="filter-start-date" class="form-input" placeholder="Von" title="Startdatum">
                         <span class="date-separator">bis</span>
                         <input type="date" id="filter-end-date" class="form-input" placeholder="Bis" title="Enddatum">
@@ -377,11 +1356,12 @@
                 </div>
                 
                 <!-- User filter -->
-                <div class="filter-group">
-                    <label for="filter-user" class="filter-label">
-                        <i class="fas fa-user form-icon"></i>User
+                        <div class="form-group">
+                            <label for="filter-user" class="form-label">
+                                <i class="fas fa-user"></i>
+                                Benutzer
                     </label>
-                    <select id="filter-user" class="form-input">
+                            <select id="filter-user" class="form-input" title="Benutzer auswählen">
                         <option value="">Alle Benutzer</option>
                         {% for user in users %}
                             <option value="{{ user[1] }}">{{ user[1] }}</option>
@@ -390,51 +1370,55 @@
                 </div>
                 
                 <!-- Status filter -->
-                <div class="filter-group">
-                    <label for="filter-status" class="filter-label">
-                        <i class="fas fa-stream form-icon"></i>Status
+                        <div class="form-group">
+                            <label for="filter-status" class="form-label">
+                                <i class="fas fa-stream"></i>
+                                Status
                     </label>
-                    <select id="filter-status" class="form-input">
-                        <option value="">Alle</option>
+                            <select id="filter-status" class="form-input" title="Status auswählen">
+                                <option value="">Alle Status</option>
                         <option value="checked-in">Eingecheckt</option>
                         <option value="checked-out">Ausgecheckt</option>
                     </select>
-                </div>
-                
-                <!-- Clear filters button -->
-                <div class="filter-group">
-                    <label class="filter-label invisible">_</label>
-                    <button type="button" id="clear-filters" class="filter-button clear-btn">
-                        <i class="fas fa-times-circle"></i><span>Filter zurücksetzen</span>
-                    </button>
-                </div>
             </div>
             
             <!-- Sort controls -->
-            <div class="sort-options">
-                <label for="sort-by" class="sort-label">
-                    <i class="fas fa-sort-amount-down form-icon"></i>Sortieren nach
+                        <div class="form-group">
+                            <label for="sort-by" class="form-label">
+                                <i class="fas fa-sort-amount-down"></i>
+                                Sortieren nach
                 </label>
-                <select id="sort-by" class="form-input">
+                            <select id="sort-by" class="form-input" title="Sortierung auswählen">
                     <option value="date-desc">Datum (neueste zuerst)</option>
                     <option value="date-asc">Datum (älteste zuerst)</option>
-                    <option value="user-asc">User (A-Z)</option>
-                    <option value="user-desc">User (Z-A)</option>
+                                <option value="user-asc">Benutzer (A-Z)</option>
+                                <option value="user-desc">Benutzer (Z-A)</option>
                     <option value="time-desc">Gesamtzeit (längste zuerst)</option>
                     <option value="time-asc">Gesamtzeit (kürzeste zuerst)</option>
                 </select>
             </div>
         </div>
         
-        <div id="filter-results-info" class="filter-results-info" style="display: none;">
+                    <div class="filter-actions">
+                        <button type="button" id="clear-filters" class="btn-admin btn-secondary" title="Alle Filter zurücksetzen">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Filter zurücksetzen</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filter Results Info -->
+                <div id="filter-results-info" class="results-info hidden">
+                    <i class="fas fa-info-circle"></i>
             <span id="filter-count">0</span> Einträge gefunden
         </div>
         
-        <div class="table-responsive">
+                <!-- Attendance Table -->
+                <div class="table-container">
         <table class="attendance-table" id="attendance-table">
             <thead>
                 <tr>
-                    <th><i class="fas fa-user table-icon"></i>User</th>
+                                <th><i class="fas fa-user table-icon"></i>Benutzer</th>
                     <th><i class="far fa-calendar table-icon"></i>Datum</th>
                     <th><i class="far fa-clock table-icon"></i>Check In</th>
                     <th><i class="far fa-clock table-icon"></i>Check Out</th>
@@ -455,7 +1439,9 @@
                     <td>
                         {% if rec['has_auto_breaks'] %}
                         <span class="break-indicator" title="Automatische Pausen erkannt">⏱️</span>
-                        <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec['id'] }}"><i class="far fa-eye btn-icon"></i>Anzeigen</a>
+                                    <a href="#" class="show-breaks-btn" data-attendance-id="{{ rec['id'] }}">
+                                        <i class="far fa-eye"></i>Anzeigen
+                                    </a>
                         {% else %}
                         <span class="no-breaks">Keine</span>
                         {% endif %}
@@ -465,20 +1451,48 @@
             </tbody>
         </table>
         </div>
+            </div>
+        </div>
+    </main>
         
         <!-- Modal for displaying breaks -->
-        <div id="breaks-modal">
-            <div class="modal-content">
+    <div id="breaks-modal" class="modal-overlay">
+        <div class="modal-container">
                 <div class="modal-header">
-                    <h3 class="modal-title"><i class="fas fa-coffee modal-title-icon"></i>Pausendetails</h3>
-                    <span id="close-modal" class="modal-close">&times;</span>
+                <h3 class="modal-title">
+                    <i class="fas fa-coffee"></i>
+                    Pausendetails
+                </h3>
+                <button id="close-modal" class="modal-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
                 </div>
                 <div id="breaks-content" class="modal-body">
-                    <p class="no-data-message">Keine Pausendaten gefunden.</p>
+                <!-- Content will be loaded here -->
                 </div>
             </div>
         </div>
         
+        <!-- User Report Modal -->
+        <div id="user-report-modal" class="report-modal-overlay">
+            <div class="report-modal-content">
+                <div class="report-modal-header">
+                    <h3 class="report-modal-title">
+                        <i class="fas fa-chart-line"></i>
+                        Benutzer Bericht
+                    </h3>
+                    <button class="report-modal-close" id="close-report-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="report-modal-body" id="report-modal-content">
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Bericht wird geladen...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     
         <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -670,10 +1684,16 @@
                 // The button variable is already defined above with "const button = this;"
                 // No need to redefine it which would cause an error
                 
-                // Open the report in a new window
-                const reportWindow = window.open(url, '_blank', 'width=900,height=700');
+                // Load the report in the modal - MODAL ONLY, no fallbacks
+                if (userReportModal) {
+                    userReportModal.loadReport(url);
+                } else {
+                    console.error('User report modal not initialized');
+                    alert('Fehler: Das Berichtssystem konnte nicht geladen werden. Bitte laden Sie die Seite neu.');
+                    return;
+                }
                 
-                // Reset button state after a short delay (even if window was blocked)
+                // Reset button state after a short delay
                 setTimeout(function() {
                     buttonText.textContent = originalText;
                     buttonIcon.className = originalIcon;
@@ -681,7 +1701,7 @@
                     button.style.opacity = '1';
                     // Re-add ready class if needed
                     updateButtonState();
-                }, 2000);
+                }, 1000);
             };
         });
     </script>
@@ -729,39 +1749,46 @@
                 var month = $("#report-month").val();
                 var entireTimeframe = $("#entire-timeframe").is(":checked") ? "true" : "false";
                 
-                // Create and submit form dynamically
-                var form = $("<form>")
-                    .attr("method", "post")
-                    .attr("action", "/generate_report")
-                    .css("display", "none");
-                    
-                form.append($("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "user_id")
-                    .attr("value", userId || ""));
-                    
-                form.append($("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "date")
-                    .attr("value", date || ""));
-                    
-                form.append($("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "week")
-                    .attr("value", week || ""));
-                    
-                form.append($("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "month")
-                    .attr("value", month || ""));
-                    
-                form.append($("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "entire_period")
-                    .attr("value", entireTimeframe));
+                // Show loading state
+                var button = $(this);
+                var originalText = button.text();
+                button.text('Bericht wird generiert...').prop('disabled', true);
                 
-                $("body").append(form);
-                form.submit();
+                // Make AJAX request to generate_report
+                $.ajax({
+                    url: '/generate_report',
+                    method: 'POST',
+                    data: {
+                        user_id: userId || "",
+                        date: date || "",
+                        week: week || "",
+                        month: month || "",
+                        entire_period: entireTimeframe
+                    },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(response) {
+                        if (response.success && response.url) {
+                            // Open the report in modal
+                            if (userReportModal) {
+                                userReportModal.loadReport(response.url);
+                            } else {
+                                alert('Fehler: Das Berichtssystem konnte nicht geladen werden. Bitte laden Sie die Seite neu.');
+                            }
+                        } else {
+                            alert('Fehler beim Generieren des Berichts.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error generating report:', error);
+                        alert('Fehler beim Generieren des Berichts: ' + error);
+                    },
+                    complete: function() {
+                        // Reset button state
+                        button.text(originalText).prop('disabled', false);
+                    }
+                });
             });
 
             // Month selector handling
@@ -800,143 +1827,420 @@
             });
         });
     </script>
-    </div>
-    <script src="/static/script.js"></script>
-    <script src="/static/week-picker.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Break details modal functionality
-            const modal = document.getElementById('breaks-modal');
-            const closeModal = document.getElementById('close-modal');
-            const breaksContent = document.getElementById('breaks-content');
-            const showBreaksBtns = document.querySelectorAll('.show-breaks-btn');
-            
-            // Close modal when clicking X
-            if (closeModal) {
-                closeModal.addEventListener('click', function() {
-                    modal.style.display = 'none';
+        // Modern Modal System for Breaks Display
+        class BreaksModal {
+            constructor() {
+                this.modal = document.getElementById('breaks-modal');
+                this.closeBtn = document.getElementById('close-modal');
+                this.content = document.getElementById('breaks-content');
+                this.isOpen = false;
+                
+                console.log('BreaksModal initialized', {
+                    modal: this.modal,
+                    closeBtn: this.closeBtn,
+                    content: this.content
                 });
+                
+                this.init();
             }
             
-            // Close modal when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+            init() {
+                if (!this.modal || !this.closeBtn || !this.content) {
+                    console.error('Modal elements not found!');
+                    return;
                 }
-            });
+                
+                // Close button event
+                this.closeBtn.addEventListener('click', () => {
+                    console.log('Close button clicked');
+                    this.close();
+                });
+                
+                // Close on overlay click
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) {
+                        console.log('Overlay clicked');
+                        this.close();
+                    }
+                });
+                
+                // Close on Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isOpen) {
+                        console.log('Escape key pressed');
+                        this.close();
+                    }
+                });
+                
+                // Attach handlers to existing buttons
+                this.attachBreaksHandlers();
+                
+                // Watch for table changes (filtering)
+                this.observeTableChanges();
+            }
             
-            // Show breaks when clicking 'Show' button
-            showBreaksBtns.forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const attendanceId = this.getAttribute('data-attendance-id');
-                    
-                    // Show loading state with animation
-                    breaksContent.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;"><i class="fas fa-circle-notch fa-spin" style="font-size: 2em; color: #1976d2; margin-bottom: 15px;"></i><p style="color: #666;">Pausendaten werden geladen...</p></div>';
-                    modal.style.display = 'block';
-                    
-                    // Fetch break details
-                    fetch('/get_breaks/' + attendanceId)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.breaks && data.breaks.length > 0) {
-                                // Check if we're on mobile
-                                const isMobile = window.innerWidth < 768;
-                                
-                                // Create table with responsive styles
-                                let html = `<div style="overflow-x: auto; margin-bottom: 10px;">
-                                <table style="width:100%; border-collapse: separate; border-spacing: 0; margin-top: 5px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px #e0e4e8;">
+            open() {
+                console.log('Opening modal');
+                this.modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                this.isOpen = true;
+                
+                // Force a reflow to ensure the class is applied
+                this.modal.offsetHeight;
+                
+                console.log('Modal opened, classes:', this.modal.className);
+            }
+            
+            close() {
+                console.log('Closing modal');
+                this.modal.classList.remove('active');
+                document.body.style.overflow = '';
+                this.isOpen = false;
+                
+                console.log('Modal closed, classes:', this.modal.className);
+            }
+            
+            showLoading() {
+                this.content.innerHTML = `
+                    <div class="modal-loading">
+                        <div class="modal-loading-spinner"></div>
+                        <p class="modal-loading-text">Pausendaten werden geladen...</p>
+                    </div>`;
+            }
+            
+            showError(message = 'Fehler beim Laden der Pausendaten') {
+                this.content.innerHTML = `
+                    <div class="modal-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Fehler</h3>
+                        <p>${message}</p>
+                        <p>Bitte versuchen Sie es später erneut.</p>
+                    </div>`;
+            }
+            
+            showEmpty() {
+                this.content.innerHTML = `
+                    <div class="modal-empty">
+                        <i class="fas fa-coffee"></i>
+                        <h3>Keine Pausendaten</h3>
+                        <p>Für diesen Eintrag wurden keine Pausendaten gefunden.</p>
+                    </div>`;
+            }
+            
+            renderBreaks(breaks) {
+                const html = this.generateBreaksHTML(breaks);
+                this.content.innerHTML = html;
+            }
+            
+            generateBreaksHTML(breaks) {
+                const summary = this.calculateSummary(breaks);
+                
+                let html = `
+                    <div class="breaks-table-container">
+                        <table class="breaks-table">
                                     <thead>
-                                        <tr style="background: linear-gradient(to bottom, #f8fafc, #eef1f5);">
-                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Start</th>
-                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Ende</th>
-                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: center; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Dauer${isMobile ? '' : ' (Min)'}</th>
-                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Typ & Beschreibung</th>
-                                            <th style="padding: ${isMobile ? '8px 10px' : '12px 15px'}; text-align: left; font-weight: 500; color: #37474f; border-bottom: 2px solid #e0e4e8;">Abrechnung</th>
+                                <tr>
+                                    <th>Start</th>
+                                    <th>Ende</th>
+                                    <th style="text-align: center;">Dauer</th>
+                                    <th>Typ & Beschreibung</th>
+                                    <th>Abrechnung</th>
                                         </tr>
                                     </thead>
                                     <tbody>`;
                                 
-                                data.breaks.forEach(function(breakItem, index) {
+                breaks.forEach(breakItem => {
+                    html += this.generateBreakRow(breakItem);
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    ${this.generateSummaryHTML(summary)}`;
+                
+                return html;
+            }
+            
+            generateBreakRow(breakItem) {
                                     const startTime = breakItem.start_time ? breakItem.start_time.substring(11, 19) : '-';
                                     const endTime = breakItem.end_time ? breakItem.end_time.substring(11, 19) : '-';
-                                    const billingStatus = breakItem.is_excluded ? 'Nicht abrechenbar' : 'Abrechenbar';
-                                    const rowStyle = index % 2 === 0 ? '' : 'background-color: #f8fafc;';
-                                    const billingIcon = breakItem.is_excluded ? '<i class="fas fa-minus-circle" style="margin-right: 6px; color: #e57373;"></i>' : '<i class="fas fa-check-circle" style="margin-right: 6px; color: #4caf50;"></i>';
-                                    
-                                    // Determine break type display
-                                    let breakTypeDisplay = '';
-                                    let typeIcon = '';
+                const duration = breakItem.duration || '0';
+                
+                const badge = this.generateBreakBadge(breakItem);
+                const billing = this.generateBillingStatus(breakItem);
+                const description = this.generateDescription(breakItem);
+                
+                return `
+                    <tr>
+                        <td>${startTime}</td>
+                        <td>${endTime}</td>
+                        <td style="text-align: center; font-weight: 600;">${duration} Min</td>
+                        <td>
+                            ${badge}
+                            ${description}
+                        </td>
+                        <td>${billing}</td>
+                    </tr>`;
+            }
+            
+            generateBreakBadge(breakItem) {
+                let badgeClass = 'manual';
+                let icon = 'fas fa-user';
+                let text = 'Manuell';
                                     
                                     if (breakItem.is_auto) {
                                         if (breakItem.description && breakItem.description.includes('ArbZG')) {
                                             if (breakItem.description.includes('Mittagspause')) {
-                                                typeIcon = '<i class="fas fa-utensils" style="margin-right: 6px; color: #e65100;"></i>';
-                                                breakTypeDisplay = '<span style="background: #ffe0b2; color: #e65100; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; border: 1px solid #ffcc80;">ArbZG Mittagspause</span>';
+                            badgeClass = 'lunch';
+                            icon = 'fas fa-utensils';
+                            text = 'ArbZG Mittagspause';
                                             } else {
-                                                typeIcon = '<i class="fas fa-clock" style="margin-right: 6px; color: #2e7d32;"></i>';
-                                                breakTypeDisplay = '<span style="background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-size: 0.8em; border: 1px solid #a5d6a7;">ArbZG</span>';
+                            badgeClass = 'arbzg';
+                            icon = 'fas fa-clock';
+                            text = 'ArbZG Pause';
                                             }
                                         } else {
-                                            typeIcon = '<i class="fas fa-robot" style="margin-right: 6px; color: #1976d2;"></i>';
-                                            breakTypeDisplay = '<span style="background: #e3f2fd; color: #1976d2; padding: 3px 8px; border-radius: 12px; font-size: 0.8em;">Automatisch</span>';
-                                        }
-                                    } else {
-                                        typeIcon = '<i class="fas fa-user" style="margin-right: 6px; color: #607d8b;"></i>';
-                                        breakTypeDisplay = '<span style="background: #eee; color: #333; padding: 3px 8px; border-radius: 12px; font-size: 0.8em;">Manuell</span>';
-                                    }
-                                    
-                                    // Add description if available
-                                    const description = breakItem.description ? 
-                                        `<div style="margin-top: 4px; font-size: 0.85em; color: #666;">${breakItem.description}</div>` : '';
-                                    
-                                    // Apply different cell padding based on screen size
-                                    const cellPadding = isMobile ? '8px 10px' : '10px 15px';
-                                    const fontSize = isMobile ? '0.95em' : '1em';
-                                    
-                                    html += `<tr style="${rowStyle} transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f1f4f7'" onmouseout="this.style.backgroundColor=index % 2 === 0 ? '' : '#f8fafc'">
-                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">${startTime}</td>
-                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">${endTime}</td>
-                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; text-align: center; font-weight: 500; font-size: ${fontSize};">${breakItem.duration}</td>
-                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">
-                                            ${typeIcon}${breakTypeDisplay}
-                                            ${description}
-                                            ${breakItem.break_type === 'lunch' ? 
-                                              '<span style="display: block; margin-top: 3px; font-size: 0.8em; color: #e65100;"><i class="fas fa-utensils" style="margin-right: 3px;"></i>Mittagszeit</span>' : ''}
-                                        </td>
-                                        <td style="padding: ${cellPadding}; border-bottom: 1px solid #e0e4e8; font-size: ${fontSize};">${billingIcon}${billingStatus}</td>
-                                    </tr>`;
-                                });
-                                
-                                // Add a summary row
-                                const totalMinutes = data.breaks.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
-                                const excludedMinutes = data.breaks.filter(item => item.is_excluded).reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
-                                
-                                // Check if mobile for responsive styling
-                                const cellPadding = isMobile ? '8px 10px' : '12px 15px';
-                                
-                                html += `</tbody>
-                                <tfoot>
-                                    <tr style="background-color: #f1f4f7;">
-                                        <td colspan="2" style="padding: ${cellPadding}; font-weight: 500; color: #37474f;">Gesamt</td>
-                                        <td style="padding: ${cellPadding}; font-weight: 500; color: #37474f; text-align: center;">${totalMinutes} Min</td>
-                                        <td colspan="2" style="padding: ${cellPadding}; font-weight: 500; color: #37474f;">Nicht abrechenbar: ${excludedMinutes} Min</td>
-                                    </tr>
-                                </tfoot>
-                                </table>
+                        badgeClass = 'auto';
+                        icon = 'fas fa-robot';
+                        text = 'Automatisch';
+                    }
+                }
+                
+                return `<span class="break-badge ${badgeClass}">
+                    <i class="${icon}"></i>
+                    ${text}
+                </span>`;
+            }
+            
+            generateBillingStatus(breakItem) {
+                const isExcluded = breakItem.is_excluded;
+                const statusClass = isExcluded ? 'non-billable' : 'billable';
+                const icon = isExcluded ? 'fas fa-minus-circle' : 'fas fa-check-circle';
+                const text = isExcluded ? 'Nicht abrechenbar' : 'Abrechenbar';
+                
+                return `<div class="billing-status ${statusClass}">
+                    <i class="${icon}"></i>
+                    ${text}
+                </div>`;
+            }
+            
+            generateDescription(breakItem) {
+                if (!breakItem.description) return '';
+                
+                return `<div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+                    ${breakItem.description}
+                </div>`;
+            }
+            
+            calculateSummary(breaks) {
+                const total = breaks.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
+                const excluded = breaks.filter(item => item.is_excluded)
+                    .reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
+                const billable = total - excluded;
+                
+                return { total, excluded, billable, count: breaks.length };
+            }
+            
+            generateSummaryHTML(summary) {
+                return `
+                    <div class="breaks-summary">
+                        <h4>
+                            <i class="fas fa-chart-pie"></i>
+                            Zusammenfassung
+                        </h4>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <i class="fas fa-list" style="color: var(--primary-color);"></i>
+                                <div>
+                                    <div class="value">${summary.count}</div>
+                                    <div class="label">Pausen gesamt</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-clock" style="color: #6b7280;"></i>
+                                <div>
+                                    <div class="value">${summary.total} Min</div>
+                                    <div class="label">Gesamtdauer</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-check-circle" style="color: #15803d;"></i>
+                                <div>
+                                    <div class="value">${summary.billable} Min</div>
+                                    <div class="label">Abrechenbar</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <i class="fas fa-minus-circle" style="color: #dc2626;"></i>
+                                <div>
+                                    <div class="value">${summary.excluded} Min</div>
+                                    <div class="label">Nicht abrechenbar</div>
+                                </div>
+                            </div>
+                        </div>
                                 </div>`;
-                                breaksContent.innerHTML = html;
+            }
+            
+            async loadBreaks(attendanceId) {
+                console.log('Loading breaks for attendance ID:', attendanceId);
+                
+                if (!attendanceId) {
+                    console.error('No attendance ID provided');
+                    this.showError('Keine Anwesenheits-ID gefunden');
+                    this.open();
+                    return;
+                }
+                
+                this.showLoading();
+                this.open();
+                
+                try {
+                    console.log('Fetching breaks from:', `/get_breaks/${attendanceId}`);
+                    const response = await fetch(`/get_breaks/${attendanceId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Received breaks data:', data);
+                    
+                    if (data.breaks && data.breaks.length > 0) {
+                        this.renderBreaks(data.breaks);
                             } else {
-                                breaksContent.innerHTML = '<div style="text-align: center; padding: 30px 0;"><i class="fas fa-coffee" style="font-size: 3em; color: #b0bec5; margin-bottom: 15px;"></i><p style="color: #666;">Keine Pausendaten gefunden.</p></div>';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching breaks:', error);
-                            breaksContent.innerHTML = '<div style="text-align: center; padding: 30px 0;"><i class="fas fa-exclamation-triangle" style="font-size: 3em; color: #e57373; margin-bottom: 15px;"></i><p style="color: #666;">Fehler beim Laden der Pausendaten.</p></div>';
-                        });
+                        this.showEmpty();
+                    }
+                } catch (error) {
+                    console.error('Error loading breaks:', error);
+                    this.showError();
+                }
+            }
+            
+            attachBreaksHandlers() {
+                const buttons = document.querySelectorAll('.show-breaks-btn');
+                console.log('Attaching handlers to', buttons.length, 'buttons');
+                
+                buttons.forEach(btn => {
+                    // Remove existing listeners
+                    btn.removeEventListener('click', this.handleBreaksClick);
+                    // Add new listener
+                    btn.addEventListener('click', this.handleBreaksClick.bind(this));
                 });
-            });
+            }
+            
+            handleBreaksClick(e) {
+                e.preventDefault();
+                console.log('Breaks button clicked:', e.target);
+                
+                const button = e.target.closest('.show-breaks-btn');
+                if (!button) {
+                    console.error('Could not find .show-breaks-btn element');
+                    return;
+                }
+                
+                const attendanceId = button.getAttribute('data-attendance-id');
+                console.log('Attendance ID from button:', attendanceId);
+                
+                this.loadBreaks(attendanceId);
+            }
+            
+            observeTableChanges() {
+                const table = document.getElementById('attendance-table');
+                if (!table) {
+                    console.warn('Attendance table not found for observation');
+                    return;
+                }
+                
+                const observer = new MutationObserver(() => {
+                    console.log('Table content changed, reattaching handlers');
+                    this.attachBreaksHandlers();
+                });
+                
+                observer.observe(table, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+            
+            // Test method to verify modal works
+            test() {
+                console.log('Testing modal...');
+                this.showLoading();
+                this.open();
+                
+                setTimeout(() => {
+                    this.showEmpty();
+                }, 2000);
+                
+                setTimeout(() => {
+                    this.close();
+                }, 4000);
+            }
+        }
+        
+        // Initialize the modal system
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing modal...');
+            window.breaksModal = new BreaksModal();
+            
+            // Add debugging function to window for testing
+            window.testModal = function() {
+                console.log('Testing modal visibility...');
+                const modal = document.getElementById('breaks-modal');
+                if (!modal) {
+                    console.error('Modal element not found!');
+                    return;
+                }
+                
+                console.log('Modal element found:', modal);
+                console.log('Current modal classes:', modal.className);
+                console.log('Current modal style:', window.getComputedStyle(modal));
+                
+                // Test opening the modal
+                modal.classList.add('active');
+                console.log('Added active class, new classes:', modal.className);
+                
+                // Check computed styles after adding active class
+                setTimeout(() => {
+                    const computedStyle = window.getComputedStyle(modal);
+                    console.log('After active class - opacity:', computedStyle.opacity);
+                    console.log('After active class - visibility:', computedStyle.visibility);
+                    console.log('After active class - display:', computedStyle.display);
+                    console.log('After active class - z-index:', computedStyle.zIndex);
+                }, 100);
+                
+                // Close after 3 seconds
+                setTimeout(() => {
+                    modal.classList.remove('active');
+                    console.log('Removed active class');
+                }, 3000);
+            };
+            
+            // Add test button for debugging (remove in production)
+            if (window.location.search.includes('debug')) {
+                const testBtn = document.createElement('button');
+                testBtn.textContent = 'Test Modal';
+                testBtn.style.position = 'fixed';
+                testBtn.style.top = '10px';
+                testBtn.style.right = '10px';
+                testBtn.style.zIndex = '99999';
+                testBtn.style.background = 'red';
+                testBtn.style.color = 'white';
+                testBtn.style.padding = '10px';
+                testBtn.style.border = 'none';
+                testBtn.style.borderRadius = '5px';
+                testBtn.onclick = () => window.breaksModal.test();
+                document.body.appendChild(testBtn);
+            }
+            
+            // Add console instructions
+            console.log('Modal debugging available:');
+            console.log('- Call window.testModal() to test modal visibility');
+            console.log('- Call window.breaksModal.test() to test full modal functionality');
+            console.log('- Add ?debug to URL to show test button');
         });
     </script>
 
@@ -1133,6 +2437,316 @@
             
             // Initial sorting
             applyFiltersAndSort();
+        });
+    </script>
+
+    <script>
+        // Modern Modal System for User Reports
+        class UserReportModal {
+            constructor() {
+                this.modal = document.getElementById('user-report-modal');
+                this.closeBtn = document.getElementById('close-report-modal');
+                this.content = document.getElementById('report-modal-content');
+                this.isOpen = false;
+                
+                console.log('UserReportModal initialized', {
+                    modal: this.modal,
+                    closeBtn: this.closeBtn,
+                    content: this.content
+                });
+                
+                this.init();
+            }
+            
+            init() {
+                if (!this.modal || !this.closeBtn || !this.content) {
+                    console.error('User report modal elements not found!');
+                    return;
+                }
+                
+                // Close button event
+                this.closeBtn.addEventListener('click', () => {
+                    console.log('Close button clicked');
+                    this.close();
+                });
+                
+                // Close on overlay click
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) {
+                        console.log('Overlay clicked');
+                        this.close();
+                    }
+                });
+                
+                // Close on Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isOpen) {
+                        console.log('Escape key pressed');
+                        this.close();
+                    }
+                });
+            }
+            
+            open() {
+                console.log('Opening user report modal');
+                this.modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                this.isOpen = true;
+                
+                // Force a reflow to ensure the class is applied
+                this.modal.offsetHeight;
+                
+                console.log('User report modal opened, classes:', this.modal.className);
+            }
+            
+            close() {
+                console.log('Closing user report modal');
+                this.modal.classList.remove('active');
+                document.body.style.overflow = '';
+                this.isOpen = false;
+                
+                // Clear content after animation
+                setTimeout(() => {
+                    this.content.innerHTML = `
+                        <div class="loading-content">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Bericht wird geladen...</p>
+                        </div>
+                    `;
+                }, 300);
+            }
+            
+            showLoading() {
+                this.content.innerHTML = `
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Bericht wird geladen...</p>
+                    </div>
+                `;
+            }
+            
+            showError(message) {
+                this.content.innerHTML = `
+                    <div class="no-data-message">
+                        <p><i class="fas fa-exclamation-triangle" style="margin-right: var(--space-sm);"></i>${message}</p>
+                    </div>
+                `;
+            }
+            
+            loadReport(url) {
+                console.log('Loading report from:', url);
+                this.showLoading();
+                this.open();
+                
+                // Fetch the report content with proper headers
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Sec-Fetch-Dest': 'empty',
+                        'Sec-Fetch-Mode': 'cors'
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        console.log('Received HTML length:', html.length);
+                        
+                        // Extract the content from the response
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const reportContainer = doc.querySelector('.report-container');
+                        
+                        console.log('Found report container:', !!reportContainer);
+                        
+                        if (reportContainer) {
+                            this.content.innerHTML = reportContainer.innerHTML;
+                            
+                            // Re-attach event handlers for the loaded content
+                            this.attachReportHandlers();
+                        } else {
+                            // If no report-container found, try to extract the body content
+                            const bodyContent = doc.querySelector('body');
+                            if (bodyContent) {
+                                console.log('Using body content as fallback');
+                                this.content.innerHTML = bodyContent.innerHTML;
+                                this.attachReportHandlers();
+                            } else {
+                                console.error('No suitable content found in response');
+                                this.showError('Bericht konnte nicht geladen werden - kein Inhalt gefunden.');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading report:', error);
+                        this.showError('Fehler beim Laden des Berichts. Bitte versuchen Sie es erneut.');
+                    });
+            }
+            
+            attachReportHandlers() {
+                // Attach handlers for print and PDF buttons in the loaded content
+                const printBtn = this.content.querySelector('.print-button');
+                const pdfBtn = this.content.querySelector('.download-button');
+                
+                if (printBtn) {
+                    printBtn.addEventListener('click', () => {
+                        this.printReport();
+                    });
+                }
+                
+                if (pdfBtn) {
+                    pdfBtn.addEventListener('click', () => {
+                        this.generatePDF();
+                    });
+                }
+            }
+            
+            printReport() {
+                // Hide modal temporarily for printing
+                const originalDisplay = this.modal.style.display;
+                this.modal.style.display = 'none';
+                
+                // Print the content
+                window.print();
+                
+                // Restore modal
+                setTimeout(() => {
+                    this.modal.style.display = originalDisplay;
+                }, 100);
+            }
+            
+            generatePDF() {
+                // Find the table in the modal content
+                const reportTable = this.content.querySelector('#report-table');
+                if (!reportTable) {
+                    alert('Tabelle nicht gefunden. PDF kann nicht erstellt werden.');
+                    return;
+                }
+                
+                // Show loading indicator
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.innerHTML = '<div class="loading-content"><i class="fas fa-spinner fa-spin"></i><br>PDF wird erstellt...</div>';
+                document.body.appendChild(loadingOverlay);
+                
+                // Make sure libraries are loaded
+                if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+                    alert('PDF-Bibliotheken werden noch geladen. Bitte versuchen Sie es gleich noch einmal.');
+                    document.body.removeChild(loadingOverlay);
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'pt', 'a4');
+                
+                // Add header with company info
+                doc.setFontSize(24);
+                doc.setTextColor(25, 118, 210);
+                doc.text("BTZ Zeiterfassung", 40, 50);
+                
+                doc.setFontSize(18);
+                doc.setTextColor(55, 71, 79);
+                doc.text("Benutzer Bericht", 40, 80);
+                
+                // Add username from modal content
+                const usernameElement = this.content.querySelector('.report-title');
+                const username = usernameElement ? usernameElement.textContent : 'Unbekannt';
+                doc.setFontSize(16);
+                doc.setTextColor(25, 118, 210);
+                doc.text(username, 40, 110);
+                
+                // Add date info
+                const urlParams = new URLSearchParams(window.location.search);
+                let dateInfo = "";
+                if (urlParams.get('entire_period') === '1') {
+                    dateInfo = "Zeitraum: Gesamter Zeitraum";
+                } else if (urlParams.get('date')) {
+                    dateInfo = "Datum: " + urlParams.get('date');
+                } else if (urlParams.get('week')) {
+                    dateInfo = "Woche: " + urlParams.get('week');
+                } else if (urlParams.get('month')) {
+                    dateInfo = "Monat: " + urlParams.get('month');
+                } else {
+                    const today = new Date();
+                    dateInfo = "Erstellt am: " + today.toLocaleDateString('de-DE');
+                }
+                doc.setFontSize(12);
+                doc.setTextColor(107, 114, 128);
+                doc.text(dateInfo, 40, 135);
+                
+                // Capture the table
+                html2canvas(reportTable, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const imgWidth = pageWidth - 80;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    
+                    // Add the table image
+                    doc.addImage(imgData, 'JPEG', 40, 160, imgWidth, imgHeight);
+                    
+                    // Add footer
+                    const pageCount = doc.internal.getNumberOfPages();
+                    for(let i = 1; i <= pageCount; i++) {
+                        doc.setPage(i);
+                        doc.setFontSize(10);
+                        doc.setTextColor(128, 128, 128);
+                        doc.text('Seite ' + i + ' von ' + pageCount, 40, doc.internal.pageSize.height - 30);
+                        doc.text('Erstellt mit BTZ Zeiterfassung System', doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 30, { align: 'right' });
+                        
+                        // Add generation timestamp
+                        const now = new Date();
+                        const timestamp = now.toLocaleString('de-DE');
+                        doc.text('Generiert am: ' + timestamp, 40, doc.internal.pageSize.height - 15);
+                    }
+                    
+                    // Generate filename
+                    const cleanUsername = username.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+                    let suffix = '';
+                    if (urlParams.get('entire_period') === '1') {
+                        suffix = 'gesamter_zeitraum';
+                    } else if (urlParams.get('date')) {
+                        suffix = urlParams.get('date');
+                    } else if (urlParams.get('week')) {
+                        suffix = urlParams.get('week');
+                    } else if (urlParams.get('month')) {
+                        suffix = urlParams.get('month');
+                    } else {
+                        const today = new Date();
+                        suffix = today.toISOString().slice(0,10);
+                    }
+                    const filename = `zeiterfassung_bericht_${cleanUsername}_${suffix}.pdf`;
+                    
+                    // Save the PDF
+                    doc.save(filename);
+                    
+                    // Remove loading indicator
+                    document.body.removeChild(loadingOverlay);
+                }).catch(error => {
+                    console.error('Failed to generate PDF:', error);
+                    alert('PDF konnte nicht erstellt werden. Bitte versuchen Sie es erneut.');
+                    document.body.removeChild(loadingOverlay);
+                });
+            }
+        }
+        
+        // Initialize the user report modal
+        let userReportModal;
+        document.addEventListener('DOMContentLoaded', function() {
+            userReportModal = new UserReportModal();
         });
     </script>
 </body>

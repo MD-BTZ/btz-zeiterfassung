@@ -4,47 +4,587 @@
 <head>
     <title>Benutzer Bericht - {{ username }}</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/breaks.css">
-    <link rel="stylesheet" href="/static/report.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script></head>
+    <!-- External Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* ============================================================================
+           USER REPORT MODAL SPECIFIC STYLES
+           ============================================================================ */
+        
+        /* Modal Overlay */
+        .report-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: var(--space-lg);
+            padding-top: 60px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .report-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .report-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            max-height: calc(100vh - 80px);
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .report-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .report-modal-overlay.active .report-modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .report-modal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            padding: var(--space-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .report-modal-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .report-modal-title i {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+        }
+        
+        .report-modal-close {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .report-modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .report-modal-body {
+            padding: var(--space-xl);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        /* Page Layout */
+        .report-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Header Section */
+        .report-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: var(--glass-shadow-light);
+        }
+        
+        .report-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .report-username {
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .report-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Controls Section */
+        .report-controls {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--glass-shadow-light);
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .action-button:hover::before {
+            left: 100%;
+        }
+        
+        .print-button {
+            background: linear-gradient(135deg, var(--secondary-color), #4b5563);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+        
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+        }
+        
+        .download-button {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            box-shadow: var(--glass-shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .table-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+            opacity: 0.8;
+        }
+        
+        /* Enhanced Table */
+        .enhanced-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+        }
+        
+        .enhanced-table th {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+            padding: var(--space-md);
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .enhanced-table th i {
+            color: var(--primary-color);
+            margin-right: var(--space-sm);
+        }
+        
+        .enhanced-table td {
+            padding: var(--space-md);
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            vertical-align: middle;
+            font-weight: 500;
+        }
+        
+        .enhanced-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .enhanced-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Table Footer */
+        .enhanced-table tfoot th {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+            border-bottom: none;
+        }
+        
+        .enhanced-table tfoot td {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 1rem;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+            border-bottom: none;
+        }
+        
+        /* Report Timestamp */
+        .report-timestamp {
+            text-align: center;
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .report-timestamp p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+        
+        .report-timestamp i {
+            color: var(--primary-color);
+        }
+        
+        /* No Data Message */
+        .no-data-message {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            text-align: center;
+            color: #92400e;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .no-data-message p {
+            margin-bottom: var(--space-md);
+            font-size: 1rem;
+        }
+        
+        .no-data-message p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Flash Messages */
+        .flash-message {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .flash-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .flash-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10002;
+            color: white;
+        }
+        
+        .loading-content {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .loading-content i {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .report-modal-overlay,
+            .report-modal-header,
+            .report-modal-close,
+            .report-controls {
+                display: none !important;
+            }
+            
+            .report-modal-content {
+                position: static !important;
+                transform: none !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: white !important;
+                max-width: none !important;
+                max-height: none !important;
+            }
+            
+            .report-modal-body {
+                padding: 0 !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            
+            .table-container,
+            .report-header {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            .enhanced-table th {
+                background: #f8f9fa !important;
+                color: #333 !important;
+            }
+            
+            .enhanced-table tfoot th,
+            .enhanced-table tfoot td {
+                background: #e8f5e9 !important;
+                color: #2e7d32 !important;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .report-modal-overlay {
+                padding: var(--space-md);
+                padding-top: 40px;
+            }
+            
+            .report-modal-content {
+                max-width: 100%;
+                border-radius: var(--radius-lg);
+            }
+            
+            .report-modal-header {
+                padding: var(--space-lg);
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+            
+            .report-modal-title {
+                font-size: 1.5rem;
+            }
+            
+            .report-modal-body {
+                padding: var(--space-lg);
+            }
+            
+            .report-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-button {
+                min-width: auto;
+                width: 100%;
+                margin-bottom: var(--space-sm);
+            }
+            
+            .enhanced-table {
+                font-size: 0.8rem;
+            }
+            
+            .enhanced-table th,
+            .enhanced-table td {
+                padding: var(--space-sm);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .report-modal-overlay {
+                padding: var(--space-sm);
+                padding-top: 20px;
+            }
+            
+            .report-modal-header {
+                padding: var(--space-md);
+            }
+            
+            .report-modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .report-modal-body {
+                padding: var(--space-md);
+            }
+            
+            .enhanced-table th,
+            .enhanced-table td {
+                padding: var(--space-xs);
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
 <body>
-    {# Menu is intentionally removed from the report view #}
-    <div class="main-card card-style">
-        <h1>Benutzer Bericht</h1>
-        <h2 class="username-header">{{ username }}</h2>
+    <!-- This template is now designed to be loaded in a modal -->
+    <div class="report-container">
+        <!-- Report Header -->
+        <div class="report-header">
+            <h2 class="report-title">{{ username }}</h2>
+            <p class="report-subtitle">Detaillierte Zeiterfassung und Anwesenheitsübersicht</p>
+        </div>
+        
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+                    <div class="flash-message {% if category == 'error' %}error{% elif category == 'success' %}success{% endif %}">
+                        {{ message }}
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        
         {% if records and records|length > 0 %}
-        <div class="scrollable-container">
+            <!-- Report Controls -->
             <div class="report-controls">
-                <button onclick="window.print()" class="action-button print-button">
-                    <i class="fas fa-print"></i> Drucken
+                <button onclick="printReport()" class="action-button print-button">
+                    <i class="fas fa-print"></i>
+                    Drucken
                 </button>
                 <button onclick="generatePDF()" class="action-button download-button">
-                    <i class="fas fa-file-pdf"></i> PDF herunterladen
+                    <i class="fas fa-file-pdf"></i>
+                    PDF herunterladen
                 </button>
             </div>
+            
+            <!-- Data Table -->
+            <div class="table-container">
             <table class="enhanced-table" id="report-table">
                 <thead>
                     <tr>
-                        {% if all_users %}<th>Benutzer</th>{% endif %}
-                        <th>Datum</th>
-                        <th>Check In</th>
-                        <th>Check Out</th>
-                        <th>Dauer</th>
+                            {% if all_users %}
+                                <th><i class="fas fa-user"></i>Benutzer</th>
+                            {% endif %}
+                            <th><i class="fas fa-calendar"></i>Datum</th>
+                            <th><i class="fas fa-sign-in-alt"></i>Check In</th>
+                            <th><i class="fas fa-sign-out-alt"></i>Check Out</th>
+                            <th><i class="fas fa-clock"></i>Dauer</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for rec, duration in records %}
                     <tr>
-                        {% if all_users %}<td>{{ rec[0] }}</td>{% endif %}
+                            {% if all_users %}
+                                <td><strong>{{ rec[0] }}</strong></td>
+                            {% endif %}
                         {% if all_users %}
                             <td>{% if rec[1] %}{{ rec[1][:10] }}{% elif rec[2] %}{{ rec[2][:10] }}{% else %}-{% endif %}</td>
                             <td>{% if rec[1] %}{{ rec[1][11:19] }}{% else %}-{% endif %}</td>
@@ -54,27 +594,37 @@
                             <td>{% if rec[0] %}{{ rec[0][11:19] }}{% else %}-{% endif %}</td>
                             <td>{% if rec[1] %}{{ rec[1][11:19] }}{% else %}-{% endif %}</td>
                         {% endif %}
-                        <td>{{ duration }}</td>
+                            <td><strong>{{ duration }}</strong></td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="{% if all_users %}4{% else %}3{% endif %}" class="total-label">Gesamtdauer</th>
-                        <td class="total-duration">{{ total_duration }}</td>
+                            <th colspan="{% if all_users %}4{% else %}3{% endif %}">
+                                <i class="fas fa-calculator"></i>
+                                Gesamtdauer
+                            </th>
+                            <td><strong>{{ total_duration }}</strong></td>
                     </tr>
                 </tfoot>
             </table>
             
             <div class="report-timestamp">
-                <p><i class="far fa-clock"></i> Bericht generiert am: {{ current_time }}</p>
+                    <p>
+                        <i class="far fa-clock"></i>
+                        Bericht generiert am: {{ current_time }}
+                    </p>
+                </div>
             </div>
+            
+        {% else %}
+            <!-- No Data Message -->
+            <div class="no-data-message">
+                <p><i class="fas fa-exclamation-triangle" style="margin-right: var(--space-sm);"></i>Keine Daten gefunden für den angegebenen Zeitraum.</p>
         </div>
-        <div class="total-time-container" id="total-time">
-            Gesamtzeit: <span class="total-time-value">{{ total_time }}</span>
+        {% endif %}
         </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
         <script>
         function getReportFileName() {
             const username = "{{ username|replace(' ', '_')|lower }}";
@@ -95,16 +645,20 @@
             return `zeiterfassung_bericht_${username}_${suffix}.pdf`;
         }
         
+        function printReport() {
+            window.print();
+        }
+        
         function generatePDF() {
             // Show loading indicator
             const loadingOverlay = document.createElement('div');
             loadingOverlay.className = 'loading-overlay';
-            loadingOverlay.innerHTML = '<div class="loading-content"><i class="fas fa-spinner fa-spin"></i> Erstelle PDF...</div>';
+            loadingOverlay.innerHTML = '<div class="loading-content"><i class="fas fa-spinner fa-spin"></i><br>PDF wird erstellt...</div>';
             document.body.appendChild(loadingOverlay);
             
             // Make sure libraries are loaded
             if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
-                alert('PDF-Bibliotheken werden noch geladen. Bitte versuche es gleich noch einmal.');
+                alert('PDF-Bibliotheken werden noch geladen. Bitte versuchen Sie es gleich noch einmal.');
                 document.body.removeChild(loadingOverlay);
                 return;
             }
@@ -112,21 +666,25 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'pt', 'a4');
             
-            // Add header with company info and logo (if available)
-            doc.setFontSize(20);
-            doc.setTextColor(25, 118, 210); // #1976d2 blue
-            doc.text("Zeiterfassung Bericht", 40, 40);
+            // Add header with company info
+            doc.setFontSize(24);
+            doc.setTextColor(25, 118, 210); // Primary blue
+            doc.text("BTZ Zeiterfassung", 40, 50);
             
-            // Add title
+            doc.setFontSize(18);
+            doc.setTextColor(55, 71, 79); // Dark grey
+            doc.text("Benutzer Bericht", 40, 80);
+            
+            // Add username
             doc.setFontSize(16);
-            doc.setTextColor(55, 71, 79); // #37474f dark grey
-            doc.text("{{ username }}", 40, 70);
+            doc.setTextColor(25, 118, 210);
+            doc.text("{{ username }}", 40, 110);
             
             // Add date info
             const urlParams = new URLSearchParams(window.location.search);
             let dateInfo = "";
             if (urlParams.get('entire_period') === '1') {
-                dateInfo = "Gesamter Zeitraum";
+                dateInfo = "Zeitraum: Gesamter Zeitraum";
             } else if (urlParams.get('date')) {
                 dateInfo = "Datum: " + urlParams.get('date');
             } else if (urlParams.get('week')) {
@@ -138,36 +696,39 @@
                 dateInfo = "Erstellt am: " + today.toLocaleDateString('de-DE');
             }
             doc.setFontSize(12);
-            doc.text(dateInfo, 40, 95);
+            doc.setTextColor(107, 114, 128);
+            doc.text(dateInfo, 40, 135);
             
             // Capture the table
             const reportElement = document.getElementById('report-table');
             
-            html2canvas(reportElement).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
+            html2canvas(reportElement, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const imgWidth = pageWidth - 80;
                 const imgHeight = canvas.height * imgWidth / canvas.width;
                 
                 // Add the table image
-                doc.addImage(imgData, 'PNG', 40, 120, imgWidth, imgHeight);
+                doc.addImage(imgData, 'JPEG', 40, 160, imgWidth, imgHeight);
                 
-                // Add total time at the bottom
-                const totalTimeY = 140 + imgHeight;
-                doc.setFontSize(14);
-                doc.setTextColor(25, 118, 210); // #1976d2 blue
-                doc.text("Gesamtzeit:", 40, totalTimeY);
-                doc.setFont(undefined, 'bold');
-                doc.text("{{ total_time }}", 130, totalTimeY);
-                
-                // Add footer with page number
+                // Add footer
                 const pageCount = doc.internal.getNumberOfPages();
                 for(let i = 1; i <= pageCount; i++) {
                     doc.setPage(i);
                     doc.setFontSize(10);
-                    doc.setTextColor(128, 128, 128); // Grey
+                    doc.setTextColor(128, 128, 128);
                     doc.text('Seite ' + i + ' von ' + pageCount, 40, doc.internal.pageSize.height - 30);
                     doc.text('Erstellt mit BTZ Zeiterfassung System', doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 30, { align: 'right' });
+                    
+                    // Add generation timestamp
+                    const now = new Date();
+                    const timestamp = now.toLocaleString('de-DE');
+                    doc.text('Generiert am: ' + timestamp, 40, doc.internal.pageSize.height - 15);
                 }
                 
                 // Save with formatted filename
@@ -177,72 +738,9 @@
                 document.body.removeChild(loadingOverlay);
             }).catch(error => {
                 console.error('Failed to generate PDF:', error);
-                alert('PDF konnte nicht erstellt werden. Bitte versuche es erneut.');
+                alert('PDF konnte nicht erstellt werden. Bitte versuchen Sie es erneut.');
                 document.body.removeChild(loadingOverlay);
             });
-        }
-        
-        // Wait for document to be fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Force a small delay to ensure libraries are available
-            setTimeout(() => {
-                const urlParams = new URLSearchParams(window.location.search);
-                console.log("Benutzerbericht bereit für " + "{{ username }}" + 
-                    (urlParams.get('entire_period') === '1' ? " für gesamten Zeitraum" : "") +
-                    (urlParams.get('date') ? " am Datum " + urlParams.get('date') : "") +
-                    (urlParams.get('week') ? " für Woche " + urlParams.get('week') : "") +
-                    (urlParams.get('month') ? " für Monat " + urlParams.get('month') : ""));
-            }, 500);
-        });
-        </script>
-        {% else %}
-        <div class="no-data-message">
-            <p>Keine Daten gefunden für den angegebenen Zeitraum.</p>
-            <p>Bitte versuchen Sie einen anderen Zeitraum oder kehren Sie zur <a href="/admin">Hauptseite</a> zurück.</p>
-        </div>
-        {% endif %}
-        
-        <div class="report-controls">
-            <a href="javascript:history.back()" class="action-button return-button">
-                <i class="fas fa-arrow-left"></i> Zurück
-            </a>
-        </div>
-    </div>
-    
-    <!-- PDF generation script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
-    <script>
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Add title
-            doc.setFontSize(20);
-            doc.text('Benutzer Bericht', 14, 20);
-            
-            doc.setFontSize(16);
-            doc.text('{{ username }}', 14, 30);
-            
-            // Generate table
-            doc.autoTable({
-                html: '#report-table',
-                startY: 40,
-                theme: 'grid',
-                headStyles: { fillColor: [25, 118, 210], textColor: 255 },
-                styles: { fontSize: 10 },
-                margin: { top: 40 }
-            });
-            
-            // Add timestamp
-            const now = new Date();
-            const timestamp = `Bericht generiert am: ${now.toLocaleString('de-DE')}`;
-            doc.setFontSize(10);
-            doc.text(timestamp, 14, doc.lastAutoTable.finalY + 15);
-            
-            // Save the PDF
-            doc.save('Bericht_{{ username }}.pdf');
         }
     </script>
 </body>

@@ -3,189 +3,19 @@
 <head>
     <title>Datenzugriff - Data Access</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/css/data-access.css">
 </head>
-<body>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
-    <div class="main-card card-style">
-        <div class="header-section">
-            <h1 style="margin-bottom: 0.2em;">
-                <i class="fas fa-shield-alt header-icon"></i>
-                Datenzugriff / Data Access
-            </h1>
-            {% if session.get('username') %}
-            <p class="user-info">
-                Angemeldet als <strong>{{ session.get('username') }}</strong>
-            </p>
-            {% endif %}
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <div class="section">
-            <h2>Zugriff auf persönliche Daten</h2>
-            <p>Gemäß der Datenschutz-Grundverordnung (DSGVO) haben Sie das Recht, Zugriff auf Ihre persönlichen Daten zu erhalten, die in unserem System gespeichert sind.</p>
-            
-            {% if not session.get('username') %}
-            <!-- Show login form only for users who are not logged in -->
-            <form id="data-access-form" method="post" action="/request_data_access" class="data-form">
-                <div class="form-group">
-                    <label for="access-username" class="form-label">Benutzername:</label>
-                    <input type="text" id="access-username" name="username" required class="form-input">
-                </div>
-                <div class="form-group">
-                    <label for="access-password" class="form-label">Passwort:</label>
-                    <input type="password" id="access-password" name="password" required class="form-input">
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="login-button">Daten anfordern</button>
-                </div>
-            </form>
-            {% else %}
-            <!-- Message for logged-in users -->
-            <div class="success-message">
-                <p class="success-text">
-                    <i class="fas fa-check-circle success-icon"></i>
-                    <strong>Sie sind bereits angemeldet.</strong> Ihre persönlichen Daten werden unten angezeigt.
-                </p>
-            </div>
-            {% endif %}
-        </div>
-        
-        {% if user_data %}
-        <div class="section" id="user-data-section" style="margin-top: 2em;">
-            <h2>Ihre persönlichen Daten</h2>
-            <div class="user-data-container">
-                <h3>Benutzerdaten</h3>
-                <p><strong>Benutzername:</strong> {{ user_data.username }}</p>
-                <p><strong>Benutzer-ID:</strong> {{ user_data.user_id }}</p>
-                <p><strong>Einwilligungsstatus:</strong> {{ user_data.consent_status }}</p>
-                {% if user_data.consent_date %}
-                <p><strong>Letzte Aktualisierung der Einwilligung:</strong> {{ user_data.consent_date }}</p>
-                {% endif %}
-                
-                <!-- Benutzer-Daten bearbeiten Button -->
-                <button id="edit-user-data-btn" class="edit-button">
-                    <i class="material-icons">edit</i> 
-                    Benutzerdaten bearbeiten
-                </button>
-                
-                <!-- Formular zur Bearbeitung der Benutzerdaten -->
-                <div id="edit-user-form" class="user-edit-form">
-                    <h4>Benutzerdaten bearbeiten</h4>
-                    <form method="post" action="/rectify_data">
-                        <input type="hidden" name="user_id" value="{{ user_data.user_id }}">
-                        <div style="margin-bottom: 1em;">
-                            <label for="edit-username" style="display: block; margin-bottom: 0.5em;">Benutzername:</label>
-                            <input type="text" id="edit-username" name="username" value="{{ user_data.username }}" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                        </div>
-                        <div style="margin-bottom: 1em;">
-                            <label for="edit-password" style="display: block; margin-bottom: 0.5em;">Neues Passwort (optional):</label>
-                            <input type="password" id="edit-password" name="new_password" style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                            <small style="color: #666; display: block; margin-top: 0.3em;">Leer lassen, wenn das Passwort nicht geändert werden soll.</small>
-                        </div>
-                        <div style="margin-bottom: 1em;">
-                            <label for="edit-current-password" style="display: block; margin-bottom: 0.5em;">Aktuelles Passwort (zur Bestätigung):</label>
-                            <input type="password" id="edit-current-password" name="current_password" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                        </div>
-                        <div>
-                            <button type="submit" style="background: #1976d2; padding: 0.8em 1.5em; color: #fff; border: none; border-radius: 6px; cursor: pointer;">Änderungen speichern</button>
-                            <button type="button" id="cancel-edit-btn" style="background: #f5f5f5; padding: 0.8em 1.5em; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; margin-left: 1em;">Abbrechen</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            {% if user_data.records and user_data.records|length > 0 %}
-            <div style="overflow-x: auto; margin-top: 1.5em;">
-                <h3>Anwesenheitsaufzeichnungen</h3>
-                <table class="attendance-table">
-                    <thead>
-                        <tr>
-                            <th>Datum</th>
-                            <th>Check-In</th>
-                            <th>Check-Out</th>
-                            <th>Dauer</th>
-                            <th>Aktionen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for record in user_data.records %}
-                        <tr>
-                            <td>{{ record.date }}</td>
-                            <td>{{ record.check_in }}</td>
-                            <td>{{ record.check_out|default('-') }}</td>
-                            <td>{{ record.duration|default('-') }}</td>
-                            <td>
-                                {% if record.id %}
-                                <button class="edit-record-btn" data-record-id="{{ record.id }}" data-date="{{ record.date }}" data-checkin="{{ record.check_in }}" data-checkout="{{ record.check_out|default('') }}" style="background: #ff9800; border: none; color: white; padding: 3px 8px; border-radius: 3px; cursor: pointer;">
-                                    Bearbeiten
-                                </button>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div style="margin-top: 1em;">
-                    <p><strong>Gesamtzeit:</strong> {{ user_data.total_duration }}</p>
-                </div>
-                
-                <!-- Modal für Anwesenheits-Bearbeitung -->
-                <div id="edit-record-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
-                    <div style="position: relative; width: 80%; max-width: 500px; margin: 10% auto; background-color: white; padding: 2em; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                        <button id="close-modal-btn" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5em; cursor: pointer;">&times;</button>
-                        <h3 style="margin-top: 0;">Anwesenheitsaufzeichnung bearbeiten</h3>
-                        
-                        <form id="edit-record-form" method="post" action="/rectify_attendance">
-                            <input type="hidden" name="record_id" id="edit-record-id">
-                            <input type="hidden" name="user_id" value="{{ user_data.user_id }}">
-                            
-                            <div style="margin-bottom: 1em;">
-                                <label for="edit-record-date" style="display: block; margin-bottom: 0.5em;">Datum:</label>
-                                <input type="date" id="edit-record-date" name="date" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 1em;">
-                                <label for="edit-record-checkin" style="display: block; margin-bottom: 0.5em;">Check-In Zeit:</label>
-                                <input type="time" id="edit-record-checkin" name="check_in" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 1.5em;">
-                                <label for="edit-record-checkout" style="display: block; margin-bottom: 0.5em;">Check-Out Zeit:</label>
-                                <input type="time" id="edit-record-checkout" name="check_out" style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                                <small style="color: #666; display: block; margin-top: 0.3em;">Leer lassen, wenn kein Check-Out vorhanden.</small>
-                            </div>
-                            
-                            <div style="margin-bottom: 1.5em;">
-                                <label for="edit-record-password" style="display: block; margin-bottom: 0.5em;">Aktuelles Passwort (zur Bestätigung):</label>
-                                <input type="password" id="edit-record-password" name="current_password" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                            </div>
-                            
-                            <div style="text-align: right;">
-                                <button type="submit" style="background: #1976d2; padding: 0.8em 1.5em; color: #fff; border: none; border-radius: 6px; cursor: pointer;">Speichern</button>
-                                <button type="button" class="cancel-modal-btn" style="background: #f5f5f5; padding: 0.8em 1.5em; color: #333; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; margin-left: 1em;">Abbrechen</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 2em; display: flex; gap: 1em; justify-content: center; flex-wrap: wrap;">
+    <div class="glass-container">
+        <div class="main-card">
+            <h1 class="mb-3 text-center"><i class="fas fa-database"></i> Datenzugriff & Export</h1>
+            <div class="d-flex gap-2 justify-center flex-wrap mt-4 mb-4">
                 <form method="post" action="/export_data">
                     <input type="hidden" name="username" value="{{ user_data.username }}">
                     {% if not session.get('username') == user_data.username %}
                     <input type="hidden" name="password" value="{{ password_placeholder }}">
                     {% endif %}
-                    <button type="submit" name="format" value="csv" style="padding: 0.8em 1.5em; background: #388e3c; color: #fff; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5em;">
+                    <button type="submit" name="format" value="csv" class="btn btn-success d-flex align-center gap-1">
                         <i class="fas fa-file-csv"></i>
                         <span>CSV-Datei exportieren</span>
                     </button>
@@ -195,7 +25,7 @@
                     {% if not session.get('username') == user_data.username %}
                     <input type="hidden" name="password" value="{{ password_placeholder }}">
                     {% endif %}
-                    <button type="submit" name="format" value="pdf" style="padding: 0.8em 1.5em; background: #1976d2; color: #fff; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5em;">
+                    <button type="submit" name="format" value="pdf" class="btn btn-primary d-flex align-center gap-1">
                         <i class="fas fa-file-pdf"></i>
                         <span>PDF-Datei exportieren</span>
                     </button>
@@ -205,52 +35,38 @@
                     {% if not session.get('username') == user_data.username %}
                     <input type="hidden" name="password" value="{{ password_placeholder }}">
                     {% endif %}
-                    <button type="submit" name="format" value="json" style="padding: 0.8em 1.5em; background: #f57c00; color: #fff; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5em;">
+                    <button type="submit" name="format" value="json" class="btn btn-warning d-flex align-center gap-1">
                         <i class="fas fa-file-code"></i>
                         <span>JSON-Datei exportieren</span>
                     </button>
                 </form>
             </div>
-            {% else %}
-            <div style="background: #ffeaea; color: #b71c1c; padding: 1em; border-radius: 6px; margin-top: 1em;">
-                <p>Keine Anwesenheitsaufzeichnungen gefunden.</p>
+            <div class="glass-card section mt-4">
+                <h2 class="mb-2">Datenlöschung</h2>
+                <p class="text-danger mb-2">Hinweis: Die Datenlöschung ist endgültig und kann nicht rückgängig gemacht werden.</p>
+                <form method="post" action="/request_data_deletion">
+                    <div class="mb-2">
+                        <label for="deletion-username" class="mb-1 text-left">Benutzername:</label>
+                        <input type="text" id="deletion-username" name="username" required class="input">
+                    </div>
+                    <div class="mb-2">
+                        <label for="deletion-password" class="mb-1 text-left">Passwort:</label>
+                        <input type="password" id="deletion-password" name="password" required class="input">
+                    </div>
+                    <div class="mb-2">
+                        <label for="deletion-reason" class="mb-1 text-left">Grund für die Löschung (optional):</label>
+                        <textarea id="deletion-reason" name="reason" rows="3" class="input"></textarea>
+                    </div>
+                    <div class="mb-2 d-flex align-center gap-1">
+                        <input type="checkbox" name="confirm_deletion" required class="mr-1">
+                        <label for="confirm_deletion" class="mb-0">Ich bestätige die endgültige Löschung meiner Daten.</label>
+                    </div>
+                    <button type="submit" class="btn btn-danger mt-2">Datenlöschung beantragen</button>
+                </form>
             </div>
-            {% endif %}
-        </div>
-        {% endif %}
-        
-        <div class="section" style="margin-top: 2em;">
-            <h2>Datenlöschung beantragen</h2>
-            <p>Gemäß der DSGVO haben Sie das Recht, die Löschung Ihrer personenbezogenen Daten zu beantragen ("Recht auf Vergessenwerden").</p>
-            <p class="note" style="color: #b71c1c;">Hinweis: Die Datenlöschung ist endgültig und kann nicht rückgängig gemacht werden.</p>
-            
-            <form id="data-deletion-form" method="post" action="/request_data_deletion" style="background: #ffeaea; padding: 1.5em; border-radius: 10px; margin: 1.5em 0;">
-                <div style="margin-bottom: 1em;">
-                    <label for="deletion-username" style="display: block; text-align: left; margin-bottom: 0.5em;">Benutzername:</label>
-                    <input type="text" id="deletion-username" name="username" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                </div>
-                <div style="margin-bottom: 1.5em;">
-                    <label for="deletion-password" style="display: block; text-align: left; margin-bottom: 0.5em;">Passwort:</label>
-                    <input type="password" id="deletion-password" name="password" required style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;">
-                </div>
-                <div style="margin-bottom: 1.5em;">
-                    <label for="deletion-reason" style="display: block; text-align: left; margin-bottom: 0.5em;">Grund für die Löschung (optional):</label>
-                    <textarea id="deletion-reason" name="reason" rows="3" style="width: 100%; padding: 0.7em; border: 1px solid #b0bec5; border-radius: 6px;"></textarea>
-                </div>
-                <div style="margin-bottom: 1em;">
-                    <label style="display: flex; align-items: center;">
-                        <input type="checkbox" name="confirm_deletion" required style="margin-right: 0.5em;">
-                        Ich bestätige, dass ich die Löschung meiner Daten beantrage
-                    </label>
-                </div>
-                <div>
-                    <button type="submit" style="background: #b71c1c; padding: 0.8em 1.5em; color: #fff; border: none; border-radius: 6px; cursor: pointer;">Datenlöschung beantragen</button>
-                </div>
-            </form>
-        </div>
-        
-        <div style="margin-top: 3em; text-align: center;">
-            <a href="/privacy_policy" class="button" style="display: inline-block; padding: 0.7em 1.5em; background: #546e7a; color: #fff; border: none; border-radius: 6px; text-decoration: none;">Datenschutzerklärung ansehen</a>
+            <div class="mt-4 text-center">
+                <a href="/privacy_policy" class="btn btn-secondary">Datenschutzerklärung ansehen</a>
+            </div>
         </div>
     </div>
     

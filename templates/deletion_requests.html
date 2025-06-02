@@ -1,419 +1,1310 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Datenlöschungsanfragen</title>
+    <title>BTZ Zeiterfassung - Datenlöschungsanfragen</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/breaks.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <style>
-        .request-card {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e0e4e8;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: box-shadow 0.3s ease;
+        /* Deletion Requests Page Styles */
+        .requests-container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
-        .request-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
         
-        .request-header {
+        .page-header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-card.pending {
+            border-color: rgba(245, 158, 11, 0.3);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.1));
+        }
+        
+        .stat-card.pending .stat-value {
+            color: #f59e0b;
+        }
+        
+        .stat-card.completed {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+        }
+        
+        .stat-card.completed .stat-value {
+            color: #10b981;
+        }
+        
+        .stat-card.rejected {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+        }
+        
+        .stat-card.rejected .stat-value {
+            color: #ef4444;
+        }
+        
+        .requests-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e0e4e8;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
         }
         
-        .request-id {
-            background-color: #e0e4e8;
-            border-radius: 4px;
-            padding: 3px 8px;
-            font-size: 0.9em;
-            color: #37474f;
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
         }
         
-        .request-status {
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.85em;
+        .filter-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+        }
+        
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .requests-table th {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .requests-table td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: top;
+        }
+        
+        .requests-table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+        
+        .requests-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .requests-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .status-pending {
-            background-color: #fff8e1;
-            color: #f57f17;
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
         
-        .status-processing {
-            background-color: #e1f5fe;
-            color: #0277bd;
+        .status-badge.processing {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
         
-        .status-completed {
-            background-color: #e8f5e9;
-            color: #2e7d32;
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
         
-        .status-rejected {
-            background-color: #ffebee;
-            color: #c62828;
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .priority-indicator {
+            width: 4px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .priority-indicator.high {
+            background: #ef4444;
+        }
+        
+        .priority-indicator.medium {
+            background: #f59e0b;
+        }
+        
+        .priority-indicator.low {
+            background: #10b981;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .action-btn.approve {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .action-btn.approve:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .action-btn.reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .action-btn.reject:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        .action-btn.view {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .action-btn.view:hover {
+            background: rgba(59, 130, 246, 0.2);
         }
         
         .request-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            max-width: 300px;
+            word-wrap: break-word;
         }
         
-        .detail-group {
-            margin-bottom: 10px;
-        }
-        
-        .detail-label {
-            font-size: 0.8em;
-            color: #78909c;
-            margin-bottom: 3px;
-        }
-        
-        .detail-value {
-            font-weight: 500;
-        }
-        
-        .request-reason {
-            background-color: #fff;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e4e8;
-        }
-        
-        .admin-notes {
-            background-color: #f5f7f9;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e4e8;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        .action-button {
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.9em;
-        }
-        
-        .process-button {
-            background-color: #1976d2;
-            color: #fff;
-        }
-        
-        .approve-button {
-            background-color: #4caf50;
-            color: #fff;
-        }
-        
-        .reject-button {
-            background-color: #f44336;
-            color: #fff;
-        }
-        
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            width: 500px;
-            max-width: 90%;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e4e8;
-        }
-        
-        .modal-header h3 {
-            margin: 0;
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #78909c;
-        }
-        
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #e0e4e8;
-        }
-        
-        .cancel-button {
-            background-color: #e0e4e8;
-            color: #37474f;
+        .request-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
         }
         
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
-            color: #78909c;
+            padding: 4rem 2rem;
         }
         
-        .empty-state i {
-            font-size: 3em;
-            margin-bottom: 15px;
+        .empty-state .icon {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+        
+        /* Improved Process Request Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+        }
+
+        .modal-dialog {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-title-section {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .modal-title-section h3 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-title-section p {
+            margin: 0.5rem 0 0 0;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            color: #6b7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+            color: #374151;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .info-section, .notes-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-section h4, .notes-section h4 {
+            margin: 0 0 1rem 0;
+            color: #374151;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .request-info {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .info-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .warning-section {
+            margin-bottom: 2rem;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .warning-box i {
+            color: #d97706;
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .warning-box strong {
+            color: #92400e;
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        .notes-section textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .char-counter {
+            text-align: right;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn:disabled {
             opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #4b5563;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+        }
+
+        .status-section {
+            margin-bottom: 1rem;
+        }
+
+        .status-box {
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .status-box.completed {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border: 1px solid #10b981;
+        }
+
+        .status-box.rejected {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border: 1px solid #ef4444;
+        }
+
+        .status-box i {
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .status-box.completed i {
+            color: #059669;
+        }
+
+        .status-box.rejected i {
+            color: #dc2626;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .modal-dialog {
+                width: 95%;
+                margin: 1rem;
+            }
+
+            .modal-header {
+                padding: 1.5rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .modal-footer {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+            }
+
+            .modal-title-section {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
         }
     </style>
-
-    <script src="/static/mobile-menu.js" defer></script></head>
-<body>
+</head>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
     
-    <div class="container">
-        <h1>Datenlöschungsanfragen</h1>
-        
-        {% if message %}
-            <div class="message {{ message_type }}">{{ message }}</div>
-        {% endif %}
-        
-        <div class="section-container">
-            {% if requests and requests|length > 0 %}
-                <div class="request-list">
-                    {% for req in requests %}
-                        <div class="request-card" data-request-id="{{ req[0] }}">
-                            <div class="request-header">
-                                <span class="request-id">#{{ req[0] }}</span>
-                                <span class="request-status status-{{ req[5] }}">{{ req[5] }}</span>
+    <main class="glass-container">
+        <div class="requests-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-user-times text-primary"></i>
+                    Datenlöschungsanfragen
+                </h1>
+                <p>Verwaltung von Benutzeranfragen zur Datenlöschung</p>
                             </div>
                             
-                            <div class="request-details">
-                                <div>
-                                    <div class="detail-group">
-                                        <div class="detail-label">Benutzer</div>
-                                        <div class="detail-value">{{ req[2] }}</div>
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {% if category == 'error' %}danger{% else %}success{% endif %} mb-3">
+                            <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %} icon-sm"></i>
+                            {{ message }}
+                                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Statistics Overview -->
+            <div class="stats-overview">
+                <div class="stat-card pending">
+                    <div class="stat-value">{{ requests|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+                    <div class="stat-label">
+                        <i class="fas fa-clock"></i>
+                        Ausstehend
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ requests|selectattr('status', 'equalto', 'processing')|list|length }}</div>
+                    <div class="stat-label">
+                        <i class="fas fa-cog"></i>
+                        In Bearbeitung
+                    </div>
+                </div>
+                <div class="stat-card completed">
+                    <div class="stat-value">{{ requests|selectattr('status', 'equalto', 'completed')|list|length }}</div>
+                    <div class="stat-label">
+                        <i class="fas fa-check"></i>
+                        Abgeschlossen
+                    </div>
+                </div>
+                <div class="stat-card rejected">
+                    <div class="stat-value">{{ requests|selectattr('status', 'equalto', 'rejected')|list|length }}</div>
+                    <div class="stat-label">
+                        <i class="fas fa-times"></i>
+                        Abgelehnt
+                    </div>
+                </div>
                                     </div>
                                     
-                                    <div class="detail-group">
-                                        <div class="detail-label">Benutzer ID</div>
-                                        <div class="detail-value">{{ req[1] }}</div>
-                                    </div>
-                                    
-                                    <div class="detail-group">
-                                        <div class="detail-label">Anzahl der Datensätze</div>
-                                        <div class="detail-value">{{ req[9] }}</div>
+            <!-- Requests Section -->
+            <div class="requests-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-list"></i>
+                        Alle Anfragen
+                    </h2>
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-filter="all">Alle</button>
+                        <button class="filter-btn" data-filter="pending">Ausstehend</button>
+                        <button class="filter-btn" data-filter="processing">Bearbeitung</button>
+                        <button class="filter-btn" data-filter="completed">Abgeschlossen</button>
+                        <button class="filter-btn" data-filter="rejected">Abgelehnt</button>
                                     </div>
                                 </div>
                                 
+                {% if requests %}
+                <div class="table-responsive">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-user icon-sm"></i>
+                                    Benutzer
+                                </th>
+                                <th>
+                                    <i class="fas fa-calendar icon-sm"></i>
+                                    Anfragedatum
+                                </th>
+                                <th>
+                                    <i class="fas fa-comment icon-sm"></i>
+                                    Grund
+                                </th>
+                                <th>
+                                    <i class="fas fa-flag icon-sm"></i>
+                                    Status
+                                </th>
+                                <th>
+                                    <i class="fas fa-database icon-sm"></i>
+                                    Datensätze
+                                </th>
+                                <th>
+                                    <i class="fas fa-cog icon-sm"></i>
+                                    Aktionen
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deletion_request in requests %}
+                            <tr data-status="{{ deletion_request.status }}" style="position: relative;">
+                                <div class="priority-indicator {% if deletion_request.status == 'pending' %}high{% elif deletion_request.status == 'processing' %}medium{% else %}low{% endif %}"></div>
+                                <td>
                                 <div>
-                                    <div class="detail-group">
-                                        <div class="detail-label">Anfragedatum</div>
-                                        <div class="detail-value">{{ req[3][:10] }} {{ req[3][11:19] }}</div>
+                                        <strong>{{ deletion_request.username }}</strong>
+                                        <div class="request-meta">ID: {{ deletion_request.user_id }}</div>
                                     </div>
-                                    
-                                    {% if req[7] %}
-                                    <div class="detail-group">
-                                        <div class="detail-label">Bearbeitet von</div>
-                                        <div class="detail-value">{{ admin_usernames.get(req[7], 'Unbekannt') }}</div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {% if deletion_request.request_date %}
+                                            {{ deletion_request.request_date[:10] }}
+                                            <div class="request-meta">{{ deletion_request.request_date[11:16] }} Uhr</div>
+                                        {% else %}
+                                            <span class="text-muted">Kein Datum</span>
+                                        {% endif %}
                                     </div>
-                                    
-                                    <div class="detail-group">
-                                        <div class="detail-label">Bearbeitet am</div>
-                                        <div class="detail-value">{{ req[8][:10] }} {{ req[8][11:19] }}</div>
+                                </td>
+                                <td>
+                                    <div class="request-details">
+                                        {% if deletion_request.reason %}
+                                            {{ deletion_request.reason[:100] }}{% if deletion_request.reason|length > 100 %}...{% endif %}
+                                        {% else %}
+                                            <span class="text-muted">Kein Grund angegeben</span>
+                                        {% endif %}
                                     </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ deletion_request.status }}">
+                                        {% if deletion_request.status == 'pending' %}
+                                            <i class="fas fa-clock"></i>
+                                            Ausstehend
+                                        {% elif deletion_request.status == 'processing' %}
+                                            <i class="fas fa-cog"></i>
+                                            Bearbeitung
+                                        {% elif deletion_request.status == 'completed' %}
+                                            <i class="fas fa-check"></i>
+                                            Abgeschlossen
+                                        {% elif deletion_request.status == 'rejected' %}
+                                            <i class="fas fa-times"></i>
+                                            Abgelehnt
                                     {% endif %}
-                                </div>
-                            </div>
-                            
-                            {% if req[4] %}
-                            <div class="detail-group">
-                                <div class="detail-label">Grund</div>
-                                <div class="request-reason">{{ req[4] }}</div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if req[6] %}
-                            <div class="detail-group">
-                                <div class="detail-label">Admin Notizen</div>
-                                <div class="admin-notes">{{ req[6] }}</div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if req[5] == 'pending' or req[5] == 'processing' %}
-                            <div class="action-buttons">
-                                {% if req[5] == 'pending' %}
-                                <button class="action-button process-button" onclick="openProcessModal({{ req[0] }})">
-                                    <i class="fas fa-hourglass-half"></i> In Bearbeitung
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong>{{ deletion_request.record_count }}</strong>
+                                    <div class="request-meta">Einträge</div>
+                                </td>
+                                <td>
+                                    <div class="request-actions">
+                                        {% if deletion_request.status == 'pending' %}
+                                            <button class="action-btn approve" data-request-id="{{ deletion_request.id }}" data-action="approve">
+                                                <i class="fas fa-check"></i>
+                                                Genehmigen
                                 </button>
-                                {% endif %}
-                                <button class="action-button approve-button" onclick="openApproveModal({{ req[0] }})">
-                                    <i class="fas fa-check"></i> Genehmigen
+                                            <button class="action-btn reject" data-request-id="{{ deletion_request.id }}" data-action="reject">
+                                                <i class="fas fa-times"></i>
+                                                Ablehnen
                                 </button>
-                                <button class="action-button reject-button" onclick="openRejectModal({{ req[0] }})">
-                                    <i class="fas fa-times"></i> Ablehnen
+                                        {% else %}
+                                            <button class="action-btn view" data-request-id="{{ deletion_request.id }}" data-action="view">
+                                                <i class="fas fa-eye"></i>
+                                                Details
                                 </button>
-                            </div>
                             {% endif %}
                         </div>
+                                </td>
+                            </tr>
                     {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% else %}
                 <div class="empty-state">
+                    <div class="icon">
                     <i class="fas fa-inbox"></i>
-                    <h3>Keine Datenlöschungsanfragen</h3>
-                    <p>Es liegen keine Datenlöschungsanfragen zur Bearbeitung vor.</p>
+                    </div>
+                    <h3>Keine Löschungsanfragen</h3>
+                    <p>
+                        Es sind derzeit keine Datenlöschungsanfragen vorhanden. 
+                        Neue Anfragen werden hier angezeigt, sobald Benutzer eine Löschung ihrer Daten beantragen.
+                    </p>
                 </div>
             {% endif %}
         </div>
     </div>
+    </main>
     
-    <!-- Process Modal -->
-    <div id="processModal" class="modal-overlay">
-        <div class="modal">
+    <!-- Improved Process Request Modal -->
+    <div id="processModal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog">
             <div class="modal-header">
-                <h3>In Bearbeitung setzen</h3>
-                <button class="close-modal" onclick="closeModal('processModal')">&times;</button>
+                <div class="modal-title-section">
+                    <div class="modal-icon" id="modalIcon">
+                        <i class="fas fa-user-times"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalTitle">Datenlöschungsanfrage bearbeiten</h3>
+                        <p id="modalSubtitle">Überprüfen Sie die Anfrage und treffen Sie eine Entscheidung</p>
             </div>
-            <form id="processForm" action="" method="post">
-                <input type="hidden" name="action" value="mark_processing">
-                <div class="form-group">
-                    <label for="processNotes">Notizen (optional)</label>
-                    <textarea id="processNotes" name="admin_notes" rows="3" class="form-control"></textarea>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="action-button cancel-button" onclick="closeModal('processModal')">Abbrechen</button>
-                    <button type="submit" class="action-button process-button">Bestätigen</button>
+                <button type="button" class="close-btn" data-action="close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Request Information -->
+                <div class="info-section">
+                    <h4><i class="fas fa-info-circle"></i> Anfrage-Details</h4>
+                    <div id="requestInfo" class="request-info">
+                        <!-- Request details will be populated here -->
+                    </div>
                 </div>
-            </form>
+                
+                <!-- Warning Section -->
+                <div class="warning-section" id="warningSection">
+                    <div class="warning-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Achtung:</strong> Diese Aktion kann nicht rückgängig gemacht werden!
+                            <br>Bei Genehmigung werden alle Benutzerdaten und Zeiterfassungseinträge permanent gelöscht.
+                        </div>
         </div>
     </div>
     
-    <!-- Approve Modal -->
-    <div id="approveModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Datenlöschung genehmigen</h3>
-                <button class="close-modal" onclick="closeModal('approveModal')">&times;</button>
+                <!-- Admin Notes -->
+                <div class="notes-section">
+                    <h4><i class="fas fa-sticky-note"></i> Admin-Notizen</h4>
+                    <textarea id="adminNotes" rows="3" placeholder="Optionale Notizen zur Bearbeitung (z.B. Grund für Ablehnung, besondere Umstände...)"></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> / 500 Zeichen
             </div>
-            <form id="approveForm" action="" method="post">
-                <input type="hidden" name="action" value="approve">
-                <p><strong>Warnung:</strong> Die Daten des Benutzers werden unwiderruflich gelöscht.</p>
-                <div class="form-group">
-                    <label for="approveNotes">Notizen (optional)</label>
-                    <textarea id="approveNotes" name="admin_notes" rows="3" class="form-control"></textarea>
                 </div>
+            </div>
+            
                 <div class="modal-footer">
-                    <button type="button" class="action-button cancel-button" onclick="closeModal('approveModal')">Abbrechen</button>
-                    <button type="submit" class="action-button approve-button">Löschen bestätigen</button>
+                <button type="button" class="btn btn-secondary" data-action="close">
+                    <i class="fas fa-times"></i> Abbrechen
+                </button>
+                <button type="button" class="btn btn-danger" id="rejectBtn" data-action="reject">
+                    <i class="fas fa-ban"></i> Ablehnen
+                </button>
+                <button type="button" class="btn btn-success" id="approveBtn" data-action="approve">
+                    <i class="fas fa-check"></i> Genehmigen & Löschen
+                </button>
                 </div>
-            </form>
         </div>
     </div>
     
-    <!-- Reject Modal -->
-    <div id="rejectModal" class="modal-overlay">
-        <div class="modal">
+    <!-- View Only Modal for Completed Requests -->
+    <div id="viewModal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog">
             <div class="modal-header">
-                <h3>Datenlöschung ablehnen</h3>
-                <button class="close-modal" onclick="closeModal('rejectModal')">&times;</button>
+                <div class="modal-title-section">
+                    <div class="modal-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div>
+                        <h3>Anfrage-Details</h3>
+                        <p>Informationen zur bearbeiteten Datenlöschungsanfrage</p>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" data-action="close-view">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <form id="rejectForm" action="" method="post">
-                <input type="hidden" name="action" value="reject">
-                <div class="form-group">
-                    <label for="rejectNotes">Grund für die Ablehnung</label>
-                    <textarea id="rejectNotes" name="admin_notes" rows="3" class="form-control" required></textarea>
+            
+            <div class="modal-body">
+                <div class="info-section">
+                    <h4><i class="fas fa-info-circle"></i> Anfrage-Details</h4>
+                    <div id="viewRequestInfo" class="request-info">
+                        <!-- Request details will be populated here -->
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="action-button cancel-button" onclick="closeModal('rejectModal')">Abbrechen</button>
-                    <button type="submit" class="action-button reject-button">Ablehnen</button>
+                
+                <div class="status-section" id="statusSection">
+                    <!-- Status information will be populated here -->
                 </div>
-            </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-action="close-view">
+                    <i class="fas fa-times"></i> Schließen
+                </button>
+            </div>
         </div>
     </div>
     
     <script>
-        // Function to open the processing modal
-        function openProcessModal(requestId) {
-            document.getElementById('processForm').action = '/process_deletion_request/' + requestId;
-            document.getElementById('processModal').style.display = 'block';
+        // Global variables
+        let currentRequestId = null;
+
+        // Function to open the process modal for pending requests
+        function processRequest(requestId, action) {
+            console.log('Opening process modal for request:', requestId, 'action:', action);
+            
+            currentRequestId = requestId;
+            
+            // Find and populate request data
+            const requestData = extractRequestData(requestId);
+            populateProcessModal(requestData);
+            
+            // Reset form
+            document.getElementById('adminNotes').value = '';
+            updateCharCount();
+            
+            // Show modal with animation
+            showModal('processModal');
         }
-        
-        // Function to open the approve modal
-        function openApproveModal(requestId) {
-            document.getElementById('approveForm').action = '/process_deletion_request/' + requestId;
-            document.getElementById('approveModal').style.display = 'block';
+
+        // Function to view completed/rejected requests
+        function viewRequest(requestId) {
+            console.log('Opening view modal for request:', requestId);
+            
+            // Find and populate request data
+            const requestData = extractRequestData(requestId);
+            populateViewModal(requestData);
+            
+            // Show view modal
+            showModal('viewModal');
         }
-        
-        // Function to open the reject modal
-        function openRejectModal(requestId) {
-            document.getElementById('rejectForm').action = '/process_deletion_request/' + requestId;
-            document.getElementById('rejectModal').style.display = 'block';
+
+        // Extract request data from table row
+        function extractRequestData(requestId) {
+            const tableRows = document.querySelectorAll('.requests-table tbody tr');
+            
+            for (let row of tableRows) {
+                const buttons = row.querySelectorAll('.action-btn');
+                for (let button of buttons) {
+                    const buttonRequestId = button.getAttribute('data-request-id');
+                    if (buttonRequestId && buttonRequestId === requestId.toString()) {
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            id: requestId,
+                            username: cells[0].querySelector('strong').textContent.trim(),
+                            userId: cells[0].querySelector('.request-meta').textContent.replace('ID: ', '').trim(),
+                            date: cells[1].textContent.trim().split('\n')[0].trim(),
+                            time: cells[1].querySelector('.request-meta').textContent.replace(' Uhr', '').trim(),
+                            reason: cells[2].textContent.trim(),
+                            status: cells[3].querySelector('.status-badge').textContent.trim(),
+                            records: cells[4].querySelector('strong').textContent.trim()
+                        };
+                    }
+                }
+            }
+            
+            // Fallback if data extraction fails
+            return {
+                id: requestId,
+                username: 'Unbekannt',
+                userId: 'Unbekannt',
+                date: 'Unbekannt',
+                time: 'Unbekannt',
+                reason: 'Keine Angabe',
+                status: 'Unbekannt',
+                records: '0'
+            };
         }
-        
-        // Function to close any modal
+
+        // Populate the process modal with request data
+        function populateProcessModal(data) {
+            const requestInfo = document.getElementById('requestInfo');
+            requestInfo.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">Benutzer:</span>
+                    <span class="info-value">${data.username}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Benutzer-ID:</span>
+                    <span class="info-value">${data.userId}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Anfragedatum:</span>
+                    <span class="info-value">${data.date} um ${data.time}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Begründung:</span>
+                    <span class="info-value">${data.reason}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Betroffene Datensätze:</span>
+                    <span class="info-value">${data.records} Zeiterfassungseinträge</span>
+                </div>
+            `;
+        }
+
+        // Populate the view modal with request data
+        function populateViewModal(data) {
+            const viewRequestInfo = document.getElementById('viewRequestInfo');
+            viewRequestInfo.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">Benutzer:</span>
+                    <span class="info-value">${data.username}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Benutzer-ID:</span>
+                    <span class="info-value">${data.userId}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Anfragedatum:</span>
+                    <span class="info-value">${data.date} um ${data.time}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Begründung:</span>
+                    <span class="info-value">${data.reason}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Betroffene Datensätze:</span>
+                    <span class="info-value">${data.records} Zeiterfassungseinträge</span>
+                </div>
+            `;
+
+            // Add status information
+            const statusSection = document.getElementById('statusSection');
+            const statusLower = data.status.toLowerCase();
+            
+            if (statusLower.includes('abgeschlossen') || statusLower.includes('completed')) {
+                statusSection.innerHTML = `
+                    <div class="status-box completed">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Status: Genehmigt und abgeschlossen</strong>
+                            <br>Die Datenlöschung wurde durchgeführt. Alle Benutzerdaten und Zeiterfassungseinträge wurden permanent gelöscht.
+                        </div>
+                    </div>
+                `;
+            } else if (statusLower.includes('abgelehnt') || statusLower.includes('rejected')) {
+                statusSection.innerHTML = `
+                    <div class="status-box rejected">
+                        <i class="fas fa-times-circle"></i>
+                        <div>
+                            <strong>Status: Abgelehnt</strong>
+                            <br>Die Datenlöschungsanfrage wurde abgelehnt. Die Benutzerdaten bleiben unverändert.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Show modal with animation
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Trigger animation
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+
+        // Close modal with animation
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+                
+                // Reset state
+                if (modalId === 'processModal') {
+                    currentRequestId = null;
+                }
+            }, 300);
         }
-        
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.style.display = 'none';
+
+        // Handle approve action
+        function handleApprove() {
+            if (!currentRequestId) {
+                alert('Fehler: Keine Anfrage ausgewählt.');
+                return;
+            }
+
+            const adminNotes = document.getElementById('adminNotes').value.trim();
+            
+            if (confirm('Sind Sie sicher, dass Sie diese Datenlöschungsanfrage genehmigen möchten?\n\nAlle Benutzerdaten und Zeiterfassungseinträge werden PERMANENT gelöscht!')) {
+                submitAction('approve', adminNotes);
             }
         }
-        
-        // Close modals with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal-overlay');
-                modals.forEach(modal => {
-                    modal.style.display = 'none';
-                });
+
+        // Handle reject action
+        function handleReject() {
+            if (!currentRequestId) {
+                alert('Fehler: Keine Anfrage ausgewählt.');
+                return;
             }
+
+            const adminNotes = document.getElementById('adminNotes').value.trim();
+            
+            if (!adminNotes) {
+                if (!confirm('Sie haben keine Begründung für die Ablehnung angegeben.\n\nMöchten Sie trotzdem fortfahren?')) {
+                    return;
+                }
+            }
+            
+            submitAction('reject', adminNotes);
+        }
+
+        // Submit the action to the server
+        function submitAction(action, adminNotes) {
+            const approveBtn = document.getElementById('approveBtn');
+            const rejectBtn = document.getElementById('rejectBtn');
+            
+            // Show loading state
+            approveBtn.disabled = true;
+            rejectBtn.disabled = true;
+            
+            if (action === 'approve') {
+                approveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wird gelöscht...';
+            } else {
+                rejectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wird abgelehnt...';
+            }
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('action', action);
+            formData.append('admin_notes', adminNotes);
+            
+            // Submit request
+            fetch(`/process_deletion_request/${currentRequestId}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Show success message and reload
+                    const actionText = action === 'approve' ? 'genehmigt und die Daten gelöscht' : 'abgelehnt';
+                    alert(`Die Datenlöschungsanfrage wurde erfolgreich ${actionText}.`);
+                    window.location.reload();
+                } else {
+                    throw new Error('Request failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Fehler beim Bearbeiten der Anfrage. Bitte versuchen Sie es erneut.');
+                
+                // Reset button states
+                approveBtn.disabled = false;
+                rejectBtn.disabled = false;
+                approveBtn.innerHTML = '<i class="fas fa-check"></i> Genehmigen & Löschen';
+                rejectBtn.innerHTML = '<i class="fas fa-ban"></i> Ablehnen';
+            });
+        }
+
+        // Update character count for admin notes
+        function updateCharCount() {
+            const textarea = document.getElementById('adminNotes');
+            const charCount = document.getElementById('charCount');
+            
+            if (textarea && charCount) {
+                const count = textarea.value.length;
+                charCount.textContent = count;
+                
+                if (count > 500) {
+                    charCount.style.color = '#ef4444';
+                    textarea.value = textarea.value.substring(0, 500);
+                    charCount.textContent = '500';
+                } else {
+                    charCount.style.color = '#6b7280';
+                }
+            }
+        }
+
+        // Initialize event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing improved modal system...');
+            
+            // Event delegation for all button clicks
+            document.addEventListener('click', function(e) {
+                // Handle table action buttons
+                const actionBtn = e.target.closest('.action-btn');
+                if (actionBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const requestId = actionBtn.getAttribute('data-request-id');
+                    const action = actionBtn.getAttribute('data-action');
+                    
+                    console.log('Table button clicked:', requestId, action);
+                    
+                    if (action === 'view') {
+                        viewRequest(requestId);
+                    } else {
+                        processRequest(requestId, action);
+                    }
+                    return;
+                }
+                
+                // Handle modal buttons
+                const modalBtn = e.target.closest('[data-action]');
+                if (modalBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const action = modalBtn.getAttribute('data-action');
+                    console.log('Modal button clicked:', action);
+                    
+                    switch(action) {
+                        case 'close':
+                            closeModal('processModal');
+                            break;
+                        case 'close-view':
+                            closeModal('viewModal');
+                            break;
+                        case 'approve':
+                            handleApprove();
+                            break;
+                        case 'reject':
+                            handleReject();
+                            break;
+                    }
+                    return;
+                }
+                
+                // Close modal when clicking outside
+                if (e.target.classList.contains('modal-overlay')) {
+                    if (e.target.id === 'processModal') {
+                        closeModal('processModal');
+                    } else if (e.target.id === 'viewModal') {
+                        closeModal('viewModal');
+                    }
+                }
+            });
+            
+            // Character count for admin notes
+            const adminNotes = document.getElementById('adminNotes');
+            if (adminNotes) {
+                adminNotes.addEventListener('input', updateCharCount);
+            }
+            
+            // Close modal on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const processModal = document.getElementById('processModal');
+                    const viewModal = document.getElementById('viewModal');
+                    
+                    if (processModal && processModal.classList.contains('show')) {
+                        closeModal('processModal');
+                    } else if (viewModal && viewModal.classList.contains('show')) {
+                        closeModal('viewModal');
+                    }
+                }
+            });
+            
+            console.log('Improved modal system loaded successfully');
         });
+
+        // Test functions for debugging
+        function testProcessModal() {
+            console.log('Testing process modal...');
+            processRequest(1, 'approve');
+        }
+
+        function testViewModal() {
+            console.log('Testing view modal...');
+            viewRequest(1);
+        }
+
+        // Debug function to check modal state
+        function debugModal() {
+            console.log('Current modal state:');
+            console.log('- currentRequestId:', currentRequestId);
+            console.log('- process modal display:', document.getElementById('processModal').style.display);
+            console.log('- view modal display:', document.getElementById('viewModal').style.display);
+        }
     </script>
 </body>
 </html>

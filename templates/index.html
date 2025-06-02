@@ -1,15 +1,404 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Zeiterfassung - Check In/Out</title>
+    <title>BTZ Zeiterfassung - Dashboard</title>
     {% include 'head_includes.html' %}
-    <link rel="stylesheet" href="/static/breaks.css">
-    <link rel="stylesheet" href="/static/checkin-checkout.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="/static/checkin-checkout.js" defer></script></head>
-<body>
+    <script src="/static/checkin-checkout.js" defer></script>
+    <!-- External Libraries for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Interactive button states */
+        .attendance-button-card {
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .attendance-button-card.active {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            z-index: 1;
+        }
+        
+        .attendance-button-card.checkout.active {
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            z-index: 1;
+        }
+        
+        .attendance-button-card.active .checkin-icon {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            animation: pulse-green 2s infinite;
+        }
+        
+        .attendance-button-card.active .checkout-icon {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            animation: pulse-red 2s infinite;
+        }
+        
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.8); }
+        }
+        
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
+        }
+        
+        .attendance-button-card.active #checkin-btn {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .attendance-button-card.active #checkout-btn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .status-active {
+            background: rgba(16, 185, 129, 0.1) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            color: #059669 !important;
+        }
+        
+        .checkout .status-active {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            color: #dc2626 !important;
+        }
+        
+        /* Button press effects */
+        .btn:active {
+            transform: scale(0.97) !important;
+        }
+        
+        .attendance-button-card.active .btn:active {
+            transform: translateY(-2px) scale(0.97) !important;
+        }
+        
+        /* Submitting state */
+        .btn.submitting {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .btn.submitting::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Ensure navigation remains clickable */
+        .modern-nav {
+            z-index: 1000 !important;
+            pointer-events: auto !important;
+        }
+        
+        .modern-nav * {
+            pointer-events: auto !important;
+        }
+        
+        /* Prevent attendance card effects from interfering with navigation */
+        .glass-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Ensure main content doesn't overlap navigation */
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Fix any potential overlay issues */
+        .attendance-button-card.active::before,
+        .attendance-button-card.active::after {
+            z-index: -1 !important;
+        }
+        
+        /* Additional fixes for menu clickability */
+        .nav-menu, .nav-menu * {
+            pointer-events: auto !important;
+        }
+        
+        .dropdown-menu {
+            z-index: 1002 !important;
+            pointer-events: auto !important;
+        }
+        
+        /* Prevent any pseudo-elements from blocking clicks */
+        .attendance-button-card.active {
+            pointer-events: auto;
+        }
+        
+        .attendance-button-card.active * {
+            pointer-events: auto;
+        }
+        
+        /* Ensure no invisible overlays */
+        .glass-morphism-page::before,
+        .glass-morphism-page::after,
+        .glass-container::before,
+        .glass-container::after {
+            pointer-events: none !important;
+        }
+        
+        /* CRITICAL FIX: Override all navigation blocking styles */
+        .modern-nav,
+        .modern-nav *,
+        .glass-nav,
+        .glass-nav *,
+        .nav-menu,
+        .nav-menu *,
+        .nav-link,
+        .nav-link *,
+        .dropdown,
+        .dropdown *,
+        .dropdown-menu,
+        .dropdown-menu *,
+        .dropdown-item,
+        .dropdown-item *,
+        .nav-container,
+        .nav-container * {
+            pointer-events: auto !important;
+            z-index: 1000 !important;
+        }
+        
+        /* Ensure dropdown menus are always above everything */
+        .dropdown-menu {
+            z-index: 1002 !important;
+            position: absolute !important;
+        }
+        
+        /* Force navigation to be clickable even when cards are active */
+        body.glass-morphism-page .modern-nav,
+        body.glass-morphism-page .modern-nav *,
+        body.glass-morphism-page .glass-nav,
+        body.glass-morphism-page .glass-nav * {
+            pointer-events: auto !important;
+            z-index: 1000 !important;
+        }
+        
+        /* Prevent any attendance card effects from affecting navigation */
+        .attendance-button-card.active,
+        .attendance-button-card.active *,
+        .attendance-button-card.active::before,
+        .attendance-button-card.active::after {
+            z-index: 1 !important;
+        }
+        
+        /* Ensure main content stays below navigation */
+        .glass-container {
+            z-index: 1 !important;
+            position: relative !important;
+        }
+        
+        /* Override any universal CSS that might block navigation */
+        .glass-nav .dropdown-menu {
+            pointer-events: auto !important;
+            z-index: 1002 !important;
+        }
+        
+        .glass-nav .nav-item.dropdown:hover .dropdown-menu {
+            pointer-events: auto !important;
+            z-index: 1002 !important;
+        }
+    </style>
+
+    <!-- User Report Modal Styles -->
+    <style>
+        /* User Report Modal Styles */
+        .report-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: var(--space-lg);
+            padding-top: 60px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .report-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .report-modal-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 95vw;
+            max-height: calc(100vh - 80px);
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .report-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .report-modal-overlay.active .report-modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .report-modal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            padding: var(--space-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .report-modal-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .report-modal-title i {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+        }
+        
+        .report-modal-close {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .report-modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .report-modal-body {
+            padding: var(--space-xl);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        
+        .report-modal-body .loading-content {
+            text-align: center;
+            padding: var(--space-xl);
+            color: var(--text-secondary);
+        }
+        
+        .report-modal-body .loading-content i {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design for Report Modal */
+        @media (max-width: 768px) {
+            .report-modal-overlay {
+                padding: var(--space-md);
+                padding-top: 40px;
+            }
+            
+            .report-modal-content {
+                max-width: 100%;
+                border-radius: var(--radius-lg);
+            }
+            
+            .report-modal-header {
+                padding: var(--space-lg);
+                flex-direction: column;
+                gap: var(--space-md);
+                text-align: center;
+            }
+            
+            .report-modal-title {
+                font-size: 1.5rem;
+            }
+            
+            .report-modal-body {
+                padding: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .report-modal-overlay {
+                padding: var(--space-sm);
+                padding-top: 20px;
+            }
+            
+            .report-modal-header {
+                padding: var(--space-md);
+            }
+            
+            .report-modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .report-modal-body {
+                padding: var(--space-md);
+            }
+        }
+    </style>
+</head>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
     
     <!-- Store user ID in sessionStorage after successful login -->
@@ -19,259 +408,397 @@
     </script>
     {% endif %}
     
-    <div class="container">
-        <h1>Zeiterfassungssystem</h1>
-        
-        <!-- Flash messages moved here, before the form -->
+    <main class="glass-container">
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                    <div class="alert {% if category == 'error' %}danger{% else %}success{% endif %} mb-3">
+                        <i class="fas fa-{% if category == 'error' %}exclamation-circle{% else %}check-circle{% endif %} icon-sm"></i>
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         
-        <!-- Form starts after flash messages -->
-        <div id="attendance-forms" class="attendance-controls">
-            <div class="user-selector-wrapper">
-                {% if session.get('admin_logged_in') %}
-                    <!-- Admin sees dropdown with all users -->
-                    <select id="user-selector" required>
-                        <option value="" disabled selected>Wähle Benutzer</option>
-                        {% for user in users %}
-                            <option value="{{ user[0] }}">{{ user[1] }}</option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    <!-- Regular users only see themselves -->
-                    <div class="user-info">
-                        Angemeldet als: <strong>{{ session.get('username') }}</strong>
-                        <input type="hidden" id="user-selector" value="{{ users[0][0] }}">
+        <!-- Attendance Actions - Directly under menu -->
+        <div class="d-grid gap-4 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            <!-- Check-in Card -->
+            <div class="glass-card text-center attendance-button-card checkin">
+                <div class="mb-3">
+                    <div class="d-flex align-center justify-center mb-3 checkin-icon" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); color: white; font-size: 2rem; transition: all 0.3s ease;">
+                        <i class="fas fa-sign-in-alt"></i>
                     </div>
-                {% endif %}
+                    <h3 class="text-success mb-2">Einstempeln</h3>
+                    <p class="text-muted mb-3">Arbeitszeit beginnen</p>
             </div>
-            <div class="button-group">
-                <div class="attendance-button-card checkin">
-                    <form action="/checkin" method="post" class="inline-form">
+                <form action="/checkin" method="post" class="mb-3">
                         <input type="hidden" name="user_id" id="checkin-user-id">
-                        <button type="submit" id="checkin-btn">
-                            <span class="button-icon"><i class="fas fa-sign-in-alt"></i></span>
-                            Check In
+                    <button type="submit" id="checkin-btn" class="btn btn-success btn-lg w-full" style="transition: all 0.3s ease;">
+                        <i class="fas fa-sign-in-alt icon-sm"></i>
+                        Jetzt einstempeln
                         </button>
                     </form>
-                    <div id="checkin-status" class="status-indicator">Nicht eingestempelt</div>
+                <div id="checkin-status" class="alert info">
+                    <i class="fas fa-clock icon-sm"></i>
+                        Nicht eingestempelt
+                    </div>
                 </div>
-                <div class="attendance-button-card checkout">
-                    <form action="/checkout" method="post" class="inline-form">
+                
+            <!-- Check-out Card -->
+            <div class="glass-card text-center attendance-button-card checkout">
+                <div class="mb-3">
+                    <div class="d-flex align-center justify-center mb-3 checkout-icon" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 2rem; transition: all 0.3s ease;">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <h3 class="text-danger mb-2">Ausstempeln</h3>
+                    <p class="text-muted mb-3">Arbeitszeit beenden</p>
+                </div>
+                <form action="/checkout" method="post" class="mb-3">
                         <input type="hidden" name="user_id" id="checkout-user-id">
-                        <button type="submit" id="checkout-btn">
-                            <span class="button-icon"><i class="fas fa-sign-out-alt"></i></span>
-                            Check Out
+                    <button type="submit" id="checkout-btn" class="btn btn-danger btn-lg w-full" style="transition: all 0.3s ease;">
+                        <i class="fas fa-sign-out-alt icon-sm"></i>
+                        Jetzt ausstempeln
                         </button>
                     </form>
-                    <div id="checkout-status" class="status-indicator">Nicht ausgestempelt</div>
-                </div>
-            </div>
-            
-            <!-- Info about system-wide break detection -->
-            <div class="info-box">
-                <h4>Automatische Pausenerkennung</h4>
-                <p>
-                    Die Pausenerkennung wird systemweit vom Administrator konfiguriert.
-                    Längere Inaktivitätsperioden können automatisch als Pausen markiert werden.
-                </p>
-                <h4>Gesetzliche Pausen (ArbZG)</h4>
-                <p>
-                    Gemäß Arbeitszeitgesetz werden automatisch Pausen eingetragen:
-                </p>
-                <ul>
-                    <li>Bei > 6 Stunden Arbeitszeit: mind. 30 Minuten Pause</li>
-                    <li>Bei > 9 Stunden Arbeitszeit: mind. 45 Minuten Pause</li>
-                </ul>
-                <p>
-                    Wenn keine ausreichenden Pausen gemacht wurden, werden diese beim Auschecken automatisch hinzugefügt.
-                </p>
-                <div class="arbzg-info-block">
-                    <p><strong><i class="fas fa-lightbulb icon-inline"></i>Intelligente Pausenplatzierung:</strong> Das System platziert gesetzliche Pausen bevorzugt während der Mittagszeit (11:30-14:00) oder fügt sie am Ende des Arbeitstages ein, wenn keine Mittagszeit verfügbar ist.</p>
-                    <div class="form-row">
-                        <span class="arbzg-badge lunch-badge">
-                            <i class="fas fa-utensils badge-icon"></i>Mittagspause
-                        </span>
-                        <span class="arbzg-badge">
-                            <i class="fas fa-clock badge-icon"></i>Ende des Arbeitstages
-                        </span>
+                <div id="checkout-status" class="alert info">
+                    <i class="fas fa-clock icon-sm"></i>
+                        Nicht ausgestempelt
                     </div>
                 </div>
             </div>
             
-            <!-- Break Tracker UI placeholder -->
-            <div id="break-tracker"></div>
-            
-            <!-- Manual break entry -->
-            <div id="manual-break-entry" class="break-entry-section" hidden>
-                <h4>Pause manuell eintragen</h4>
-                <p>Tragen Sie manuell eine Pause für den aktuellen Tag ein:</p>
-                <form id="add-break-form" class="break-form">
-                    <input type="hidden" id="break-attendance-id" name="attendance_id">
-                    
-                    <div class="break-form-field">
-                        <label for="break-start">Start:</label>
-                        <input type="time" id="break-start" name="break_start" required>
-                    </div>
-                    
-                    <div class="break-form-field">
-                        <label for="break-end">Ende:</label>
-                        <input type="time" id="break-end" name="break_end" required>
-                    </div>
-                    
-                    <div class="break-form-field">
-                        <label for="break-type-select">Pausentyp:</label>
-                        <select id="break-type-select" name="break_type">
-                            <option value="regular">Reguläre Pause</option>
-                            <option value="lunch">Mittagspause</option>
-                            <option value="arbzg">ArbZG Pflichtpause</option>
+        <!-- Current Time Card -->
+        <div class="glass-card mb-4 text-center">
+            <h3 class="mb-3 d-flex align-center justify-center gap-2">
+                <i class="far fa-clock text-primary"></i>
+                Aktuelle Zeit
+            </h3>
+            <div id="current-time">
+                <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Courier New', monospace;">--:--:--</div>
+                <div class="text-muted">Wird geladen...</div>
+            </div>
+        </div>
+        
+        <!-- User Selection Card -->
+        {% if session.get('admin_logged_in') %}
+        <div class="glass-card mb-4">
+            <h3 class="mb-3 d-flex align-center gap-2">
+                <i class="fas fa-users text-primary"></i>
+                Benutzer auswählen
+            </h3>
+            <div class="form-group">
+                <select id="user-selector" class="form-input w-full" required>
+                    <option value="" disabled selected>Wähle Benutzer</option>
+                    {% for user in users %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                </div>
+        {% else %}
+            <!-- Hidden user selector for non-admin users -->
+            <input type="hidden" id="user-selector" value="{{ users[0][0] }}">
+        {% endif %}
+        
+        <!-- Dashboard Grid -->
+        <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+            <!-- Quick Actions -->
+            <div class="glass-card">
+                <h3 class="mb-3 d-flex align-center gap-2">
+                    <i class="fas fa-bolt text-primary"></i>
+                    Schnellzugriff
+                </h3>
+                <div class="d-flex flex-column gap-2">
+                    <a href="/my_attendance" class="btn btn-ghost d-flex align-center gap-2">
+                        <i class="fas fa-calendar-alt text-primary"></i>
+                        <span>Meine Arbeitszeiten</span>
+                    </a>
+                    <a href="/manual_attendance" class="btn btn-ghost d-flex align-center gap-2">
+                        <i class="fas fa-plus text-primary"></i>
+                        <span>Zeit hinzufügen</span>
+                    </a>
+                    <a href="/data_access" class="btn btn-ghost d-flex align-center gap-2">
+                        <i class="fas fa-file-alt text-primary"></i>
+                        <span>Meine Daten</span>
+                    </a>
+                    {% if session.get('admin_logged_in') %}
+                    <a href="/admin" class="btn btn-ghost d-flex align-center gap-2">
+                        <i class="fas fa-tachometer-alt text-primary"></i>
+                        <span>Admin-Dashboard</span>
+                    </a>
+                    {% endif %}
+                </div>
+        </div>
+        
+            <!-- Report Generation -->
+            <div class="glass-card">
+                <h3 class="mb-3 d-flex align-center gap-2">
+                    <i class="fas fa-chart-bar text-primary"></i>
+                Bericht generieren
+            </h3>
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="form-group">
+                        <label for="report-date" class="form-label d-flex align-center gap-1">
+                            <i class="far fa-calendar-alt text-primary icon-sm"></i>
+                            Einzelnes Datum
+                    </label>
+                        <input type="date" id="report-date" name="date" class="form-input">
+                </div>
+                
+                    <div class="form-group">
+                        <label for="report-month-select" class="form-label d-flex align-center gap-1">
+                            <i class="far fa-calendar text-primary icon-sm"></i>
+                            Monat
+                    </label>
+                        <select id="report-month-select" class="form-input mb-2">
+                            <option value="" disabled selected>Monat wählen</option>
+                            <option value="1">Januar</option>
+                            <option value="2">Februar</option>
+                            <option value="3">März</option>
+                            <option value="4">April</option>
+                            <option value="5">Mai</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Dezember</option>
+                        </select>
+                        <select id="report-month-year" class="form-input">
+                            {% for year in range(2023, 2026) %}
+                            <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    
-                    <div class="break-form-field">
-                        <label for="break-description">Beschreibung:</label>
-                        <input type="text" id="break-description" name="break_description" placeholder="Optional">
-                    </div>
-                    
-                    <div class="break-form-field">
-                        <label>Abrechnung:</label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="break-excluded" name="break_excluded" value="1" checked>
-                            <span>Nicht abrechenbar</span>
-                        </label>
-                    </div>
-                    
-                    <div class="break-form-field">
-                        <button type="button" id="add-break-btn" class="break-add-button">Pause hinzufügen</button>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Report options -->
-            <div class="report-section">
-                <h3 class="report-heading">Bericht generieren</h3>
-                <p class="report-description">Bitte wählen Sie eine der folgenden Optionen:</p>
-                <div class="options-container">
-                    <!-- Date selector -->
-                    <div class="option-card">
-                        <label for="report-date">Datum:</label>
-                        <input type="date" id="report-date" name="date" class="datepicker-field">
-                    </div>
-                    
-                    <!-- Week selector with calendar -->
-                    <div class="option-card">
-                        <label for="week-picker">Woche:</label>
-                        <div class="option-field">
-                            <input type="text" id="week-picker" class="week-picker" placeholder="KW wählen" readonly>
-                            <span id="selected-week-display" class="week-display"></span>
-                            <input type="hidden" id="report-week" name="week">
-                        </div>
-                    </div>
-                    
-                    <!-- Month selector with fallback -->
-                    <div class="option-card">
-                        <label for="report-month-select">Monat:</label>
-                        <div class="option-field">
-                            <select id="report-month-select" class="month-select">
-                                <option value="" selected disabled>Monat</option>
-                                <option value="1">Januar</option>
-                                <option value="2">Februar</option>
-                                <option value="3">März</option>
-                                <option value="4">April</option>
-                                <option value="5">Mai</option>
-                                <option value="6">Juni</option>
-                                <option value="7">Juli</option>
-                                <option value="8">August</option>
-                                <option value="9">September</option>
-                                <option value="10">Oktober</option>
-                                <option value="11">November</option>
-                                <option value="12">Dezember</option>
-                            </select>
-                            <select id="report-month-year" class="year-select">
-                                {% for year in range(2023, 2026) %}
-                                <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}</option>
-                                {% endfor %}
-                            </select>
-                            <input type="hidden" id="report-month" name="month">
-                        </div>
-                    </div>
-                    
-                    <!-- Entire period option -->
-                    <div class="option-card">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="entire-period">
-                            <span>Gesamter Zeitraum</span>
-                        </label>
-                        <p class="report-description">Alle verfügbaren Daten anzeigen</p>
-                        <input type="hidden" id="report-entire-period" name="entire_period" value="0">
-                    </div>
                 </div>
-                <div class="button-container">
-                    <button type="button" id="generate-report-btn" class="action-button print-button">
-                        <i class="fas fa-file-alt"></i> Bericht generieren
-                    </button>
+                
+                <button type="button" id="generate-report-btn" class="btn btn-primary btn-lg w-full">
+                    <i class="fas fa-file-alt icon-sm"></i>
+                    Bericht generieren
+                </button>
+                
+                <input type="hidden" id="report-month" name="month">
+                </div>
+            </div>
+    </main>
+    
+    <!-- User Report Modal -->
+    <div id="user-report-modal" class="report-modal-overlay">
+        <div class="report-modal-content">
+            <div class="report-modal-header">
+                <h3 class="report-modal-title">
+                    <i class="fas fa-chart-line"></i>
+                    Benutzer Bericht
+                </h3>
+                <button class="report-modal-close" id="close-report-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="report-modal-body" id="report-modal-content">
+                <div class="loading-content">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Bericht wird geladen...</p>
                 </div>
             </div>
         </div>
     </div>
+    
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Main check-in/check-out functionality is in checkin-checkout.js
-        
-        // Report generation handling
-        const reportDateInput = document.getElementById('report-date');
-        const reportWeekInput = document.getElementById('report-week');
-        const reportMonthInput = document.getElementById('report-month');
-        
-        // Week picker element
-        const weekPicker = document.getElementById('week-picker');
-        const selectedWeekDisplay = document.getElementById('selected-week-display');
-        
-        // Month selector elements
-        const reportMonthSelect = document.getElementById('report-month-select');
-        const reportMonthYear = document.getElementById('report-month-year');
-        
-        const generateReportBtn = document.getElementById('generate-report-btn');
-        
-        // Function to clear all inputs
-        function clearAllInputs() {
-            reportDateInput.value = '';
-            reportWeekInput.value = '';
-            reportMonthInput.value = '';
-            weekPicker.value = '';
-            selectedWeekDisplay.textContent = '';
-            reportMonthSelect.selectedIndex = 0;
+        // Current time display
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('de-DE', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('de-DE', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const currentTimeElement = document.getElementById('current-time');
+            if (currentTimeElement) {
+                currentTimeElement.innerHTML = `
+                    <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Courier New', monospace;">${timeString}</div>
+                    <div class="text-muted">${dateString}</div>
+                `;
+            }
         }
         
-        // Week picker initialization is handled by week-picker.js
+        // Update time every second
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
         
-        // Make inputs mutually exclusive
+        // Attendance status management
+        const userSelector = document.getElementById('user-selector');
+        const checkinUserIdField = document.getElementById('checkin-user-id');
+        const checkoutUserIdField = document.getElementById('checkout-user-id');
+        const checkinBtn = document.getElementById('checkin-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const checkinCard = document.querySelector('.attendance-button-card.checkin');
+        const checkoutCard = document.querySelector('.attendance-button-card.checkout');
+        const checkinStatus = document.getElementById('checkin-status');
+        const checkoutStatus = document.getElementById('checkout-status');
+        
+        let statusCheckInterval;
+        
+        // Initialize user ID for forms
+        function updateUserIds() {
+            const selectedUserId = userSelector.value;
+            if (selectedUserId) {
+                checkinUserIdField.value = selectedUserId;
+                checkoutUserIdField.value = selectedUserId;
+                checkinBtn.disabled = false;
+                checkoutBtn.disabled = false;
+                
+                // Check attendance status for the selected user
+                checkAttendanceStatus(selectedUserId);
+                
+                // Start periodic status checking
+                if (statusCheckInterval) {
+                    clearInterval(statusCheckInterval);
+                }
+                statusCheckInterval = setInterval(() => {
+                    checkAttendanceStatus(selectedUserId);
+                }, 30000); // Check every 30 seconds
+            } else {
+                checkinBtn.disabled = true;
+                checkoutBtn.disabled = true;
+                updateStatusDisplay(false, false);
+                
+                if (statusCheckInterval) {
+                    clearInterval(statusCheckInterval);
+                }
+            }
+        }
+        
+        // Update visual status indicators
+        function updateStatusDisplay(isCheckedIn, isCheckedOut, checkInTime = null, checkOutTime = null) {
+            if (isCheckedIn && !isCheckedOut) {
+                // Currently checked in (active session)
+                checkinCard.classList.add('active');
+                checkoutCard.classList.remove('active');
+                
+                const timeStr = checkInTime ? new Date(checkInTime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : '';
+                checkinStatus.innerHTML = `<i class="fas fa-check-circle icon-sm"></i> Eingestempelt${timeStr ? ' um ' + timeStr : ''}`;
+                checkinStatus.classList.add('status-active');
+                checkinBtn.innerHTML = '<i class="fas fa-check icon-sm"></i> Bereits eingestempelt';
+                checkinBtn.disabled = true;
+                
+                checkoutStatus.innerHTML = '<i class="fas fa-clock icon-sm"></i> Bereit zum Ausstempeln';
+                checkoutStatus.classList.remove('status-active');
+                checkoutBtn.innerHTML = '<i class="fas fa-sign-out-alt icon-sm"></i> Jetzt ausstempeln';
+                checkoutBtn.disabled = false;
+                
+            } else if (!isCheckedIn && isCheckedOut) {
+                // Completed session today - ready for new check-in
+                checkinCard.classList.remove('active');
+                checkoutCard.classList.add('active');
+                
+                const checkOutTimeStr = checkOutTime ? new Date(checkOutTime).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'}) : '';
+                
+                checkinStatus.innerHTML = '<i class="fas fa-clock icon-sm"></i> Bereit für neue Session';
+                checkinStatus.classList.remove('status-active');
+                checkinBtn.innerHTML = '<i class="fas fa-sign-in-alt icon-sm"></i> Jetzt einstempeln';
+                checkinBtn.disabled = false;
+                
+                checkoutStatus.innerHTML = `<i class="fas fa-check-circle icon-sm"></i> Ausgestempelt${checkOutTimeStr ? ' um ' + checkOutTimeStr : ''}`;
+                checkoutStatus.classList.add('status-active');
+                checkoutBtn.innerHTML = '<i class="fas fa-check icon-sm"></i> Session beendet';
+                checkoutBtn.disabled = true;
+                
+            } else {
+                // No activity today (initial state)
+                checkinCard.classList.remove('active');
+                checkoutCard.classList.remove('active');
+                
+                checkinStatus.innerHTML = '<i class="fas fa-clock icon-sm"></i> Nicht eingestempelt';
+                checkinStatus.classList.remove('status-active');
+                checkinBtn.innerHTML = '<i class="fas fa-sign-in-alt icon-sm"></i> Jetzt einstempeln';
+                checkinBtn.disabled = false;
+                
+                checkoutStatus.innerHTML = '<i class="fas fa-clock icon-sm"></i> Nicht ausgestempelt';
+                checkoutStatus.classList.remove('status-active');
+                checkoutBtn.innerHTML = '<i class="fas fa-sign-out-alt icon-sm"></i> Jetzt ausstempeln';
+                checkoutBtn.disabled = true;
+            }
+        }
+        
+        // Check the user's attendance status
+        function checkAttendanceStatus(userId) {
+            fetch('/get_attendance_status?user_id=' + userId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error:', data.error);
+                        updateStatusDisplay(false, false);
+                        return;
+                    }
+                    updateStatusDisplay(
+                        data.is_checked_in, 
+                        data.is_checked_out, 
+                        data.check_in_time, 
+                        data.check_out_time
+                    );
+                })
+                .catch(error => {
+                    console.error('Error checking attendance status:', error);
+                    updateStatusDisplay(false, false);
+                });
+        }
+        
+        // For admin dropdown, listen for changes
+        if (userSelector && userSelector.tagName === 'SELECT') {
+            userSelector.addEventListener('change', updateUserIds);
+        }
+        
+        // Initial setup
+        updateUserIds();
+        
+        // Handle form submissions with better feedback
+        const checkinForm = checkinBtn.closest('form');
+        const checkoutForm = checkoutBtn.closest('form');
+        
+        if (checkinForm) {
+            checkinForm.addEventListener('submit', function(event) {
+                checkinBtn.classList.add('submitting');
+                checkinBtn.innerHTML = '<i class="fas fa-spinner fa-spin icon-sm"></i> Einstempeln...';
+                checkinBtn.disabled = true;
+            });
+        }
+        
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', function(event) {
+                checkoutBtn.classList.add('submitting');
+                checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin icon-sm"></i> Ausstempeln...';
+                checkoutBtn.disabled = true;
+            });
+        }
+        
+        // Report generation
+        const generateReportBtn = document.getElementById('generate-report-btn');
+        const reportDateInput = document.getElementById('report-date');
+        const reportMonthSelect = document.getElementById('report-month-select');
+        const reportMonthYear = document.getElementById('report-month-year');
+        const reportMonthInput = document.getElementById('report-month');
+        
+        // Clear other inputs when one is selected
         reportDateInput.addEventListener('input', function() {
             if (this.value) {
-                reportWeekInput.value = '';
-                reportMonthInput.value = '';
-                weekPicker.value = '';
-                selectedWeekDisplay.textContent = '';
                 reportMonthSelect.selectedIndex = 0;
+                reportMonthInput.value = '';
             }
         });
         
-        // Handle month selection
         reportMonthSelect.addEventListener('change', function() {
             if (this.value) {
                 reportDateInput.value = '';
-                reportWeekInput.value = '';
-                weekPicker.value = '';
-                selectedWeekDisplay.textContent = '';
-                
-                // Format as YYYY-MM
                 const month = this.value.padStart(2, '0');
                 const year = reportMonthYear.value;
                 reportMonthInput.value = `${year}-${month}`;
@@ -286,115 +813,447 @@
             }
         });
         
-        // Add event listener for the entire period checkbox
-        const entirePeriodCheckbox = document.getElementById('entire-period');
-        const reportEntirePeriodInput = document.getElementById('report-entire-period');
-        
-        entirePeriodCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                // Clear all other date/week/month selections when entire period is checked
-                reportDateInput.value = '';
-                reportWeekInput.value = '';
-                reportMonthInput.value = '';
-                weekPicker.value = '';
-                selectedWeekDisplay.textContent = '';
-                reportMonthSelect.selectedIndex = 0;
-                
-                // Set hidden field value
-                reportEntirePeriodInput.value = '1';
-            } else {
-                reportEntirePeriodInput.value = '0';
-            }
-        });
-        
-        // Make sure checking a date/week/month option unchecks the entire period checkbox
-        reportDateInput.addEventListener('change', function() {
-            if (this.value) {
-                entirePeriodCheckbox.checked = false;
-                reportEntirePeriodInput.value = '0';
-            }
-        });
-        
-        // Week picker is handled in week-picker.js, so let's add a handler here
-        document.addEventListener('weekPickerChanged', function() {
-            entirePeriodCheckbox.checked = false;
-            reportEntirePeriodInput.value = '0';
-        });
-        
-        reportMonthSelect.addEventListener('change', function() {
-            if (this.value) {
-                entirePeriodCheckbox.checked = false;
-                reportEntirePeriodInput.value = '0';
-            }
-        });
-        
         // Generate report
         generateReportBtn.addEventListener('click', function() {
             let username;
             
-            // Different approach based on whether we're admin or regular user
-            if (userSelector.tagName === 'SELECT') {
-                // For admin dropdown
+            if (userSelector && userSelector.tagName === 'SELECT') {
                 const selectedOption = userSelector.options[userSelector.selectedIndex];
                 username = selectedOption ? selectedOption.text : null;
                 
                 if (!username) {
-                    alert('Bitte wählen Sie einen Benutzer aus.');
+                    showAlert('Bitte wählen Sie einen Benutzer aus.', 'danger');
                     return;
                 }
             } else {
-                // For regular users (session username)
                 username = '{{ session.get("username") }}';
             }
             
-            // Update month hidden field (week is updated by the datepicker)
-            if (reportMonthSelect.value && reportMonthYear.value) {
-                const month = reportMonthSelect.value.padStart(2, '0');
-                const year = reportMonthYear.value;
-                reportMonthInput.value = `${year}-${month}`;
-            }
-            
-            // Update entire period hidden field
-            reportEntirePeriodInput.value = entirePeriodCheckbox.checked ? "1" : "0";
-            
             const date = reportDateInput.value;
-            const week = reportWeekInput.value;
             const month = reportMonthInput.value;
-            const entirePeriod = entirePeriodCheckbox.checked;
             
-            // Verify at least one filter is selected or entire period is checked
-            if (!date && !week && !month && !entirePeriod) {
-                alert('Bitte wählen Sie ein Datum, eine Woche, einen Monat oder den gesamten Zeitraum aus.');
+            if (!date && !month) {
+                showAlert('Bitte wählen Sie ein Datum oder einen Monat aus.', 'warning');
                 return;
             }
             
-            // Build report URL
+            // Show loading state
+            const originalText = generateReportBtn.innerHTML;
+            generateReportBtn.innerHTML = '<i class="fas fa-spinner fa-spin icon-sm"></i> Wird generiert...';
+            generateReportBtn.disabled = true;
+            
+            // Build URL
             let params = [];
             if (date) params.push('date=' + encodeURIComponent(date));
-            if (week) params.push('week=' + encodeURIComponent(week));
             if (month) params.push('month=' + encodeURIComponent(month));
-            if (entirePeriod) params.push('entire_period=1');
             
             let url = '/user_report/' + encodeURIComponent(username);
             if (params.length > 0) {
                 url += '?' + params.join('&');
             }
             
-            // For admin, open in new window; for users, navigate directly
-            const isAdmin = "{{ 'true' if session.get('admin_logged_in') else 'false' }}" === "true";
+            setTimeout(() => {
+                // Use the modal for both admin and regular users - MODAL ONLY, no fallbacks
+                if (userReportModal) {
+                    userReportModal.loadReport(url);
+                } else {
+                    console.error('User report modal not initialized');
+                    showAlert('Fehler: Das Berichtssystem konnte nicht geladen werden. Bitte laden Sie die Seite neu.', 'danger');
+                    return;
+                }
+                
+                generateReportBtn.innerHTML = originalText;
+                generateReportBtn.disabled = false;
+            }, 1000);
+        });
+        
+        // Alert function
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type} mb-3`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} icon-sm"></i>
+                ${message}
+            `;
             
-            if (isAdmin) {
-                // Admin opens report in new window
-                window.open(url, '_blank', 'width=900,height=700');
-            } else {
-                // For users, navigate directly which may prompt for authentication
-                window.location.href = url;
+            const container = document.querySelector('.glass-container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.style.opacity = '0';
+                    alertDiv.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alertDiv.remove(), 300);
+                }
+            }, 5000);
+        }
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
             }
         });
+        
+        // Debug menu clickability issues
+        document.addEventListener('click', function(e) {
+            // Check if click is on navigation elements
+            if (e.target.closest('.modern-nav')) {
+                console.log('Navigation click detected:', e.target);
+                // Ensure the click is not prevented
+                e.stopPropagation();
+            }
+        }, true); // Use capture phase
+        
+        // Ensure menu links work properly
+        document.querySelectorAll('.nav-link, .dropdown-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                console.log('Menu link clicked:', this.href || this.textContent);
+                // For dropdown toggles, don't follow href
+                if (this.classList.contains('dropdown-toggle')) {
+                    return; // Let the dropdown script handle it
+                }
+                // For actual links, ensure they work
+                if (this.href && this.href !== '#') {
+                    window.location.href = this.href;
+                }
+            });
+        });
+        
+        // Additional check for menu functionality
+        setTimeout(() => {
+            const navLinks = document.querySelectorAll('.nav-link, .dropdown-item');
+            navLinks.forEach(link => {
+                const computedStyle = window.getComputedStyle(link);
+                if (computedStyle.pointerEvents === 'none') {
+                    console.warn('Menu link has pointer-events: none', link);
+                    link.style.pointerEvents = 'auto';
+                }
+            });
+        }, 1000);
     });
     </script>
-    <script src="/static/week-picker.js"></script>
-    <!-- Load break tracker script -->
-    <script src="/static/script.js"></script>
+    
+    <script>
+        // Modern Modal System for User Reports
+        class UserReportModal {
+            constructor() {
+                this.modal = document.getElementById('user-report-modal');
+                this.closeBtn = document.getElementById('close-report-modal');
+                this.content = document.getElementById('report-modal-content');
+                this.isOpen = false;
+                
+                console.log('UserReportModal initialized', {
+                    modal: this.modal,
+                    closeBtn: this.closeBtn,
+                    content: this.content
+                });
+                
+                this.init();
+            }
+            
+            init() {
+                if (!this.modal || !this.closeBtn || !this.content) {
+                    console.error('User report modal elements not found!');
+                    return;
+                }
+                
+                // Close button event
+                this.closeBtn.addEventListener('click', () => {
+                    console.log('Close button clicked');
+                    this.close();
+                });
+                
+                // Close on overlay click
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) {
+                        console.log('Overlay clicked');
+                        this.close();
+                    }
+                });
+                
+                // Close on Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.isOpen) {
+                        console.log('Escape key pressed');
+                        this.close();
+                    }
+                });
+            }
+            
+            open() {
+                console.log('Opening user report modal');
+                this.modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                this.isOpen = true;
+                
+                // Force a reflow to ensure the class is applied
+                this.modal.offsetHeight;
+                
+                console.log('User report modal opened, classes:', this.modal.className);
+            }
+            
+            close() {
+                console.log('Closing user report modal');
+                this.modal.classList.remove('active');
+                document.body.style.overflow = '';
+                this.isOpen = false;
+                
+                // Clear content after animation
+                setTimeout(() => {
+                    this.content.innerHTML = `
+                        <div class="loading-content">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Bericht wird geladen...</p>
+                        </div>
+                    `;
+                }, 300);
+            }
+            
+            showLoading() {
+                this.content.innerHTML = `
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Bericht wird geladen...</p>
+                    </div>
+                `;
+            }
+            
+            showError(message) {
+                this.content.innerHTML = `
+                    <div class="no-data-message">
+                        <p><i class="fas fa-exclamation-triangle" style="margin-right: var(--space-sm);"></i>${message}</p>
+                    </div>
+                `;
+            }
+            
+            loadReport(url) {
+                console.log('Loading report from:', url);
+                this.showLoading();
+                this.open();
+                
+                // Fetch the report content with proper headers
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        'Sec-Fetch-Dest': 'empty',
+                        'Sec-Fetch-Mode': 'cors'
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        console.log('Received HTML length:', html.length);
+                        
+                        // Extract the content from the response
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const reportContainer = doc.querySelector('.report-container');
+                        
+                        console.log('Found report container:', !!reportContainer);
+                        
+                        if (reportContainer) {
+                            this.content.innerHTML = reportContainer.innerHTML;
+                            
+                            // Re-attach event handlers for the loaded content
+                            this.attachReportHandlers();
+                        } else {
+                            // If no report-container found, try to extract the body content
+                            const bodyContent = doc.querySelector('body');
+                            if (bodyContent) {
+                                console.log('Using body content as fallback');
+                                this.content.innerHTML = bodyContent.innerHTML;
+                                this.attachReportHandlers();
+                            } else {
+                                console.error('No suitable content found in response');
+                                this.showError('Bericht konnte nicht geladen werden - kein Inhalt gefunden.');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading report:', error);
+                        this.showError('Fehler beim Laden des Berichts. Bitte versuchen Sie es erneut.');
+                    });
+            }
+            
+            attachReportHandlers() {
+                // Attach handlers for print and PDF buttons in the loaded content
+                const printBtn = this.content.querySelector('.print-button');
+                const pdfBtn = this.content.querySelector('.download-button');
+                
+                if (printBtn) {
+                    printBtn.addEventListener('click', () => {
+                        this.printReport();
+                    });
+                }
+                
+                if (pdfBtn) {
+                    pdfBtn.addEventListener('click', () => {
+                        this.generatePDF();
+                    });
+                }
+            }
+            
+            printReport() {
+                // Hide modal temporarily for printing
+                const originalDisplay = this.modal.style.display;
+                this.modal.style.display = 'none';
+                
+                // Print the content
+                window.print();
+                
+                // Restore modal
+                setTimeout(() => {
+                    this.modal.style.display = originalDisplay;
+                }, 100);
+            }
+            
+            generatePDF() {
+                // Find the table in the modal content
+                const reportTable = this.content.querySelector('#report-table');
+                if (!reportTable) {
+                    alert('Tabelle nicht gefunden. PDF kann nicht erstellt werden.');
+                    return;
+                }
+                
+                // Show loading indicator
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.innerHTML = '<div class="loading-content"><i class="fas fa-spinner fa-spin"></i><br>PDF wird erstellt...</div>';
+                loadingOverlay.style.position = 'fixed';
+                loadingOverlay.style.top = '0';
+                loadingOverlay.style.left = '0';
+                loadingOverlay.style.width = '100%';
+                loadingOverlay.style.height = '100%';
+                loadingOverlay.style.background = 'rgba(0, 0, 0, 0.8)';
+                loadingOverlay.style.backdropFilter = 'blur(8px)';
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.style.alignItems = 'center';
+                loadingOverlay.style.justifyContent = 'center';
+                loadingOverlay.style.zIndex = '10002';
+                loadingOverlay.style.color = 'white';
+                document.body.appendChild(loadingOverlay);
+                
+                // Make sure libraries are loaded
+                if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+                    alert('PDF-Bibliotheken werden noch geladen. Bitte versuchen Sie es gleich noch einmal.');
+                    document.body.removeChild(loadingOverlay);
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'pt', 'a4');
+                
+                // Add header with company info
+                doc.setFontSize(24);
+                doc.setTextColor(25, 118, 210);
+                doc.text("BTZ Zeiterfassung", 40, 50);
+                
+                doc.setFontSize(18);
+                doc.setTextColor(55, 71, 79);
+                doc.text("Benutzer Bericht", 40, 80);
+                
+                // Add username from modal content
+                const usernameElement = this.content.querySelector('.report-title');
+                const username = usernameElement ? usernameElement.textContent : 'Unbekannt';
+                doc.setFontSize(16);
+                doc.setTextColor(25, 118, 210);
+                doc.text(username, 40, 110);
+                
+                // Add date info
+                const urlParams = new URLSearchParams(window.location.search);
+                let dateInfo = "";
+                if (urlParams.get('entire_period') === '1') {
+                    dateInfo = "Zeitraum: Gesamter Zeitraum";
+                } else if (urlParams.get('date')) {
+                    dateInfo = "Datum: " + urlParams.get('date');
+                } else if (urlParams.get('week')) {
+                    dateInfo = "Woche: " + urlParams.get('week');
+                } else if (urlParams.get('month')) {
+                    dateInfo = "Monat: " + urlParams.get('month');
+                } else {
+                    const today = new Date();
+                    dateInfo = "Erstellt am: " + today.toLocaleDateString('de-DE');
+                }
+                doc.setFontSize(12);
+                doc.setTextColor(107, 114, 128);
+                doc.text(dateInfo, 40, 135);
+                
+                // Capture the table
+                html2canvas(reportTable, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const imgWidth = pageWidth - 80;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    
+                    // Add the table image
+                    doc.addImage(imgData, 'JPEG', 40, 160, imgWidth, imgHeight);
+                    
+                    // Add footer
+                    const pageCount = doc.internal.getNumberOfPages();
+                    for(let i = 1; i <= pageCount; i++) {
+                        doc.setPage(i);
+                        doc.setFontSize(10);
+                        doc.setTextColor(128, 128, 128);
+                        doc.text('Seite ' + i + ' von ' + pageCount, 40, doc.internal.pageSize.height - 30);
+                        doc.text('Erstellt mit BTZ Zeiterfassung System', doc.internal.pageSize.width - 40, doc.internal.pageSize.height - 30, { align: 'right' });
+                        
+                        // Add generation timestamp
+                        const now = new Date();
+                        const timestamp = now.toLocaleString('de-DE');
+                        doc.text('Generiert am: ' + timestamp, 40, doc.internal.pageSize.height - 15);
+                    }
+                    
+                    // Generate filename
+                    const cleanUsername = username.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+                    let suffix = '';
+                    if (urlParams.get('entire_period') === '1') {
+                        suffix = 'gesamter_zeitraum';
+                    } else if (urlParams.get('date')) {
+                        suffix = urlParams.get('date');
+                    } else if (urlParams.get('week')) {
+                        suffix = urlParams.get('week');
+                    } else if (urlParams.get('month')) {
+                        suffix = urlParams.get('month');
+                    } else {
+                        const today = new Date();
+                        suffix = today.toISOString().slice(0,10);
+                    }
+                    const filename = `zeiterfassung_bericht_${cleanUsername}_${suffix}.pdf`;
+                    
+                    // Save the PDF
+                    doc.save(filename);
+                    
+                    // Remove loading indicator
+                    document.body.removeChild(loadingOverlay);
+                }).catch(error => {
+                    console.error('Failed to generate PDF:', error);
+                    alert('PDF konnte nicht erstellt werden. Bitte versuchen Sie es erneut.');
+                    document.body.removeChild(loadingOverlay);
+                });
+            }
+        }
+        
+        // Initialize the user report modal
+        let userReportModal;
+        document.addEventListener('DOMContentLoaded', function() {
+            userReportModal = new UserReportModal();
+        });
+    </script>
 </body>
 </html>

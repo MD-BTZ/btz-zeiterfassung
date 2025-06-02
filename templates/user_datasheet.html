@@ -5,101 +5,676 @@
     {% include 'head_includes.html' %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="/static/css/datasheet.css">
-           
-    <script src="/static/mobile-menu.js" defer></script></head>
-<body>
+    <style>
+        /* ============================================================================
+           USER DATASHEET SPECIFIC STYLES
+           ============================================================================ */
+        
+        /* Page Layout */
+        .datasheet-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+        
+        /* Back Button */
+        .back-container {
+            margin-bottom: var(--space-xl);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius-md);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: var(--glass-shadow-light);
+        }
+        
+        .back-button:hover {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--glass-shadow-medium);
+        }
+        
+        .back-button i {
+            font-size: 0.9rem;
+        }
+        
+        /* Header Section */
+        .datasheet-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            box-shadow: var(--glass-shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .datasheet-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4, var(--success-color));
+        }
+        
+        .datasheet-header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .datasheet-header h1 i {
+            color: var(--primary-color);
+            -webkit-text-fill-color: var(--primary-color);
+            font-size: 2.2rem;
+        }
+        
+        .datasheet-header p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        /* Main Content Grid */
+        .datasheet-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        /* Info Cards */
+        .info-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--glass-shadow-medium);
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #06b6d4);
+            opacity: 0.8;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glass-shadow-heavy);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .info-card h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .info-card h3 i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+            padding: var(--space-lg) var(--space-md);
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            width: 40%;
+            font-size: 0.95rem;
+        }
+        
+        .data-table td {
+            padding: var(--space-lg) var(--space-md);
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .password-display {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+        }
+        
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .qr-code {
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: var(--space-md) 0;
+        }
+        
+        .qr-caption {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .login-url {
+            word-break: break-all;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            margin: var(--space-sm) 0;
+            display: inline-block;
+        }
+        
+        /* Notice Sections */
+        .notice-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--glass-shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .notice-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f59e0b, #f97316);
+            opacity: 0.8;
+        }
+        
+        .notice-section h4 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: #92400e;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+        
+        .notice-section h4 i {
+            color: #f59e0b;
+            font-size: 1rem;
+        }
+        
+        .notice-section ul {
+            margin: var(--space-md) 0;
+            padding-left: var(--space-xl);
+            color: var(--text-secondary);
+        }
+        
+        .notice-section li {
+            margin-bottom: var(--space-sm);
+            line-height: 1.6;
+        }
+        
+        /* Button Section */
+        .button-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--glass-shadow-medium);
+            text-align: center;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .print-button {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 180px;
+            justify-content: center;
+        }
+        
+        .print-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .print-button:hover::before {
+            left: 100%;
+        }
+        
+        .print-button.browser-print {
+            background: linear-gradient(135deg, var(--secondary-color), #4b5563);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+        
+        .print-button.pdf-button {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .button-tip {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+            font-style: italic;
+        }
+        
+        /* Footer */
+        .datasheet-footer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: var(--glass-shadow-light);
+            color: var(--text-muted);
+        }
+        
+        .datasheet-footer p {
+            margin: var(--space-sm) 0;
+            font-size: 0.9rem;
+        }
+        
+        .datasheet-footer p:first-child {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        /* Flash Messages */
+        .flash-message {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            font-weight: 500;
+        }
+        
+        .flash-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .datasheet-container {
+                padding: var(--space-md);
+            }
+            
+            .datasheet-header {
+                padding: var(--space-xl);
+            }
+            
+            .datasheet-header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .datasheet-header h1 i {
+                font-size: 1.8rem;
+            }
+            
+            .datasheet-header p {
+                font-size: 1rem;
+            }
+            
+            .datasheet-content {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .info-card {
+                padding: var(--space-lg);
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .print-button {
+                min-width: auto;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: var(--space-md) var(--space-sm);
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .datasheet-container {
+                padding: var(--space-sm);
+            }
+            
+            .datasheet-header {
+                padding: var(--space-lg);
+            }
+            
+            .datasheet-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .info-card {
+                padding: var(--space-md);
+            }
+            
+            .info-card h3 {
+                font-size: 1.1rem;
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-sm);
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: var(--space-sm);
+                font-size: 0.85rem;
+            }
+            
+            .login-url {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+            }
+            
+            .back-container,
+            .button-section {
+                display: none !important;
+            }
+            
+            .datasheet-container {
+                max-width: none;
+                margin: 0;
+                padding: 20px;
+            }
+            
+            .datasheet-header,
+            .info-card,
+            .notice-section,
+            .datasheet-footer {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            .datasheet-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="glass-morphism-page">
     {% include 'menu.html' %}
-    <div class="main-card card-style">
+    
+    <main class="datasheet-container">
+        <!-- Back Button -->
         <div class="back-container">
             <a href="/user_management" class="back-button">
-                <i class="fas fa-arrow-left"></i> Zurück zur Benutzerverwaltung
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Benutzerverwaltung
             </a>
         </div>
-        <div class="header">
-            <h1>BTZ Zeiterfassung - Benutzerdaten</h1>
+        
+        <!-- Header -->
+        <div class="datasheet-header">
+            <h1>
+                <i class="fas fa-id-card"></i>
+                BTZ Zeiterfassung - Benutzerdaten
+            </h1>
             <p>Zugangsdaten für das Zeiterfassungssystem</p>
         </div>
+        
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message|safe }}
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         
-        <div class="info-section">
+        <!-- Main Content -->
+        <div class="datasheet-content">
+            <!-- Credentials Card -->
+            <div class="info-card">
+                <h3>
+                    <i class="fas fa-user-lock"></i>
+                    Zugangsdaten
+                </h3>
             <table class="data-table">
                 <tr>
                     <th>Benutzername</th>
-                    <td>{{ username }}</td>
+                        <td><strong>{{ username }}</strong></td>
                 </tr>
                 <tr>
                     <th>Passwort</th>
-                    <td>{{ password }}</td>
+                        <td><span class="password-display">{{ password }}</span></td>
                 </tr>
                 <tr>
                     <th>Erstellungsdatum</th>
                     <td>{{ creation_date }}</td>
                 </tr>
             </table>
-            
-            <div class="notice">
-                <p><strong>Wichtiger Hinweis:</strong> Bitte ändern Sie Ihr Passwort nach der ersten Anmeldung. Bewahren Sie diese Information sicher auf und teilen Sie Ihre Zugangsdaten nicht mit anderen Personen.</p>
             </div>
             
-            <div class="notice">
-                <p><strong>Login-URL:</strong> <span>{{ login_url }}</span></p>
-                <p>Sie können sich unter der oben angegebenen URL mit Ihren Zugangsdaten einloggen.</p>
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ login_url }}" alt="QR-Code für Login" class="qr-code">
+            <!-- QR Code Card -->
+            <div class="info-card">
+                <h3>
+                    <i class="fas fa-qrcode"></i>
+                    Mobiler Zugriff
+                </h3>
+                <div class="qr-section">
+                    <p><strong>Login-URL:</strong></p>
+                    <div class="login-url">{{ login_url }}</div>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ login_url }}" 
+                         alt="QR-Code für Login" class="qr-code">
                     <p class="qr-caption">QR-Code für mobilen Zugriff</p>
                 </div>
             </div>
         </div>
         
+        <!-- Security Notice -->
+        <div class="notice-section">
+            <h4>
+                <i class="fas fa-exclamation-triangle"></i>
+                Wichtige Sicherheitshinweise
+            </h4>
+            <ul>
+                <li>Bitte ändern Sie Ihr Passwort nach der ersten Anmeldung</li>
+                <li>Bewahren Sie diese Information sicher auf</li>
+                <li>Teilen Sie Ihre Zugangsdaten nicht mit anderen Personen</li>
+                <li>Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</li>
+            </ul>
+        </div>
+        
+        <!-- Print Buttons -->
+        <div class="button-section">
         <div class="button-container">
-            <button class="print-button" onclick="window.print()">
-                <i class="fas fa-print"></i> Im Browser drucken
+                <button class="print-button browser-print" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    Im Browser drucken
             </button>
             
             <button id="generate-pdf-btn" class="print-button pdf-button">
-                <i class="fas fa-file-pdf"></i> PDF erstellen und herunterladen
+                    <i class="fas fa-file-pdf"></i>
+                    PDF erstellen
             </button>
+            </div>
             
             <p class="button-tip">
-                Tipp: Für zuverlässige Ergebnisse empfehlen wir die PDF-Option ⬆️
+                <i class="fas fa-lightbulb"></i>
+                Tipp: Für zuverlässige Ergebnisse empfehlen wir die PDF-Option
             </p>
         </div>
 
-        <div class="footer">
-            <p>BTZ Zeiterfassung | Erstellt am {{ current_date }}</p>
+        <!-- Footer -->
+        <div class="datasheet-footer">
+            <p><strong>BTZ Zeiterfassung</strong> | Erstellt am {{ current_date }}</p>
             <p><small>Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</small></p>
         </div>
+    </main>
         
         <script>
             // PDF Generator
             document.getElementById('generate-pdf-btn').addEventListener('click', function() {
-                // Zeige Ladeanzeige
+            // Show loading overlay
                 var loadingMessage = document.createElement('div');
-                loadingMessage.innerHTML = 'PDF wird erstellt...';
+            loadingMessage.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i>PDF wird erstellt...';
                 loadingMessage.className = 'loading-overlay';
                 document.body.appendChild(loadingMessage);
                 
-                // Verstecke den zurück Button für den Screenshot
-                var backBtn = document.querySelector('a[href="/user_management"]');
-                var originalDisplay = backBtn.style.display;
+            // Hide the back button and print section for the screenshot
+            var backBtn = document.querySelector('.back-container');
+            var buttonSection = document.querySelector('.button-section');
+            var originalBackDisplay = backBtn.style.display;
+            var originalButtonDisplay = buttonSection.style.display;
                 backBtn.style.display = 'none';
+            buttonSection.style.display = 'none';
                 
-                // Erzeuge ein PDF mit HTML2Canvas und jsPDF
+            // Generate PDF with HTML2Canvas and jsPDF
                 setTimeout(function() {
-                    var contentElement = document.querySelector('.container');
+                var contentElement = document.querySelector('.datasheet-container');
                     const { jsPDF } = window.jspdf;
                     
                     html2canvas(contentElement, {
-                        scale: 1.5,
+                    scale: 2,
                         useCORS: true,
-                        allowTaint: true
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
                     }).then(function(canvas) {
                         var imgData = canvas.toDataURL('image/jpeg', 0.95);
                         var pdf = new jsPDF('p', 'mm', 'a4');
@@ -109,13 +684,19 @@
                         pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
                         pdf.save('BTZ-Zeiterfassung_Zugangsdaten_{{ username }}.pdf');
                         
-                        // Entferne Ladeanzeige und stelle den zurück Button wieder her
+                    // Remove loading overlay and restore hidden elements
+                    document.body.removeChild(loadingMessage);
+                    backBtn.style.display = originalBackDisplay;
+                    buttonSection.style.display = originalButtonDisplay;
+                }).catch(function(error) {
+                    console.error('Error generating PDF:', error);
                         document.body.removeChild(loadingMessage);
-                        backBtn.style.display = originalDisplay;
+                    backBtn.style.display = originalBackDisplay;
+                    buttonSection.style.display = originalButtonDisplay;
+                    alert('Fehler beim Erstellen der PDF-Datei');
                     });
                 }, 500);
             });
         </script>
-    </div>
 </body>
 </html>

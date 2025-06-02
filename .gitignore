@@ -23,3 +23,27 @@ ENV/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Test and debug files
+test_*.py
+*test*.py
+debug_*.py
+*debug*.py
+test_*.html
+*test*.html
+
+# Backup directories
+*backup*/
+cleanup_backup/
+unused_backup/
+legacy-*-backup/
+
+# Temporary and completion marker files
+*_COMPLETE.md
+temp_*.py
+*.tmp
+*.temp
+
+# Log files
+*.log
+app.log
