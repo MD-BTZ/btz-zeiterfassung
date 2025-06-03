@@ -1715,18 +1715,34 @@
             feedback.classList.remove('hidden');
             
             if (data.success) {
-                // Zeige Erfolgsmeldung mit Popup-Button zum Datenblatt
-                feedback.innerHTML = `
-                    <div class="feedback-success">
-                        ${data.message}
-                        <div class="button-container">
-                            <button onclick="openDatasheetPopup('${data.datasheet_url}', '${data.username}')" class="btn btn-primary">
-                                <i class="fas fa-id-card"></i> Datenblatt anzeigen
-                            </button>
-                            <span class="consent-info consent-info-inline">(Zugangsdaten im Popup anzeigen)</span>
+                // Automatisch das Datenblatt in neuem Fenster öffnen
+                const newWindow = window.open(data.datasheet_url, '_blank', 'width=800,height=900,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no');
+                
+                if (newWindow) {
+                    newWindow.focus();
+                    // Zeige Erfolgsmeldung
+                    feedback.innerHTML = `
+                        <div class="feedback-success">
+                            ${data.message}
+                            <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                <i class="fas fa-external-link-alt"></i> Das Datenblatt wurde automatisch in einem neuen Fenster geöffnet.
+                            </p>
                         </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    // Fallback wenn Popup blockiert wurde
+                    feedback.innerHTML = `
+                        <div class="feedback-success">
+                            ${data.message}
+                            <div class="button-container">
+                                <button onclick="openDatasheetInNewWindow('${data.datasheet_url}', '${data.username}')" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> Datenblatt öffnen (Popup wurde blockiert)
+                                </button>
+                                <span class="consent-info consent-info-inline">(Bitte erlauben Sie Popups für diese Seite)</span>
+                            </div>
+                        </div>
+                    `;
+                }
                 
                 var usersTable = document.getElementById('users-table').getElementsByTagName('tbody')[0];
                 var newRow = usersTable.insertRow();
@@ -2531,14 +2547,27 @@
             let feedbackContent = `<div class="feedback-success">${message}`;
             
             if (datasheetUrl) {
-                feedbackContent += `
-                    <div class="button-container">
-                        <button onclick="openDatasheetPopup('${datasheetUrl}', '${this.usernameSpan.textContent}')" class="btn btn-primary">
-                            <i class="fas fa-id-card"></i> Neues Datenblatt anzeigen
-                        </button>
-                        <span class="consent-info consent-info-inline">(Neue Zugangsdaten im Popup anzeigen)</span>
-                    </div>
-                `;
+                // Automatisch das Datenblatt in neuem Fenster öffnen
+                const newWindow = window.open(datasheetUrl, '_blank', 'width=800,height=900,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no');
+                
+                if (newWindow) {
+                    newWindow.focus();
+                    feedbackContent += `
+                        <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                            <i class="fas fa-external-link-alt"></i> Das neue Datenblatt wurde automatisch in einem neuen Fenster geöffnet.
+                        </p>
+                    `;
+                    } else {
+                    // Fallback wenn Popup blockiert wurde
+                    feedbackContent += `
+                        <div class="button-container">
+                            <button onclick="openDatasheetInNewWindow('${datasheetUrl}', '${this.usernameSpan.textContent}')" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Neues Datenblatt öffnen (Popup wurde blockiert)
+                            </button>
+                            <span class="consent-info consent-info-inline">(Bitte erlauben Sie Popups für diese Seite)</span>
+                        </div>
+                    `;
+                }
             }
             
             feedbackContent += `</div>`;
@@ -2546,8 +2575,8 @@
         }
         
         showErrorMessage(message) {
-            const feedback = document.getElementById('delete-user-feedback');
-            feedback.style.display = 'block';
+                    const feedback = document.getElementById('delete-user-feedback');
+                    feedback.style.display = 'block';
             feedback.classList.remove('hidden');
             feedback.innerHTML = `<div class="feedback-error">${message}</div>`;
         }
@@ -2572,6 +2601,27 @@
         }
         
         window.passwordChangeModal.open(userId, username);
+    }
+    
+    // Function to open datasheet in new window
+    function openDatasheetInNewWindow(datasheetUrl, username) {
+        // Open the datasheet URL directly in a new window
+        const newWindow = window.open(datasheetUrl, '_blank', 'width=800,height=900,scrollbars=yes,resizable=yes');
+        
+        if (newWindow) {
+            newWindow.focus();
+        } else {
+            // Fallback if popup blocker prevents opening
+            alert('Popup wurde blockiert. Bitte erlauben Sie Popups für diese Seite oder öffnen Sie das Datenblatt manuell: ' + datasheetUrl);
+        }
+    }
+    
+    // Initialize datasheet modal
+    window.datasheetModal = new DatasheetModal();
+    
+    // Function to open datasheet popup (kept for backward compatibility)
+    function openDatasheetPopup(datasheetUrl, username) {
+        window.datasheetModal.open(datasheetUrl, username);
     }
         </script>
 </body>

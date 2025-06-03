@@ -982,8 +982,8 @@
                         };
                     }
                 }
-            }
-            
+        }
+        
             // Fallback if data extraction fails
             return {
                 id: requestId,
@@ -1104,7 +1104,7 @@
                 }
             }, 300);
         }
-
+        
         // Handle approve action
         function handleApprove() {
             if (!currentRequestId) {
@@ -1250,10 +1250,10 @@
                         case 'reject':
                             handleReject();
                             break;
-                    }
+            }
                     return;
-                }
-                
+        }
+        
                 // Close modal when clicking outside
                 if (e.target.classList.contains('modal-overlay')) {
                     if (e.target.id === 'processModal') {
@@ -1304,7 +1304,7 @@
             console.log('- currentRequestId:', currentRequestId);
             console.log('- process modal display:', document.getElementById('processModal').style.display);
             console.log('- view modal display:', document.getElementById('viewModal').style.display);
-        }
+            }
     </script>
 </body>
 </html>

@@ -1,42 +1,651 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Systemweite Pauseneinstellungen - Admin</title>
+    <title>Pauseneinstellungen - BTZ Zeiterfassung</title>
     {% include 'head_includes.html' %}
-
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script></head>
-<body class="glass-morphism-page">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        /* Enhanced Break Settings Styling */
+        .break-settings-page {
+            background: linear-gradient(135deg, 
+                #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, 
+                #cbd5e1 75%, #94a3b8 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 30s ease infinite;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .page-header h1 i {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Settings Grid Layout */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .settings-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .settings-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.75rem;
+            border-radius: 12px;
+        }
+
+        /* Enhanced Toggle Switches */
+        .setting-group {
+            margin-bottom: 2rem;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .switch-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active {
+            background: var(--primary-color);
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(30px);
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        /* Enhanced Range Slider */
+        .threshold-container {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .threshold-container.hidden {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .threshold-display {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .threshold-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+        }
+
+        .threshold-unit {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .range-container {
+            position: relative;
+            margin: 1.5rem 0;
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Time Input Styling */
+        .time-range-container {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .time-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .time-input-group label {
+            min-width: 120px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .time-input {
+            width: 60px;
+            padding: 0.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .time-input:focus {
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            outline: none;
+        }
+
+        /* ArbZG Information Block */
+        .arbzg-info-block {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .arbzg-info-block h4 {
+            color: var(--warning-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .arbzg-info-block h4::before {
+            content: '⚖️';
+            font-size: 1.2rem;
+        }
+
+        .arbzg-info-block ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .arbzg-info-block li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Save Button */
+        .settings-save-btn {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem auto 0;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .settings-save-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .settings-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .settings-save-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Break History Section */
+        .break-history-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-top: 3rem;
+        }
+
+        .break-history-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--info-color), var(--primary-color));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .history-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .history-header i {
+            color: var(--info-color);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 0.75rem;
+            border-radius: 12px;
+        }
+
+        /* Enhanced Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .break-history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .break-history-table th {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .break-history-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        .break-history-table tr:hover {
+            background: rgba(59, 130, 246, 0.02);
+        }
+
+        .break-history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Enhanced Badges */
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .arbzg-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .lunch-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .auto-detected-badge {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .manual-badge {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .excluded-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .included-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        /* No Data Message */
+        .no-breaks-message {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-style: italic;
+            background: rgba(59, 130, 246, 0.02);
+            border-radius: 12px;
+            border: 2px dashed rgba(59, 130, 246, 0.1);
+        }
+
+        /* Access Denied Styling */
+        .access-denied {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.1);
+            border-radius: 20px;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        .access-denied h2 {
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .access-denied i {
+            font-size: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .settings-container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .switch-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .time-input-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .time-input-group label {
+                min-width: auto;
+            }
+
+            .break-history-table {
+                font-size: 0.85rem;
+            }
+
+            .break-history-table th,
+            .break-history-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* Animation for settings cards */
+        .settings-card {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .settings-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .settings-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .settings-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="break-settings-page">
     {% include 'menu.html' %}
     
     {% if not session.get('admin_logged_in') %}
-        <div class="glass-container">
-            <div class="glass-card access-denied">
+        <div class="settings-container">
+            <div class="access-denied">
                 <h2><i class="fas fa-lock"></i> Zugriff verweigert</h2>
                 <p>Diese Seite ist nur für Administratoren zugänglich.</p>
             </div>
         </div>
     {% else %}
-    <div class="glass-container main-card">
-        <h1><i class="fas fa-cog"></i> Systemweite Pauseneinstellungen</h1>
-        
-        <div class="glass-card break-settings-container">
-            <h2><i class="fas fa-robot"></i> Automatische Pausenerkennung</h2>
+    <div class="settings-container">
+        <div class="page-header">
+            <h1><i class="fas fa-cogs"></i> Pauseneinstellungen</h1>
+            <p class="page-subtitle">Systemweite Konfiguration für automatische Pausenerkennung und Arbeitszeitgesetz-Compliance</p>
+        </div>
             
             <form action="/update_user_settings" method="post" class="settings-form">
-                <div class="setting-group">
-                    <label for="auto-break-detection" class="switch-label">
-                        <input type="checkbox" id="auto-break-detection" name="auto_break_detection" value="1" {% if settings and settings.auto_break_detection %}checked{% endif %}>
-                        <span>Automatische Pausenerkennung aktivieren</span>
-                    </label>
+            <div class="settings-grid">
+                <!-- Auto Break Detection Card -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <i class="fas fa-robot"></i>
+                        <h3>Automatische Pausenerkennung</h3>
+                    </div>
                     
-                    <div id="threshold-container" class="threshold-container{% if not settings or not settings.auto_break_detection %} hidden{% endif %}">
-                        <p>
-                            Pausen automatisch erkennen, wenn Mitarbeiter länger als
-                            <span id="threshold-value">{{ settings.auto_break_threshold if settings else 30 }}</span>
-                            Minuten inaktiv sind.
-                        </p>
+                    <div class="setting-group">
+                        <div class="switch-container">
+                            <label for="auto-break-detection" class="switch-label">
+                                <span>Automatische Erkennung aktivieren</span>
+                            </label>
+                            <div class="toggle-switch" id="auto-break-toggle">
+                                <input type="checkbox" id="auto-break-detection" name="auto_break_detection" value="1" {% if settings and settings.auto_break_detection %}checked{% endif %}>
+                            </div>
+                        </div>
+                        
+                        <div id="threshold-container" class="threshold-container{% if not settings or not settings.auto_break_detection %} hidden{% endif %}">
+                            <div class="threshold-display">
+                                <span class="threshold-value" id="threshold-value">{{ settings.auto_break_threshold if settings else 30 }}</span>
+                                <span class="threshold-unit">Minuten Inaktivität</span>
+                            </div>
                         
                         <div class="range-container">
                             <input type="range" id="threshold-slider" name="threshold_slider" min="10" max="120" step="5" value="{{ settings.auto_break_threshold if settings else 30 }}" class="range-slider">
@@ -49,82 +658,124 @@
                         <input type="hidden" id="auto-break-threshold" name="auto_break_threshold" value="{{ settings.auto_break_threshold if settings else 30 }}">
                     </div>
                 </div>
+                </div>
+
+                <!-- Billing Settings Card -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Abrechnungseinstellungen</h3>
+                    </div>
                 
                 <div class="setting-group">
+                        <div class="switch-container">
                     <label for="exclude-breaks" class="switch-label">
-                        <input type="checkbox" id="exclude-breaks" name="exclude_breaks" value="1" {% if settings and settings.exclude_breaks %}checked{% endif %}>
                         <span>Pausen von Abrechnung ausschließen</span>
                     </label>
-                    <p>Wenn aktiviert, werden Pausen von der abrechenbaren Arbeitszeit abgezogen.</p>
+                            <div class="toggle-switch" id="exclude-breaks-toggle">
+                                <input type="checkbox" id="exclude-breaks" name="exclude_breaks" value="1" {% if settings and settings.exclude_breaks %}checked{% endif %}>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">
+                            Wenn aktiviert, werden Pausen von der abrechenbaren Arbeitszeit abgezogen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ArbZG Settings Card (Full Width) -->
+            <div class="settings-card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <i class="fas fa-gavel"></i>
+                    <h3>Arbeitszeitgesetz (ArbZG) Compliance</h3>
                 </div>
                 
-                <div class="setting-group arbzg">
+                <div class="setting-group">
+                    <div class="switch-container">
                     <label for="arbzg-breaks-enabled" class="switch-label">
+                            <span>Automatische ArbZG-Pausen aktivieren</span>
+                        </label>
+                        <div class="toggle-switch" id="arbzg-breaks-toggle">
                         <input type="checkbox" id="arbzg-breaks-enabled" name="arbzg_breaks_enabled" value="1" {% if settings and settings.arbzg_breaks_enabled %}checked{% endif %}>
-                        <span>Automatische Pausen nach Arbeitszeitgesetz (ArbZG)</span>
-                    </label>
-                    <p>Wenn aktiviert, werden automatisch gesetzliche Pausen gemäß Arbeitszeitgesetz (ArbZG §4) eingefügt:</p>
-                    <ul>
-                        <li>Bei Arbeitszeit > 6 Stunden: mindestens 30 Minuten Pause</li>
-                        <li>Bei Arbeitszeit > 9 Stunden: mindestens 45 Minuten Pause</li>
-                    </ul>
-                    <p>Fehlende Pausen werden beim Auschecken automatisch hinzugefügt.</p>
+                        </div>
+                    </div>
                     
                     <div class="arbzg-info-block">
-                        <h4>Intelligente Pausenplatzierung</h4>
-                        <p>Das System platziert gesetzliche Pausen nach folgenden Regeln:</p>
+                        <h4>Gesetzliche Pausenregelungen</h4>
+                        <p>Automatische Einfügung gesetzlicher Pausen gemäß Arbeitszeitgesetz (ArbZG §4):</p>
                         <ul>
-                            <li><strong>Mittagspausen-Priorität:</strong> Wenn möglich, werden Pausen in der Mittagszeit eingetragen (siehe Einstellungen unten)</li>
-                            <li><strong>Ende des Arbeitstages:</strong> Wenn keine Mittagszeit verfügbar ist, werden Pausen am Ende des Arbeitstages hinzugefügt</li>
-                            <li><strong>Pausendauer:</strong> Entscheidend ist immer die Gesamtpausendauer gemäß ArbZG</li>
-                            <li><strong>Visuelle Unterscheidung:</strong> Mittagspausen und End-of-Day-Pausen werden unterschiedlich gekennzeichnet</li>
+                            <li><strong>Bei Arbeitszeit > 6 Stunden:</strong> mindestens 30 Minuten Pause</li>
+                            <li><strong>Bei Arbeitszeit > 9 Stunden:</strong> mindestens 45 Minuten Pause</li>
+                        </ul>
+                        <p><strong>Hinweis:</strong> Fehlende Pausen werden beim Auschecken automatisch hinzugefügt.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Intelligente Pausenplatzierung</h4>
+                        <ul>
+                            <li><strong>Mittagspausen-Priorität:</strong> Bevorzugte Platzierung in der konfigurierten Mittagszeit</li>
+                            <li><strong>End-of-Day Fallback:</strong> Alternative Platzierung am Ende des Arbeitstages</li>
+                            <li><strong>Visuelle Unterscheidung:</strong> Verschiedene Kennzeichnungen für Pausentypen</li>
                         </ul>
                     </div>
                     
-                    <div class="lunch-period-settings">
-                        <h4>Mittagszeitraum einstellen</h4>
-                        <p>Legen Sie den Zeitraum fest, in dem das System bevorzugt Pausen platzieren soll:</p>
                         <div class="time-range-container">
+                        <h4 style="margin-bottom: 1rem; color: var(--success-color);">
+                            <i class="fas fa-clock" style="margin-right: 0.5rem;"></i>
+                            Mittagszeitraum konfigurieren
+                        </h4>
+                        <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                            Legen Sie den bevorzugten Zeitraum für automatische Pausenplatzierung fest:
+                        </p>
+                        
                             <div class="time-input-group">
                                 <label for="lunch-start-time">Mittagszeit von:</label>
                                 <input type="number" min="0" max="23" id="lunch-start-hour" name="lunch_period_start_hour" 
-                                       value="{{ settings.lunch_period_start_hour if settings and settings.lunch_period_start_hour is defined else 11 }}" class="time-input"> :
+                                   value="{{ settings.lunch_period_start_hour if settings and settings.lunch_period_start_hour is defined else 11 }}" class="time-input">
+                            <span style="font-weight: bold; color: var(--text-primary);">:</span>
                                 <input type="number" min="0" max="59" id="lunch-start-minute" name="lunch_period_start_minute" 
                                        value="{{ settings.lunch_period_start_minute if settings and settings.lunch_period_start_minute is defined else 30 }}" class="time-input">
                             </div>
+                        
                             <div class="time-input-group">
                                 <label for="lunch-end-time">bis:</label>
                                 <input type="number" min="0" max="23" id="lunch-end-hour" name="lunch_period_end_hour" 
-                                       value="{{ settings.lunch_period_end_hour if settings and settings.lunch_period_end_hour is defined else 14 }}" class="time-input"> :
+                                   value="{{ settings.lunch_period_end_hour if settings and settings.lunch_period_end_hour is defined else 14 }}" class="time-input">
+                            <span style="font-weight: bold; color: var(--text-primary);">:</span>
                                 <input type="number" min="0" max="59" id="lunch-end-minute" name="lunch_period_end_minute" 
                                        value="{{ settings.lunch_period_end_minute if settings and settings.lunch_period_end_minute is defined else 0 }}" class="time-input">
-                            </div>
                         </div>
-                        <p class="note">Hinweis: Die Standardeinstellung ist 11:30 Uhr bis 14:00 Uhr.</p>
+                        
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                            💡 Standardeinstellung: 11:30 Uhr bis 14:00 Uhr
+                        </p>
+                    </div>
                     </div>
                 </div>
                 
-                <button type="submit" class="settings-save-btn">Einstellungen speichern</button>
+            <button type="submit" class="settings-save-btn">
+                <i class="fas fa-save"></i>
+                Einstellungen speichern
+            </button>
             </form>
-        </div>
         
         <!-- Break History Section -->
-        <div class="breaks-history">
-            <h2>Pausen Historie</h2>
+        <div class="break-history-section">
+            <div class="history-header">
+                <h2><i class="fas fa-history"></i> Pausen Historie</h2>
+            </div>
             
             {% if breaks %}
                 <div class="table-responsive">
                     <table class="break-history-table">
                         <thead>
                             <tr>
-                                <th>Benutzer</th>
-                                <th>Datum</th>
-                                <th>Startzeit</th>
-                                <th>Endzeit</th>
-                                <th>Dauer</th>
-                                <th>Typ</th>
-                                <th>Abrechnung</th>
-                                <th>Beschreibung</th>
+                                <th><i class="fas fa-user"></i> Benutzer</th>
+                                <th><i class="fas fa-calendar"></i> Datum</th>
+                                <th><i class="fas fa-play"></i> Start</th>
+                                <th><i class="fas fa-stop"></i> Ende</th>
+                                <th><i class="fas fa-clock"></i> Dauer</th>
+                                <th><i class="fas fa-tag"></i> Typ</th>
+                                <th><i class="fas fa-calculator"></i> Abrechnung</th>
+                                <th><i class="fas fa-comment"></i> Beschreibung</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,32 +785,32 @@
                                     <td>{{ break_item[1][:10] }}</td>
                                     <td>{{ break_item[1][11:19] }}</td>
                                     <td>{{ break_item[2][11:19] }}</td>
-                                    <td>{{ break_item[3] }} Min</td>
+                                    <td><strong>{{ break_item[3] }} Min</strong></td>
                                     <td>
                                         {% if break_item[5] and break_item[7] and 'ArbZG' in break_item[7] %}
                                             {% if 'Mittagspause' in break_item[7] %}
-                                                <span class="arbzg-badge lunch-badge" title="Automatisch während der Mittagszeit eingefügt">ArbZG Mittagspause</span>
+                                                <span class="badge lunch-badge" title="Automatisch während der Mittagszeit eingefügt">ArbZG Mittagspause</span>
                                             {% else %}
-                                                <span class="arbzg-badge" title="Automatisch hinzugefügt gemäß Arbeitszeitgesetz">ArbZG</span>
+                                                <span class="badge arbzg-badge" title="Automatisch hinzugefügt gemäß Arbeitszeitgesetz">ArbZG</span>
                                             {% endif %}
                                         {% elif break_item[5] %}
-                                            <span class="auto-detected-badge">Automatisch</span>
+                                            <span class="badge auto-detected-badge">Automatisch</span>
                                         {% else %}
-                                            <span class="manual-badge">Manuell</span>
+                                            <span class="badge manual-badge">Manuell</span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         {% if break_item[4] %}
-                                            <span class="excluded-badge">Nicht abrechenbar</span>
+                                            <span class="badge excluded-badge">Nicht abrechenbar</span>
                                         {% else %}
-                                            <span class="included-badge">Abrechenbar</span>
+                                            <span class="badge included-badge">Abrechenbar</span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         {% if break_item[7] %}
                                             {{ break_item[7] }}
                                         {% else %}
-                                            -
+                                            <em style="color: var(--text-muted);">Keine Beschreibung</em>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -168,9 +819,11 @@
                     </table>
                 </div>
             {% else %}
-                <p class="no-breaks-message">
-                    Keine Pausendaten gefunden. Pausen werden angezeigt, sobald sie erkannt oder manuell eingetragen werden.
-                </p>
+                <div class="no-breaks-message">
+                    <i class="fas fa-coffee" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                    <p>Keine Pausendaten gefunden.</p>
+                    <p>Pausen werden angezeigt, sobald sie erkannt oder manuell eingetragen werden.</p>
+                </div>
             {% endif %}
         </div>
     </div>
@@ -178,6 +831,39 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Enhanced toggle switch functionality
+            function initToggleSwitch(toggleId, checkboxId) {
+                const toggle = document.getElementById(toggleId);
+                const checkbox = document.getElementById(checkboxId);
+                
+                if (toggle && checkbox) {
+                    // Set initial state
+                    if (checkbox.checked) {
+                        toggle.classList.add('active');
+                    }
+                    
+                    // Handle toggle click
+                    toggle.addEventListener('click', function() {
+                        checkbox.checked = !checkbox.checked;
+                        toggle.classList.toggle('active', checkbox.checked);
+                        
+                        // Trigger change event for additional functionality
+                        checkbox.dispatchEvent(new Event('change'));
+                    });
+                    
+                    // Handle checkbox change (for form submission)
+                    checkbox.addEventListener('change', function() {
+                        toggle.classList.toggle('active', this.checked);
+                    });
+                }
+            }
+            
+            // Initialize all toggle switches
+            initToggleSwitch('auto-break-toggle', 'auto-break-detection');
+            initToggleSwitch('exclude-breaks-toggle', 'exclude-breaks');
+            initToggleSwitch('arbzg-breaks-toggle', 'arbzg-breaks-enabled');
+            
+            // Auto break detection threshold functionality
             const autoBreakDetection = document.getElementById('auto-break-detection');
             const thresholdContainer = document.getElementById('threshold-container');
             const thresholdSlider = document.getElementById('threshold-slider');
@@ -186,14 +872,71 @@
             
             // Toggle threshold input visibility based on checkbox state
             autoBreakDetection.addEventListener('change', function() {
-                thresholdContainer.style.display = this.checked ? 'block' : 'none';
+                if (this.checked) {
+                    thresholdContainer.classList.remove('hidden');
+                } else {
+                    thresholdContainer.classList.add('hidden');
+                }
             });
             
             // Update displayed threshold value when slider is moved
             thresholdSlider.addEventListener('input', function() {
                 thresholdValue.textContent = this.value;
                 thresholdInput.value = this.value;
+                
+                // Add visual feedback
+                this.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${(this.value - 10) / (120 - 10) * 100}%, #e2e8f0 ${(this.value - 10) / (120 - 10) * 100}%, #e2e8f0 100%)`;
             });
+            
+            // Initialize slider background
+            const initialValue = thresholdSlider.value;
+            thresholdSlider.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${(initialValue - 10) / (120 - 10) * 100}%, #e2e8f0 ${(initialValue - 10) / (120 - 10) * 100}%, #e2e8f0 100%)`;
+            
+            // Time input validation
+            const timeInputs = document.querySelectorAll('.time-input');
+            timeInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const value = parseInt(this.value);
+                    const max = parseInt(this.max);
+                    const min = parseInt(this.min);
+                    
+                    if (value > max) {
+                        this.value = max;
+                    } else if (value < min) {
+                        this.value = min;
+                    }
+                    
+                    // Pad with zero if needed
+                    if (this.value.length === 1) {
+                        this.value = '0' + this.value;
+                    }
+                });
+                
+                // Format on blur
+                input.addEventListener('blur', function() {
+                    if (this.value.length === 1) {
+                        this.value = '0' + this.value;
+                    }
+                });
+            });
+            
+            // Form submission enhancement
+            const form = document.querySelector('.settings-form');
+            const saveBtn = document.querySelector('.settings-save-btn');
+            
+            form.addEventListener('submit', function() {
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere...';
+                saveBtn.disabled = true;
+            });
+            
+            // Add smooth scrolling to form submission
+            if (window.location.hash) {
+                setTimeout(() => {
+                    document.querySelector(window.location.hash)?.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
         });
     </script>
 </body>

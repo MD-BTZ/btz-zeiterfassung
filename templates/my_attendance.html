@@ -89,30 +89,30 @@
             .search-form {
                 flex-direction: column;
                 align-items: stretch;
-            }
-            
+        }
+        
             .search-actions {
                 justify-content: stretch;
             }
             
             .search-actions .btn {
                 flex: 1;
-            }
-            
+        }
+        
             .attendance-table {
                 font-size: 0.875rem;
-            }
-            
+        }
+        
             .attendance-table th,
             .attendance-table td {
                 padding: 0.75rem 0.5rem;
-            }
-            
-            .attendance-actions {
+        }
+        
+        .attendance-actions {
                 flex-direction: column;
                 gap: 0.25rem;
-            }
-            
+        }
+        
             .attendance-actions .btn {
                 font-size: 0.75rem;
                 padding: 0.25rem 0.5rem;
@@ -293,8 +293,8 @@
                 <i class="fas fa-table text-primary"></i>
                 Zeiterfassung
             </h3>
-            
-            {% if records %}
+        
+        {% if records %}
             <div class="table-responsive">
                 <table class="attendance-table w-full">
                     <thead>
@@ -327,7 +327,7 @@
                     </thead>
                     <tbody>
                         {% for record in records %}
-                        <tr>
+                            <tr>
                             <td>
                                 <div class="d-flex align-center gap-2">
                                     <i class="far fa-calendar text-primary icon-sm"></i>
@@ -353,23 +353,23 @@
                                 </div>
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if record.check_in and record.check_out %}
+                                <td>
+                                    {% if record.check_in and record.check_out %}
                                     <span class="duration-display">{{ get_duration(record.check_in, record.check_out) }}</span>
-                                {% else %}
+                                    {% else %}
                                     <span class="text-muted">-</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if record.has_auto_breaks %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.has_auto_breaks %}
                                     <span class="break-indicator">
                                         <i class="fas fa-check icon-sm"></i>
                                         Automatisch
                                     </span>
-                                {% else %}
+                                    {% else %}
                                     <span class="no-break-indicator">Keine</span>
-                                {% endif %}
-                            </td>
+                                    {% endif %}
+                                </td>
                             <td>
                                 <div class="attendance-actions d-flex gap-1">
                                     <button class="btn btn-warning btn-sm edit-window-btn" 
@@ -378,8 +378,8 @@
                                         Bearbeiten
                                     </button>
                                 </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -410,8 +410,8 @@
                     {% endif %}
                 </div>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
+    </div>
         
         <!-- Quick Actions -->
         <div class="glass-card mt-4">
@@ -540,7 +540,7 @@
                 alert('Popup wurde blockiert. Bitte erlauben Sie Popups für diese Seite oder öffnen Sie den Link in einem neuen Tab.');
                 // Open in new tab as fallback
                 window.open(`/edit_attendance/${attendanceId}`, '_blank');
-            }
+        }
         }
         
         // Add visual feedback for edit buttons

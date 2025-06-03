@@ -1,71 +1,201 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datenzugriff - Data Access</title>
     {% include 'head_includes.html' %}
+    <style>
+        .export-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .export-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+        }
+        .export-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .export-button i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .deletion-section {
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid #dc3545;
+            padding: 1.5rem;
+            margin: 2.5rem 0;
+            border-radius: 0 10px 10px 0;
+        }
+        .deletion-section h2 {
+            color: #dc3545;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #f8f9fa;
+        }
+        .input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .input:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            outline: 0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        textarea.input {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-danger {
+            background: #dc3545;
+            border: none;
+        }
+        .btn-danger:hover {
+            background: #bb2d3b;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background: #5c636a;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .export-buttons {
+                grid-template-columns: 1fr;
+            }
+            .glass-container {
+                padding: 1rem;
+            }
+            .export-section {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
 </head>
 <body class="glass-morphism-page">
     {% include 'menu.html' %}
     <div class="glass-container">
         <div class="main-card">
             <h1 class="mb-3 text-center"><i class="fas fa-database"></i> Datenzugriff & Export</h1>
-            <div class="d-flex gap-2 justify-center flex-wrap mt-4 mb-4">
-                <form method="post" action="/export_data">
-                    <input type="hidden" name="username" value="{{ user_data.username }}">
-                    {% if not session.get('username') == user_data.username %}
-                    <input type="hidden" name="password" value="{{ password_placeholder }}">
-                    {% endif %}
-                    <button type="submit" name="format" value="csv" class="btn btn-success d-flex align-center gap-1">
-                        <i class="fas fa-file-csv"></i>
-                        <span>CSV-Datei exportieren</span>
-                    </button>
-                </form>
-                <form method="post" action="/export_data">
-                    <input type="hidden" name="username" value="{{ user_data.username }}">
-                    {% if not session.get('username') == user_data.username %}
-                    <input type="hidden" name="password" value="{{ password_placeholder }}">
-                    {% endif %}
-                    <button type="submit" name="format" value="pdf" class="btn btn-primary d-flex align-center gap-1">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>PDF-Datei exportieren</span>
-                    </button>
-                </form>
-                <form method="post" action="/export_data">
-                    <input type="hidden" name="username" value="{{ user_data.username }}">
-                    {% if not session.get('username') == user_data.username %}
-                    <input type="hidden" name="password" value="{{ password_placeholder }}">
-                    {% endif %}
-                    <button type="submit" name="format" value="json" class="btn btn-warning d-flex align-center gap-1">
-                        <i class="fas fa-file-code"></i>
-                        <span>JSON-Datei exportieren</span>
-                    </button>
-                </form>
+            <div class="export-section">
+                <h2 class="text-center mb-4"><i class="fas fa-download me-2"></i>Daten exportieren</h2>
+                <p class="text-center text-muted mb-4">Wählen Sie ein Format aus, um Ihre Daten herunterzuladen:</p>
+                <div class="export-buttons">
+                    <form method="post" action="/export_data" class="mb-0">
+                        <input type="hidden" name="username" value="{{ user_data.username }}">
+                        {% if not session.get('username') == user_data.username %}
+                        <input type="hidden" name="password" value="{{ password_placeholder }}">
+                        {% endif %}
+                        <button type="submit" name="format" value="csv" class="btn btn-success export-button w-100">
+                            <i class="fas fa-file-csv"></i>
+                            <span>CSV exportieren</span>
+                            <small class="opacity-75 d-block mt-1">.csv Datei</small>
+                        </button>
+                    </form>
+                    <form method="post" action="/export_data" class="mb-0">
+                        <input type="hidden" name="username" value="{{ user_data.username }}">
+                        {% if not session.get('username') == user_data.username %}
+                        <input type="hidden" name="password" value="{{ password_placeholder }}">
+                        {% endif %}
+                        <button type="submit" name="format" value="pdf" class="btn btn-primary export-button w-100">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>PDF exportieren</span>
+                            <small class="opacity-75 d-block mt-1">.pdf Dokument</small>
+                        </button>
+                    </form>
+                    <form method="post" action="/export_data" class="mb-0">
+                        <input type="hidden" name="username" value="{{ user_data.username }}">
+                        {% if not session.get('username') == user_data.username %}
+                        <input type="hidden" name="password" value="{{ password_placeholder }}">
+                        {% endif %}
+                        <button type="submit" name="format" value="json" class="btn btn-warning export-button w-100">
+                            <i class="fas fa-file-code"></i>
+                            <span>JSON exportieren</span>
+                            <small class="opacity-75 d-block mt-1">.json Datei</small>
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="glass-card section mt-4">
-                <h2 class="mb-2">Datenlöschung</h2>
-                <p class="text-danger mb-2">Hinweis: Die Datenlöschung ist endgültig und kann nicht rückgängig gemacht werden.</p>
+            <div class="deletion-section">
+                <h2><i class="fas fa-exclamation-triangle me-2"></i>Datenlöschung</h2>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Wichtiger Hinweis:</strong> Die Datenlöschung ist endgültig und kann nicht rückgängig gemacht werden.
+                </div>
                 <form method="post" action="/request_data_deletion">
-                    <div class="mb-2">
-                        <label for="deletion-username" class="mb-1 text-left">Benutzername:</label>
-                        <input type="text" id="deletion-username" name="username" required class="input">
+                    <div class="form-group">
+                        <label for="deletion-username" class="form-label">Benutzername</label>
+                        <input type="text" id="deletion-username" name="username" required class="input" placeholder="Ihr Benutzername">
                     </div>
-                    <div class="mb-2">
-                        <label for="deletion-password" class="mb-1 text-left">Passwort:</label>
-                        <input type="password" id="deletion-password" name="password" required class="input">
+                    <div class="form-group">
+                        <label for="deletion-password" class="form-label">Passwort</label>
+                        <input type="password" id="deletion-password" name="password" required class="input" placeholder="Ihr Passwort">
                     </div>
-                    <div class="mb-2">
-                        <label for="deletion-reason" class="mb-1 text-left">Grund für die Löschung (optional):</label>
-                        <textarea id="deletion-reason" name="reason" rows="3" class="input"></textarea>
+                    <div class="form-group">
+                        <label for="deletion-reason" class="form-label">Grund für die Löschung (optional)</label>
+                        <textarea id="deletion-reason" name="reason" rows="3" class="input" placeholder="Bitte teilen Sie uns mit, warum Sie Ihre Daten löschen möchten..."></textarea>
                     </div>
-                    <div class="mb-2 d-flex align-center gap-1">
-                        <input type="checkbox" name="confirm_deletion" required class="mr-1">
-                        <label for="confirm_deletion" class="mb-0">Ich bestätige die endgültige Löschung meiner Daten.</label>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="confirm_deletion" name="confirm_deletion" required class="form-check-input">
+                            <label for="confirm_deletion" class="form-check-label">Ich bestätige, dass ich verstehe, dass diese Aktion unwiderruflich ist und alle meine Daten dauerhaft gelöscht werden.</label>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-danger mt-2">Datenlöschung beantragen</button>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="fas fa-trash-alt me-2"></i>Datenlöschung beantragen
+                        </button>
+                    </div>
                 </form>
             </div>
-            <div class="mt-4 text-center">
-                <a href="/privacy_policy" class="btn btn-secondary">Datenschutzerklärung ansehen</a>
+            <div class="mt-5 text-center">
+                <a href="/privacy_policy" class="btn btn-outline-light">
+                    <i class="fas fa-shield-alt me-2"></i>Datenschutzerklärung ansehen
+                </a>
             </div>
         </div>
     </div>
