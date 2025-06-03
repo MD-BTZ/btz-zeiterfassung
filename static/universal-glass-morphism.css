@@ -126,7 +126,7 @@ body:not(.login-page):not(.error-page)::before {
    UNIVERSAL CONTAINER SYSTEM
    ============================================================================ */
 
-/* Main container wrapper */
+/* Main container wrapper - Add top spacing for fixed navbar */
 .glass-container,
 .container:not(.login-container),
 .main-container,
@@ -134,11 +134,40 @@ body:not(.login-page):not(.error-page)::before {
 .dashboard-container,
 .admin-container {
     max-width: 1200px;
-    margin: var(--space-xl) auto;
+    margin: 0 auto;
     padding: 0 var(--space-lg);
+    padding-top: calc(70px + var(--space-xl)); /* Account for fixed navbar height + extra spacing */
     position: relative;
     z-index: 1;
     min-height: calc(100vh - 8rem);
+}
+
+/* Ensure main content areas have proper top spacing */
+main,
+.main-content,
+.page-content,
+.content-area {
+    padding-top: calc(70px + var(--space-lg)); /* Account for fixed navbar */
+    min-height: calc(100vh - 70px);
+}
+
+/* Mobile adjustments for navbar height */
+@media (max-width: 768px) {
+    .glass-container,
+    .container:not(.login-container),
+    .main-container,
+    .content-wrapper,
+    .dashboard-container,
+    .admin-container {
+        padding-top: calc(60px + var(--space-lg)); /* Mobile navbar height + spacing */
+    }
+    
+    main,
+    .main-content,
+    .page-content,
+    .content-area {
+        padding-top: calc(60px + var(--space-md)); /* Mobile navbar height + spacing */
+    }
 }
 
 /* Main content card */
