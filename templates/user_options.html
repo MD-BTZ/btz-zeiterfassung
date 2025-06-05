@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Benutzer-Optionen - {{ user.display_name or user.username }} - BTZ Zeiterfassung</title>
+    {% include 'head_includes.html' %}
+    <style>
+        /* ============================================================================
+           USER OPTIONS PAGE - CLEAN PROFESSIONAL DESIGN
+           ============================================================================ */
+        
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #6b7280;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #06b6d4;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            
+            --border-color: #e5e7eb;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
+            
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+        
+        body {
+            background: var(--bg-secondary);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .options-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+            min-height: 100vh;
+        }
+        
+        /* Header Section */
+        .page-header {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            border: 4px solid var(--bg-primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .user-details h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+        
+        .user-meta {
+            display: flex;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .meta-item i {
+            color: var(--primary-color);
+            width: 16px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        .role-admin {
+            background: #ddd6fe;
+            color: #5b21b6;
+            border: 1px solid #c4b5fd;
+        }
+        
+        .role-supervisor {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .role-hr {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #d1fae5;
+        }
+        
+        .role-employee {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-xl);
+        }
+        
+        .option-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        
+        .option-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .card-icon.edit {
+            background: var(--primary-color);
+        }
+        
+        .card-icon.security {
+            background: var(--warning-color);
+        }
+        
+        .card-icon.status {
+            background: var(--info-color);
+        }
+        
+        .card-icon.details {
+            background: var(--success-color);
+        }
+        
+        .card-icon.danger {
+            background: var(--danger-color);
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.5;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+            border-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+            border-color: #d97706;
+        }
+        
+        .btn-info {
+            background: var(--info-color);
+            color: white;
+            border-color: var(--info-color);
+        }
+        
+        .btn-info:hover {
+            background: #0891b2;
+            border-color: #0891b2;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            border-color: #4b5563;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .form-label i {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Details Section */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .detail-item {
+            padding: var(--spacing-md);
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+        
+        .detail-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .detail-value {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        /* Navigation */
+        .nav-actions {
+            position: fixed;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-sm);
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .options-container {
+                padding: var(--spacing-md);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-meta {
+                justify-content: center;
+            }
+            
+            .header-actions {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .nav-actions {
+                position: static;
+                justify-content: center;
+                margin-bottom: var(--spacing-lg);
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-header {
+                padding: var(--spacing-lg);
+            }
+            
+            .option-card {
+                padding: var(--spacing-lg);
+            }
+            
+            .user-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .user-details h1 {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Actions -->
+    <div class="nav-actions">
+        <button class="nav-btn" onclick="window.close()" title="Fenster schließen">
+            <i class="fas fa-times"></i>
+        </button>
+        <button class="nav-btn" onclick="window.print()" title="Drucken">
+            <i class="fas fa-print"></i>
+        </button>
+    </div>
+
+    <div class="options-container">
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ user.display_name[0].upper() if user.display_name else user.username[0].upper() }}
+                    </div>
+                    <div class="user-details">
+                        <h1>{{ user.display_name or user.username }}</h1>
+                        <div class="user-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user"></i>
+                                <span>@{{ user.username }}</span>
+                            </div>
+                            {% if user.employee_id %}
+                            <div class="meta-item">
+                                <i class="fas fa-id-badge"></i>
+                                <span>ID: {{ user.employee_id }}</span>
+                            </div>
+                            {% endif %}
+                            {% if user.department %}
+                            <div class="meta-item">
+                                <i class="fas fa-building"></i>
+                                <span>{{ user.department }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <span class="status-badge status-{{ 'active' if user.account_status == 'active' else 'inactive' }}">
+                        <i class="fas fa-circle"></i>
+                        {{ 'Aktiv' if user.account_status == 'active' else 'Inaktiv' }}
+                    </span>
+                    <span class="status-badge role-{{ user.user_role or 'employee' }}">
+                        <i class="fas fa-user-tag"></i>
+                        {{ user.role_display or 'Mitarbeiter' }}
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content-grid">
+            <!-- Edit User Information -->
+            <div class="option-card">
+                <div class="card-header">
+                    <div class="card-icon edit">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h2 class="card-title">Benutzer bearbeiten</h2>
+                </div>
+                <p class="card-description">
+                    Persönliche Informationen, Rolle und Abteilung des Benutzers bearbeiten.
+                </p>
+                <form id="edit-user-form" method="POST" action="/edit_user/{{ user.id }}">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i>
+                            Benutzername
+                        </label>
+                        <input type="text" class="form-input" name="username" value="{{ user.username }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i>
+                            Vorname
+                        </label>
+                        <input type="text" class="form-input" name="first_name" value="{{ user.first_name or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i>
+                            Nachname
+                        </label>
+                        <input type="text" class="form-input" name="last_name" value="{{ user.last_name or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-badge"></i>
+                            Mitarbeiter-ID
+                        </label>
+                        <input type="text" class="form-input" name="employee_id" value="{{ user.employee_id or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user-tag"></i>
+                            Rolle
+                        </label>
+                        <select class="form-select" name="user_role">
+                            <option value="employee" {{ 'selected' if user.user_role == 'employee' else '' }}>Mitarbeiter</option>
+                            <option value="supervisor" {{ 'selected' if user.user_role == 'supervisor' else '' }}>Vorgesetzter</option>
+                            <option value="hr" {{ 'selected' if user.user_role == 'hr' else '' }}>Personalwesen</option>
+                            <option value="admin" {{ 'selected' if user.user_role == 'admin' else '' }}>Administrator</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-building"></i>
+                            Abteilung
+                        </label>
+                        <input type="text" class="form-input" name="department" value="{{ user.department or '' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Änderungen speichern
+                    </button>
+                </form>
+            </div>
+
+            <!-- Security & Password -->
+            <div class="option-card">
+                <div class="card-header">
+                    <div class="card-icon security">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h2 class="card-title">Sicherheit</h2>
+                </div>
+                <p class="card-description">
+                    Passwort zurücksetzen und Sicherheitseinstellungen verwalten.
+                </p>
+                <div class="form-group">
+                    <button type="button" class="btn btn-warning" onclick="resetUserPassword({{ user.id }})">
+                        <i class="fas fa-key"></i>
+                        Passwort zurücksetzen
+                    </button>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-info" onclick="generateTempPassword({{ user.id }})">
+                        <i class="fas fa-clock"></i>
+                        Temporäres Passwort
+                    </button>
+                </div>
+            </div>
+
+            <!-- Account Status -->
+            <div class="option-card">
+                <div class="card-header">
+                    <div class="card-icon status">
+                        <i class="fas fa-toggle-on"></i>
+                    </div>
+                    <h2 class="card-title">Kontostatus</h2>
+                </div>
+                <p class="card-description">
+                    Benutzerkonto aktivieren, deaktivieren oder sperren.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-circle"></i>
+                        Aktueller Status
+                    </label>
+                    <select class="form-select" id="account-status" onchange="updateAccountStatus({{ user.id }}, this.value)">
+                        <option value="active" {{ 'selected' if user.account_status == 'active' else '' }}>Aktiv</option>
+                        <option value="inactive" {{ 'selected' if user.account_status == 'inactive' else '' }}>Inaktiv</option>
+                        <option value="suspended" {{ 'selected' if user.account_status == 'suspended' else '' }}>Gesperrt</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-shield-alt"></i>
+                        Datenschutz-Einwilligung
+                    </label>
+                    <select class="form-select" id="consent-status" onchange="updateConsentStatus({{ user.id }}, this.value)">
+                        <option value="pending" {{ 'selected' if user.consent_status == 'pending' else '' }}>Ausstehend</option>
+                        <option value="granted" {{ 'selected' if user.consent_status == 'granted' else '' }}>Erteilt</option>
+                        <option value="declined" {{ 'selected' if user.consent_status == 'declined' else '' }}>Verweigert</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- User Details -->
+            <div class="option-card">
+                <div class="card-header">
+                    <div class="card-icon details">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h2 class="card-title">Benutzerdetails</h2>
+                </div>
+                <p class="card-description">
+                    Detaillierte Informationen und Statistiken zum Benutzer.
+                </p>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Benutzer-ID</div>
+                        <div class="detail-value">{{ user.id }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Erstellt am</div>
+                        <div class="detail-value">{{ user.created_at.strftime('%d.%m.%Y') if user.created_at else 'Unbekannt' }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Letzter Login</div>
+                        <div class="detail-value">
+                            {% if user.last_login %}
+                                {% if user.last_login is string %}
+                                    {{ user.last_login }}
+                                {% else %}
+                                    {{ user.last_login.strftime('%d.%m.%Y %H:%M') }}
+                                {% endif %}
+                            {% else %}
+                                Nie
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Administrator</div>
+                        <div class="detail-value">{{ 'Ja' if user.is_admin else 'Nein' }}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-success" onclick="exportUserData({{ user.id }})">
+                        <i class="fas fa-download"></i>
+                        Daten exportieren
+                    </button>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="option-card">
+                <div class="card-header">
+                    <div class="card-icon danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h2 class="card-title">Gefahrenbereich</h2>
+                </div>
+                <p class="card-description">
+                    Irreversible Aktionen, die mit Vorsicht durchgeführt werden sollten.
+                </p>
+                <div class="form-group">
+                    <button type="button" class="btn btn-danger" onclick="deleteUser({{ user.id }}, '{{ user.display_name or user.username }}')">
+                        <i class="fas fa-trash"></i>
+                        Benutzer löschen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // USER OPTIONS PAGE FUNCTIONALITY
+        // ============================================================================
+
+        // Helper function to close window and refresh parent
+        function closeAndRefreshParent(message) {
+            if (message) {
+                alert(message);
+            }
+            
+            // Try to refresh the parent window (user management page)
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.location.reload();
+                }
+            } catch (e) {
+                console.log('Could not refresh parent window:', e);
+            }
+            
+            // Close this popup window
+            window.close();
+        }
+
+        // Form submission for user editing
+        document.getElementById('edit-user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            fetch(`/edit_user/{{ user.id }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeAndRefreshParent('Benutzer wurde erfolgreich aktualisiert!');
+                } else {
+                    alert('Fehler: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ein Fehler ist aufgetreten beim Speichern.');
+            });
+        });
+
+        // Password reset
+        function resetUserPassword(userId) {
+            if (confirm('Möchten Sie wirklich das Passwort für diesen Benutzer zurücksetzen?')) {
+                fetch(`/reset_password/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Passwort wurde erfolgreich zurückgesetzt!');
+                        if (data.datasheet_url) {
+                            window.open(data.datasheet_url, '_blank');
+                        }
+                        // Don't close window immediately for password reset - user might need to see datasheet
+                    } else {
+                        alert('Fehler: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ein Fehler ist aufgetreten beim Zurücksetzen des Passworts.');
+                });
+            }
+        }
+
+        // Generate temporary password
+        function generateTempPassword(userId) {
+            if (confirm('Möchten Sie ein temporäres Passwort für diesen Benutzer generieren?')) {
+                fetch(`/generate_temp_password/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showTempPasswordDialog(data.temp_password, '{{ user.display_name or user.username }}', '{{ user.username }}');
+                    } else {
+                        alert('Fehler: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ein Fehler ist aufgetreten beim Generieren des temporären Passworts.');
+                });
+            }
+        }
+
+        // Show temporary password dialog with print option
+        function showTempPasswordDialog(tempPassword, displayName, username) {
+            // Create modal dialog
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                font-family: 'Inter', 'Segoe UI', sans-serif;
+            `;
+
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                padding: 2rem;
+                max-width: 500px;
+                width: 90%;
+                box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+                text-align: center;
+            `;
+
+            const currentDate = new Date().toLocaleDateString('de-DE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            dialog.innerHTML = `
+                <div id="password-content">
+                    <div style="margin-bottom: 1.5rem;">
+                        <i class="fas fa-key" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
+                        <h2 style="margin: 0; color: #1f2937; font-size: 1.5rem;">Temporäres Passwort generiert</h2>
+                    </div>
+                    
+                    <div style="background: #f8fafc; border: 2px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;">
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #374151;">Benutzer:</strong> ${displayName} (@${username})
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color: #374151;">Temporäres Passwort:</strong>
+                        </div>
+                        <div style="font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: bold; color: #dc2626; background: white; padding: 1rem; border: 2px dashed #dc2626; border-radius: 6px; margin: 1rem 0; letter-spacing: 2px;">
+                            ${tempPassword}
+                        </div>
+                        <div style="font-size: 0.9rem; color: #6b7280;">
+                            Generiert am: ${currentDate}
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef3cd; border: 1px solid #f59e0b; border-radius: 6px; padding: 1rem; margin: 1.5rem 0; font-size: 0.9rem; color: #92400e;">
+                        <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
+                        <strong>Wichtig:</strong> Bitte notieren Sie sich das Passwort, da es nur einmalig angezeigt wird. Der Benutzer sollte das Passwort bei der ersten Anmeldung ändern.
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                    <button onclick="printTempPassword()" style="
+                        background: #3b82f6;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        transition: background 0.2s;
+                    " onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+                        <i class="fas fa-print"></i>
+                        Drucken
+                    </button>
+                    
+                    <button onclick="copyTempPassword('${tempPassword}')" style="
+                        background: #10b981;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        transition: background 0.2s;
+                    " onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                        <i class="fas fa-copy"></i>
+                        Kopieren
+                    </button>
+                    
+                    <button onclick="closeTempPasswordDialog()" style="
+                        background: #6b7280;
+                        color: white;
+                        border: none;
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 6px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        transition: background 0.2s;
+                    " onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#6b7280'">
+                        <i class="fas fa-times"></i>
+                        Schließen
+                    </button>
+                </div>
+            `;
+
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+
+            // Store modal reference for closing
+            window.tempPasswordModal = modal;
+        }
+
+        // Print temporary password
+        function printTempPassword() {
+            const content = document.getElementById('password-content').innerHTML;
+            const printWindow = window.open('', '_blank', 'width=600,height=400');
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Temporäres Passwort - BTZ Zeiterfassung</title>
+                    <style>
+                        body {
+                            font-family: 'Arial', sans-serif;
+                            margin: 2rem;
+                            line-height: 1.6;
+                        }
+                        .header {
+                            text-align: center;
+                            border-bottom: 2px solid #333;
+                            padding-bottom: 1rem;
+                            margin-bottom: 2rem;
+                        }
+                        .password-box {
+                            border: 2px solid #333;
+                            padding: 1rem;
+                            margin: 1rem 0;
+                            text-align: center;
+                        }
+                        .password {
+                            font-family: 'Courier New', monospace;
+                            font-size: 1.5rem;
+                            font-weight: bold;
+                            letter-spacing: 2px;
+                            margin: 1rem 0;
+                        }
+                        .warning {
+                            background: #f0f0f0;
+                            border: 1px solid #ccc;
+                            padding: 1rem;
+                            margin: 1rem 0;
+                            font-size: 0.9rem;
+                        }
+                        @media print {
+                            body { margin: 1rem; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>BTZ Zeiterfassung</h1>
+                        <h2>Temporäres Passwort</h2>
+                    </div>
+                    ${content}
+                    <div class="warning">
+                        <strong>Sicherheitshinweis:</strong> Dieses Dokument enthält vertrauliche Informationen. 
+                        Bitte sicher aufbewahren und nach Verwendung vernichten.
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.focus();
+            
+            // Auto-print after a short delay
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        // Copy temporary password to clipboard
+        function copyTempPassword(password) {
+            navigator.clipboard.writeText(password).then(() => {
+                // Show temporary success message
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Kopiert!';
+                button.style.background = '#059669';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = '#10b981';
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy password: ', err);
+                alert('Passwort konnte nicht kopiert werden. Bitte manuell markieren und kopieren.');
+            });
+        }
+
+        // Close temporary password dialog
+        function closeTempPasswordDialog() {
+            if (window.tempPasswordModal) {
+                document.body.removeChild(window.tempPasswordModal);
+                window.tempPasswordModal = null;
+            }
+        }
+
+        // Update account status
+        function updateAccountStatus(userId, newStatus) {
+            const statusNames = {
+                'active': 'aktivieren',
+                'inactive': 'deaktivieren',
+                'suspended': 'sperren'
+            };
+            
+            if (confirm(`Möchten Sie diesen Benutzer wirklich ${statusNames[newStatus]}?`)) {
+                fetch(`/update_user_status/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        account_status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeAndRefreshParent('Benutzerstatus wurde erfolgreich aktualisiert!');
+                    } else {
+                        alert('Fehler: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ein Fehler ist aufgetreten beim Aktualisieren des Status.');
+                });
+            } else {
+                // Reset select to original value
+                location.reload();
+            }
+        }
+
+        // Update consent status
+        function updateConsentStatus(userId, newStatus) {
+            const statusNames = {
+                'pending': 'auf ausstehend setzen',
+                'granted': 'erteilen',
+                'declined': 'verweigern'
+            };
+            
+            if (confirm(`Möchten Sie die Datenschutz-Einwilligung wirklich ${statusNames[newStatus]}?`)) {
+                fetch(`/update_consent/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        consent_status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeAndRefreshParent('Datenschutz-Einwilligung wurde erfolgreich aktualisiert!');
+                    } else {
+                        alert('Fehler: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ein Fehler ist aufgetreten beim Aktualisieren der Einwilligung.');
+                });
+            } else {
+                // Reset select to original value
+                location.reload();
+            }
+        }
+
+        // Export user data
+        function exportUserData(userId) {
+            if (confirm('Möchten Sie alle Daten dieses Benutzers als CSV-Datei exportieren?')) {
+                window.location.href = `/export_user_data/${userId}`;
+                // Don't close window for export - user might want to do other actions
+            }
+        }
+
+        // Delete user
+        function deleteUser(userId, userName) {
+            if (confirm(`Möchten Sie den Benutzer "${userName}" wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!`)) {
+                if (confirm('Sind Sie sich absolut sicher? Alle Daten dieses Benutzers werden unwiderruflich gelöscht!')) {
+                    fetch(`/delete_user/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            closeAndRefreshParent(data.message);
+                        } else {
+                            alert('Fehler: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Ein Fehler ist aufgetreten beim Löschen des Benutzers.');
+                    });
+                }
+            }
+        }
+
+        // Close window on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
+    </script>
+</body>
+</html> 

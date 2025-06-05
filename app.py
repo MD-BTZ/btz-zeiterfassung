@@ -4357,6 +4357,295 @@ def search_users():
         logging.error(f"Error searching users: {str(e)}")
         return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
 
+@app.route('/user_options/<int:user_id>')
+def user_options(user_id):
+    """User options page - comprehensive user management interface"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        flash('Nur Administratoren können auf die Benutzeroptionen zugreifen', 'error')
+        return redirect(url_for('index'))
+    
+    try:
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        # Get comprehensive user data
+        cursor.execute('''
+            SELECT 
+                u.id, 
+                u.username, 
+                COALESCE(u.first_name, '') AS first_name,
+                COALESCE(u.last_name, '') AS last_name,
+                COALESCE(u.employee_id, '') AS employee_id,
+                COALESCE(u.user_role, 'employee') AS user_role,
+                COALESCE(u.department, '') AS department,
+                COALESCE(u.account_status, 'active') AS account_status,
+                COALESCE(u.is_admin, 0) AS is_admin,
+                COALESCE(u.created_at, '') AS created_at,
+                COALESCE(u.updated_at, '') AS updated_at,
+                u.last_login,
+                COALESCE(uc.consent_status, 'pending') AS consent_status,
+                COALESCE(uc.consent_date, '') AS consent_date
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status, consent_date
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+            WHERE u.id = ?
+        ''', (user_id,))
+        
+        user = cursor.fetchone()
+        if not user:
+            flash('Benutzer nicht gefunden', 'error')
+            return redirect(url_for('user_management'))
+        
+        # Convert to dictionary and enhance data
+        user_data = dict(user)
+        
+        # Create display name
+        if user_data['first_name'] and user_data['last_name']:
+            user_data['display_name'] = f"{user_data['first_name']} {user_data['last_name']}"
+        else:
+            user_data['display_name'] = user_data['username']
+        
+        # Format role display
+        role_display = {
+            'employee': 'Mitarbeiter',
+            'supervisor': 'Vorgesetzter', 
+            'hr': 'Personalwesen',
+            'admin': 'Administrator'
+        }
+        user_data['role_display'] = role_display.get(user_data['user_role'], user_data['user_role'])
+        
+        # Parse datetime fields safely
+        if user_data['created_at']:
+            try:
+                parsed_date = try_parse(user_data['created_at'])
+                if parsed_date:
+                    user_data['created_at'] = parsed_date
+            except:
+                pass
+        
+        if user_data['last_login']:
+            try:
+                parsed_date = try_parse(user_data['last_login'])
+                if parsed_date:
+                    user_data['last_login'] = parsed_date
+            except:
+                pass
+        
+        logging.info(f"User options page accessed for user {user_id} by admin {session.get('username')}")
+        
+        return render_template('user_options.html', user=user_data)
+        
+    except Exception as e:
+        logging.error(f"Error loading user options for user {user_id}: {str(e)}")
+        flash('Fehler beim Laden der Benutzeroptionen', 'error')
+        return redirect(url_for('user_management'))
+
+@app.route('/update_user_status/<int:user_id>', methods=['POST'])
+def update_user_status(user_id):
+    """Update user account status (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzerstatus ändern'}), 403
+    
+    try:
+        data = request.get_json()
+        new_status = data.get('account_status')
+        
+        # Validate status
+        valid_statuses = ['active', 'inactive', 'suspended']
+        if new_status not in valid_statuses:
+            return jsonify({'success': False, 'message': 'Ungültiger Status'}), 400
+        
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Check if user exists
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+        
+        username = user[0]
+        
+        # Update user status
+        current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute('''
+            UPDATE users SET account_status = ?, updated_at = ? WHERE id = ?
+        ''', (new_status, current_time, user_id))
+        
+        db.commit()
+        
+        status_names = {
+            'active': 'aktiviert',
+            'inactive': 'deaktiviert',
+            'suspended': 'gesperrt'
+        }
+        
+        success_message = f'Benutzer {username} wurde erfolgreich {status_names[new_status]}'
+        logging.info(f"User {user_id} status changed to {new_status} by admin {session.get('username')}")
+        
+        return jsonify({'success': True, 'message': success_message})
+        
+    except Exception as e:
+        logging.error(f"Error updating user status: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
+@app.route('/generate_temp_password/<int:user_id>', methods=['POST'])
+def generate_temp_password(user_id):
+    """Generate temporary password for user (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können temporäre Passwörter generieren'}), 403
+    
+    try:
+        import secrets
+        import string
+        
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Check if user exists
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+        
+        username = user[0]
+        
+        # Generate secure temporary password
+        alphabet = string.ascii_letters + string.digits
+        temp_password = ''.join(secrets.choice(alphabet) for _ in range(12))
+        
+        # Hash the temporary password
+        hashed_password = bcrypt.generate_password_hash(temp_password).decode('utf-8')
+        
+        # Update user password
+        current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute('''
+            UPDATE users SET password = ?, updated_at = ? WHERE id = ?
+        ''', (hashed_password, current_time, user_id))
+        
+        db.commit()
+        
+        logging.info(f"Temporary password generated for user {user_id} by admin {session.get('username')}")
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Temporäres Passwort für {username} generiert',
+            'temp_password': temp_password
+        })
+        
+    except Exception as e:
+        logging.error(f"Error generating temporary password: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
+@app.route('/export_user_data/<int:user_id>')
+def export_user_data(user_id):
+    """Export all data for a specific user as CSV (admin only)"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        flash('Nur Administratoren können Benutzerdaten exportieren', 'error')
+        return redirect(url_for('index'))
+    
+    try:
+        import csv
+        from io import StringIO
+        
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        # Get user data
+        cursor.execute('''
+            SELECT 
+                u.id, u.username, u.first_name, u.last_name, u.employee_id,
+                u.user_role, u.department, u.account_status, u.is_admin,
+                u.created_at, u.updated_at, u.last_login,
+                COALESCE(uc.consent_status, 'Unknown') AS consent_status,
+                COALESCE(uc.consent_date, '') AS consent_date
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status, consent_date
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+            WHERE u.id = ?
+        ''', (user_id,))
+        
+        user = cursor.fetchone()
+        if not user:
+            flash('Benutzer nicht gefunden', 'error')
+            return redirect(url_for('user_management'))
+        
+        # Get attendance data for the user
+        cursor.execute('''
+            SELECT date, check_in, check_out, total_hours, break_duration
+            FROM attendance 
+            WHERE user_id = ? 
+            ORDER BY date DESC
+        ''', (user_id,))
+        
+        attendance_records = cursor.fetchall()
+        
+        # Create CSV output
+        output = StringIO()
+        
+        # Write user information
+        output.write("=== BENUTZERDATEN ===\n")
+        output.write(f"ID,{user['id']}\n")
+        output.write(f"Benutzername,{user['username']}\n")
+        output.write(f"Vorname,{user['first_name'] or ''}\n")
+        output.write(f"Nachname,{user['last_name'] or ''}\n")
+        output.write(f"Mitarbeiter-ID,{user['employee_id'] or ''}\n")
+        output.write(f"Rolle,{user['user_role']}\n")
+        output.write(f"Abteilung,{user['department'] or ''}\n")
+        output.write(f"Kontostatus,{user['account_status']}\n")
+        output.write(f"Administrator,{'Ja' if user['is_admin'] else 'Nein'}\n")
+        output.write(f"Erstellt am,{user['created_at']}\n")
+        output.write(f"Letzter Login,{user['last_login'] or 'Nie'}\n")
+        output.write(f"Datenschutz-Einwilligung,{user['consent_status']}\n")
+        output.write(f"Einwilligung am,{user['consent_date']}\n")
+        output.write("\n")
+        
+        # Write attendance data
+        output.write("=== ANWESENHEITSDATEN ===\n")
+        output.write("Datum,Ankunft,Abgang,Gesamtstunden,Pausenzeit\n")
+        
+        for record in attendance_records:
+            output.write(f"{record['date']},{record['check_in'] or ''},{record['check_out'] or ''},{record['total_hours'] or ''},{record['break_duration'] or ''}\n")
+        
+        # Create response
+        output.seek(0)
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = f'attachment; filename=benutzer_{user["username"]}_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        
+        logging.info(f"User data exported for user {user_id} by admin {session.get('username')}")
+        
+        return response
+        
+    except Exception as e:
+        logging.error(f"Error exporting user data: {str(e)}")
+        flash('Fehler beim Exportieren der Benutzerdaten', 'error')
+        return redirect(url_for('user_management'))
+
 if __name__ == '__main__':
     print("Initializing BTZ-Zeiterfassung application...")
     init_db()
