@@ -1,310 +1,31 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-    <title>Login - BTZ Zeiterfassung</title>
+    <title>Login</title>
     {% include 'head_includes.html' %}
-    <style>
-        /* ============================================================================
-           CLEAN LOGIN PAGE DESIGN
-           ============================================================================ */
-        
-        :root {
-            --primary-color: #3b82f6;
-            --secondary-color: #6b7280;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-tertiary: #f1f5f9;
-            
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            
-            --border-color: #e5e7eb;
-            --border-radius: 8px;
-            --border-radius-lg: 12px;
-            
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            
-            --spacing-xs: 0.25rem;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --spacing-xl: 2rem;
-            --spacing-2xl: 3rem;
-        }
-        
-        /* Remove glass morphism body styling */
-        body.login-page {
-            background: var(--bg-secondary);
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--spacing-lg);
-        }
-        
-        /* Login container */
-        .login-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        /* Login card */
-        .login-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-2xl);
-            box-shadow: var(--shadow-lg);
-            text-align: center;
-        }
-        
-        /* Login header */
-        .login-card h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin: 0 0 var(--spacing-xl) 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-md);
-        }
-        
-        .login-card h1 i {
-            font-size: 1.75rem;
-        }
-        
-        /* Flash messages */
-        .flash-message {
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-lg);
-            font-weight: 500;
-            text-align: left;
-        }
-        
-        .flash-message.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-        
-        .flash-message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-        
-        /* Login form */
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
-        }
-        
-        /* Form inputs */
-        .login-form input[type="text"],
-        .login-form input[type="password"] {
-            width: 100%;
-            padding: var(--spacing-lg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            background: var(--bg-primary);
-            font-size: 1rem;
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-        }
-        
-        .login-form input[type="text"]:focus,
-        .login-form input[type="password"]:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .login-form input::placeholder {
-            color: var(--text-muted);
-        }
-        
-        /* Show password checkbox */
-        .show-password {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            text-align: left;
-            margin-top: calc(-1 * var(--spacing-md));
-        }
-        
-        .show-password input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            cursor: pointer;
-        }
-        
-        /* Login button */
-        .login-form button {
-            width: 100%;
-            padding: var(--spacing-lg);
-            background: var(--primary-color);
-            color: white;
-            border: 1px solid var(--primary-color);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-sm);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .login-form button:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .login-form button:active {
-            transform: translateY(0);
-        }
-        
-        /* Loading state */
-        .login-form button.loading {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        
-        .login-form button.loading::after {
-            content: '';
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            margin-left: var(--spacing-sm);
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Back link */
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        
-        .back-link:hover {
-            color: var(--primary-color);
-            text-decoration: underline;
-        }
-        
-        .back-link i {
-            font-size: 0.8rem;
-        }
-        
-        /* Responsive design */
-        @media (max-width: 480px) {
-            body.login-page {
-                padding: var(--spacing-md);
-            }
-            
-            .login-card {
-                padding: var(--spacing-xl);
-            }
-            
-            .login-card h1 {
-                font-size: 1.75rem;
-                flex-direction: column;
-                gap: var(--spacing-sm);
-            }
-            
-            .login-form input[type="text"],
-            .login-form input[type="password"],
-            .login-form button {
-                padding: var(--spacing-md);
-            }
-        }
-        
-        /* Remove any glass morphism overrides */
-        .login-page {
-            background: var(--bg-secondary) !important;
-        }
-        
-        .login-card {
-            background: var(--bg-primary) !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-        }
-    </style>
+
 </head>
 <body class="login-page">
     {% include 'menu.html' %}
-    
-    <div class="login-container">
-        <div class="login-card">
-            <h1>
-                <i class="fas fa-sign-in-alt"></i>
-                Login
-            </h1>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            <form method="post" class="login-form">
-                <input type="text" name="username" placeholder="Benutzername" autocomplete="username" required>
-                <input type="password" name="password" id="password-input" placeholder="Passwort" autocomplete="current-password" required>
-                <label class="show-password">
-                    <input type="checkbox" id="show-password-toggle">
-                    Passwort anzeigen
-                </label>
-                <button type="submit">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Login
-                </button>
-            </form>
-            
-            <a href="/" class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                Zurück zur Startseite
-            </a>
-        </div>
+    <div class="login-card">
+        <h1><i class="fas fa-sign-in-alt icon-inline"></i>Login</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post" class="login-form">
+            <input type="text" name="username" placeholder="Benutzername" autocomplete="username" required>
+            <input type="password" name="password" id="password-input" placeholder="Passwort" autocomplete="current-password" required>
+            <label class="show-password"><input type="checkbox" id="show-password-toggle"> Passwort anzeigen</label>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Zurück zur Startseite</a>
     </div>
-    
     {% if 'user_id' in session %}
     <script>
         sessionStorage.setItem('user_id', '{{ session.user_id }}');
@@ -314,42 +35,152 @@
         sessionStorage.removeItem('user_id');
     </script>
     {% endif %}
-    
     <script>
-        // Clean login page functionality
+    document.getElementById('show-password-toggle').addEventListener('change', function() {
+        var pwd = document.getElementById('password-input');
+        pwd.type = this.checked ? 'text' : 'password';
+    });
+    </script>
+    <script src="/static/script.js"></script>
+    <script>
+        // Modern login page enhancements
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password-input');
             const showPasswordToggle = document.getElementById('show-password-toggle');
             const loginForm = document.querySelector('.login-form');
             const submitButton = loginForm.querySelector('button[type="submit"]');
+            const inputs = loginForm.querySelectorAll('input[type="text"], input[type="password"]');
             
-            // Show/hide password functionality
+            // Enhanced show/hide password functionality
             if (showPasswordToggle && passwordInput) {
                 showPasswordToggle.addEventListener('change', function() {
                     passwordInput.type = this.checked ? 'text' : 'password';
+                    
+                    // Add smooth transition effect
+                    passwordInput.style.transition = 'all 0.3s ease';
+                    passwordInput.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        passwordInput.style.transform = 'scale(1)';
+                    }, 150);
                 });
             }
             
-            // Form submission loading state
-            loginForm.addEventListener('submit', function(e) {
-                submitButton.classList.add('loading');
-                submitButton.disabled = true;
+            // Enhanced floating label animation for inputs
+            inputs.forEach(input => {
+                const label = document.createElement('label');
+                label.textContent = input.getAttribute('placeholder') || input.name;
+                label.style.cssText = `
+                    position: absolute;
+                    left: 16px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: #f8fafc;
+                    padding: 0 8px;
+                    color: #94a3b8;
+                    pointer-events: none;
+                    transition: all 0.3s ease;
+                    font-size: 14px;
+                    z-index: 1;
+                `;
                 
-                // Reset after 5 seconds if still loading (fallback)
-                setTimeout(() => {
-                    submitButton.classList.remove('loading');
-                    submitButton.disabled = false;
-                }, 5000);
+                // Wrap input in container for positioning
+                const container = document.createElement('div');
+                container.style.position = 'relative';
+                input.parentNode.insertBefore(container, input);
+                container.appendChild(input);
+                container.appendChild(label);
+                
+                // Handle focus/blur events
+                const updateLabel = () => {
+                    if (input.value || input === document.activeElement) {
+                        label.style.top = '0';
+                        label.style.transform = 'translateY(-50%) scale(0.85)';
+                        label.style.color = '#667eea';
+                        label.style.background = '#ffffff';
+                    } else {
+                        label.style.top = '50%';
+                        label.style.transform = 'translateY(-50%)';
+                        label.style.color = '#94a3b8';
+                        label.style.background = '#f8fafc';
+                    }
+                };
+                
+                input.addEventListener('focus', updateLabel);
+                input.addEventListener('blur', updateLabel);
+                input.addEventListener('input', updateLabel);
+                
+                // Initial check
+                updateLabel();
             });
             
-            // Focus first input
-            const firstInput = loginForm.querySelector('input[type="text"]');
-            if (firstInput) {
-                firstInput.focus();
-            }
+            // Add form submission animation
+            loginForm.addEventListener('submit', function(e) {
+                submitButton.classList.add('loading');
+                submitButton.style.pointerEvents = 'none';
+                
+                // Reset after 3 seconds if still loading (fallback)
+                setTimeout(() => {
+                    submitButton.classList.remove('loading');
+                    submitButton.style.pointerEvents = 'auto';
+                }, 3000);
+            });
+            
+            // Add ripple effect to button
+            submitButton.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+            
+            // Add CSS for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                
+                .login-form button {
+                    position: relative;
+                    overflow: hidden;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Add entrance animation
+            const loginCard = document.querySelector('.login-card');
+            loginCard.style.opacity = '0';
+            loginCard.style.transform = 'translateY(30px) scale(0.95)';
+            
+            setTimeout(() => {
+                loginCard.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                loginCard.style.opacity = '1';
+                loginCard.style.transform = 'translateY(0) scale(1)';
+            }, 100);
         });
-    </script>
-    
-    <script src="/static/script.js"></script>
+        </script>
 </body>
 </html>

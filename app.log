@@ -29029,3 +29029,26 @@ Connection: keep-alive
 2025-06-05 08:42:36,815 - werkzeug - INFO - 127.0.0.1 - - [05/Jun/2025 08:42:36] "GET /search_users?q=admin HTTP/1.1" 200 -
 2025-06-05 08:42:36,836 - root - INFO - User data exported by admin m.kopecki
 2025-06-05 08:42:36,836 - werkzeug - INFO - 127.0.0.1 - - [05/Jun/2025 08:42:36] "GET /export_users HTTP/1.1" 200 -
+2025-06-05 08:43:44,853 - root - INFO - Loaded 21 users for management interface
+2025-06-05 08:43:44,873 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 08:43:44,879 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:44,882 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:44,882 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 08:43:44,883 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:44,883 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:44,883 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:44] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 08:43:50,904 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "GET /edit_user/34 HTTP/1.1" 200 -
+2025-06-05 08:43:50,909 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:50,911 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:50,911 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 08:43:50,912 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 08:43:50,912 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 08:43:50,913 - werkzeug - INFO - 10.43.10.77 - - [05/Jun/2025 08:43:50] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 08:54:12,942 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/setup_database.py', reloading
+2025-06-05 08:54:12,963 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 08:54:13,125 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 08:54:13,134 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 08:58:14,690 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/test_database_management.py', reloading
+2025-06-05 08:58:14,712 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 08:58:14,866 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 08:58:14,875 - werkzeug - INFO -  * Debugger PIN: 122-582-706
