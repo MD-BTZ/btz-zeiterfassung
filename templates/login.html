@@ -1,463 +1,310 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <title>BTZ Zeiterfassung - Login</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <title>Login - BTZ Zeiterfassung</title>
+    {% include 'head_includes.html' %}
     <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* CSS Variables - Matching project color scheme */
+        /* ============================================================================
+           CLEAN LOGIN PAGE DESIGN
+           ============================================================================ */
+        
         :root {
-            /* Primary Colors from project */
             --primary-color: #3b82f6;
-            --primary-dark: #2563eb;
             --secondary-color: #6b7280;
             --success-color: #10b981;
-            --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            --info-color: #06b6d4;
+            --warning-color: #f59e0b;
             
-            /* Text Colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            
             --text-primary: #1f2937;
             --text-secondary: #6b7280;
             --text-muted: #9ca3af;
             
-            /* Background Colors */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-muted: #f1f5f9;
+            --border-color: #e5e7eb;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
             
-            /* Glass morphism effects */
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
         }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, 
-                #f8fafc 0%,     /* Very light gray */
-                #f1f5f9 25%,    /* Light gray */
-                #e2e8f0 50%,    /* Subtle gray */
-                #cbd5e1 75%,    /* Medium gray */
-                #94a3b8 100%);  /* Accent gray */
-            background-size: 400% 400%;
-            animation: gradientShift 30s ease infinite;
+        
+        /* Remove glass morphism body styling */
+        body.login-page {
+            background: var(--bg-secondary);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
-            position: relative;
-            overflow-x: hidden;
+            padding: var(--spacing-lg);
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            25% { background-position: 100% 50%; }
-            50% { background-position: 100% 100%; }
-            75% { background-position: 0% 100%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Removed animated background elements for clean minimal design */
-        body::before {
-            display: none;
-        }
-
+        
+        /* Login container */
         .login-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: var(--glass-shadow);
             width: 100%;
-            max-width: 450px;
-            position: relative;
-            z-index: 10;
-            animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 400px;
+            margin: 0 auto;
         }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .login-header {
+        
+        /* Login card */
+        .login-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-2xl);
+            box-shadow: var(--shadow-lg);
             text-align: center;
-            margin-bottom: 2.5rem;
         }
-
-        .login-header h1 {
-            font-size: 2.5rem;
+        
+        /* Login header */
+        .login-card h1 {
+            font-size: 2rem;
             font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            margin: 0 0 var(--spacing-xl) 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
+            gap: var(--spacing-md);
         }
-
-        .login-header h1 i {
-            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2.2rem;
+        
+        .login-card h1 i {
+            font-size: 1.75rem;
         }
-
-        .login-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            font-weight: 400;
-        }
-
-        /* Flash Messages */
-        .flash-messages {
-            margin-bottom: 1.5rem;
-        }
-
+        
+        /* Flash messages */
         .flash-message {
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            margin-bottom: 0.75rem;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: slideInDown 0.5s ease;
+            text-align: left;
         }
-
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
+        
         .flash-message.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
-
+        
         .flash-message.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger-color);
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
-
-        .flash-message i {
-            font-size: 1.1rem;
-        }
-
-        /* Form Styling */
+        
+        /* Login form */
         .login-form {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
         }
-
-        .input-group {
-            position: relative;
-        }
-
-        .form-input {
+        
+        /* Form inputs */
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
             width: 100%;
-            padding: 1rem 1.25rem;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            font-size: 1rem;
             color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        .login-form input[type="text"]:focus,
+        .login-form input[type="password"]:focus {
             outline: none;
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-            opacity: 0.8;
-        }
-
-        .form-input:focus {
             border-color: var(--primary-color);
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-
-        .form-input:focus + .floating-label,
-        .form-input:not(:placeholder-shown) + .floating-label {
-            top: -8px;
-            left: 12px;
-            font-size: 0.75rem;
-            color: var(--primary-color);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 0 8px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .floating-label {
-            position: absolute;
-            top: 50%;
-            left: 1.25rem;
-            transform: translateY(-50%);
+        
+        .login-form input::placeholder {
             color: var(--text-muted);
-            font-size: 1rem;
-            font-weight: 500;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
         }
-
-        /* Password Input with Toggle */
-        .password-container {
-            position: relative;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
+        
+        /* Show password checkbox */
+        .show-password {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            z-index: 2;
+            text-align: left;
+            margin-top: calc(-1 * var(--spacing-md));
         }
-
-        .password-toggle:hover {
-            color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.1);
+        
+        .show-password input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
         }
-
-        .password-toggle i {
-            font-size: 1.1rem;
-        }
-
-        /* Submit Button */
-        .submit-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        
+        /* Login button */
+        .login-form button {
+            width: 100%;
+            padding: var(--spacing-lg);
+            background: var(--primary-color);
             color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            margin-top: 0.5rem;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-sm);
         }
-
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+        
+        .login-form button:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-        }
-
-        .submit-btn:hover::before {
-            left: 100%;
-        }
-
-        .submit-btn:active {
+        
+        .login-form button:active {
             transform: translateY(0);
         }
-
-        .submit-btn.loading {
-            pointer-events: none;
-            opacity: 0.8;
+        
+        /* Loading state */
+        .login-form button.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
-
-        .submit-btn.loading i {
+        
+        .login-form button.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: var(--spacing-sm);
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
+        
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
-        /* Back Link */
+        
+        /* Back link */
         .back-link {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--spacing-sm);
             color: var(--text-secondary);
             text-decoration: none;
-            font-weight: 500;
-            margin-top: 1.5rem;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
         }
-
+        
         .back-link:hover {
             color: var(--primary-color);
-            background: rgba(59, 130, 246, 0.1);
-            transform: translateX(-3px);
+            text-decoration: underline;
         }
-
+        
         .back-link i {
-            transition: transform 0.3s ease;
+            font-size: 0.8rem;
         }
-
-        .back-link:hover i {
-            transform: translateX(-3px);
-        }
-
-        /* Responsive Design */
+        
+        /* Responsive design */
         @media (max-width: 480px) {
-            .login-container {
-                padding: 2rem 1.5rem;
-                margin: 1rem;
-                border-radius: 16px;
+            body.login-page {
+                padding: var(--spacing-md);
             }
-
-            .login-header h1 {
-                font-size: 2rem;
+            
+            .login-card {
+                padding: var(--spacing-xl);
+            }
+            
+            .login-card h1 {
+                font-size: 1.75rem;
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: var(--spacing-sm);
             }
-
-            .login-header h1 i {
-                font-size: 1.8rem;
-            }
-
-            .form-input {
-                padding: 0.875rem 1rem;
-                font-size: 0.95rem;
-            }
-
-            .floating-label {
-                left: 1rem;
-                font-size: 0.95rem;
-            }
-
-            .form-input:focus + .floating-label,
-            .form-input:not(:placeholder-shown) + .floating-label {
-                left: 8px;
-                font-size: 0.7rem;
+            
+            .login-form input[type="text"],
+            .login-form input[type="password"],
+            .login-form button {
+                padding: var(--spacing-md);
             }
         }
-
-        /* Additional animations */
-        .login-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+        
+        /* Remove any glass morphism overrides */
+        .login-page {
+            background: var(--bg-secondary) !important;
         }
-
-        /* Ripple effect for button */
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(0);
-            animation: ripple-animation 0.6s ease-out;
-            pointer-events: none;
-        }
-
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+        
+        .login-card {
+            background: var(--bg-primary) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
     </style>
 </head>
-<body>
+<body class="login-page">
+    {% include 'menu.html' %}
+    
     <div class="login-container">
-        <div class="login-header">
+        <div class="login-card">
             <h1>
                 <i class="fas fa-sign-in-alt"></i>
-                BTZ Login
+                Login
             </h1>
-            <p class="login-subtitle">Willkommen zurück! Melden Sie sich an, um fortzufahren.</p>
-        </div>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                {% for category, message in messages %}
-                        <div class="flash-message {{ 'error' if category == 'error' else 'success' }}">
-                            <i class="fas {{ 'fa-exclamation-triangle' if category == 'error' else 'fa-check-circle' }}"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        <form method="post" class="login-form">
-            <div class="input-group">
-                <input type="text" name="username" class="form-input" placeholder=" " autocomplete="username" required>
-                <label class="floating-label">Benutzername</label>
-            </div>
-
-            <div class="input-group password-container">
-                <input type="password" name="password" id="password-input" class="form-input" placeholder=" " autocomplete="current-password" required>
-                <label class="floating-label">Passwort</label>
-                <button type="button" class="password-toggle" id="password-toggle">
-                    <i class="fas fa-eye" id="password-icon"></i>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="post" class="login-form">
+                <input type="text" name="username" placeholder="Benutzername" autocomplete="username" required>
+                <input type="password" name="password" id="password-input" placeholder="Passwort" autocomplete="current-password" required>
+                <label class="show-password">
+                    <input type="checkbox" id="show-password-toggle">
+                    Passwort anzeigen
+                </label>
+                <button type="submit">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
                 </button>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submit-btn">
-                <i class="fas fa-sign-in-alt"></i>
-                Anmelden
-            </button>
-        </form>
-
-        <a href="/" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            Zurück zur Startseite
-        </a>
+            </form>
+            
+            <a href="/" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Startseite
+            </a>
+        </div>
     </div>
-
+    
     {% if 'user_id' in session %}
     <script>
         sessionStorage.setItem('user_id', '{{ session.user_id }}');
@@ -467,112 +314,42 @@
         sessionStorage.removeItem('user_id');
     </script>
     {% endif %}
-
+    
     <script>
+        // Clean login page functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Password toggle functionality
             const passwordInput = document.getElementById('password-input');
-            const passwordToggle = document.getElementById('password-toggle');
-            const passwordIcon = document.getElementById('password-icon');
-
-            passwordToggle.addEventListener('click', function() {
-                const isPassword = passwordInput.type === 'password';
-                passwordInput.type = isPassword ? 'text' : 'password';
-                passwordIcon.className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
-                    
-                    // Add smooth transition effect
-                    passwordInput.style.transform = 'scale(0.98)';
-                    setTimeout(() => {
-                        passwordInput.style.transform = 'scale(1)';
-                    }, 150);
+            const showPasswordToggle = document.getElementById('show-password-toggle');
+            const loginForm = document.querySelector('.login-form');
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+            
+            // Show/hide password functionality
+            if (showPasswordToggle && passwordInput) {
+                showPasswordToggle.addEventListener('change', function() {
+                    passwordInput.type = this.checked ? 'text' : 'password';
                 });
-
-            // Form submission with loading state
-            const form = document.querySelector('.login-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const submitIcon = submitBtn.querySelector('i');
-
-            form.addEventListener('submit', function() {
-                submitBtn.classList.add('loading');
-                submitIcon.className = 'fas fa-spinner';
-                submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Anmeldung läuft...';
+            }
+            
+            // Form submission loading state
+            loginForm.addEventListener('submit', function(e) {
+                submitButton.classList.add('loading');
+                submitButton.disabled = true;
                 
                 // Reset after 5 seconds if still loading (fallback)
                 setTimeout(() => {
-                    if (submitBtn.classList.contains('loading')) {
-                        submitBtn.classList.remove('loading');
-                        submitIcon.className = 'fas fa-sign-in-alt';
-                        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
-                    }
+                    submitButton.classList.remove('loading');
+                    submitButton.disabled = false;
                 }, 5000);
             });
-
-            // Ripple effect for submit button
-            submitBtn.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                const rect = this.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-                
-                ripple.className = 'ripple';
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                
-                this.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            });
             
-            // Enhanced floating label functionality
-            const inputs = document.querySelectorAll('.form-input');
-            inputs.forEach(input => {
-                // Check initial state
-                if (input.value) {
-                    input.classList.add('has-value');
-                }
-                
-                input.addEventListener('input', function() {
-                    if (this.value) {
-                        this.classList.add('has-value');
-                    } else {
-                        this.classList.remove('has-value');
-                    }
-                });
-                
-                input.addEventListener('focus', function() {
-                    this.classList.add('focused');
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.classList.remove('focused');
-                });
-            });
-
-            // Add entrance animation delay for form elements
-            const formElements = document.querySelectorAll('.input-group, .submit-btn, .back-link');
-            formElements.forEach((element, index) => {
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(20px)';
-                element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-                
-                setTimeout(() => {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                }, 300 + (index * 100));
-            });
-
-            // Auto-focus first input
-            setTimeout(() => {
-                const firstInput = document.querySelector('input[name="username"]');
-                if (firstInput) {
-                    firstInput.focus();
-                }
-            }, 800);
+            // Focus first input
+            const firstInput = loginForm.querySelector('input[type="text"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
         });
-        </script>
+    </script>
+    
+    <script src="/static/script.js"></script>
 </body>
 </html>

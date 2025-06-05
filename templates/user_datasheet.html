@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benutzerdaten - BTZ Zeiterfassung</title>
-
+    <title>Benutzerdatenblatt - BTZ Zeiterfassung</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            /* Use project's consistent color system */
             --primary-color: #3b82f6;
             --secondary-color: #6b7280;
             --success-color: #10b981;
@@ -19,41 +19,28 @@
             --warning-color: #f59e0b;
             --info-color: #06b6d4;
             
-            /* Text Colors */
-            --text-primary: rgba(17, 24, 39, 0.9);
-            --text-secondary: rgba(75, 85, 99, 0.8);
-            --text-muted: rgba(107, 114, 128, 0.7);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
             
-            /* Glass morphism backgrounds */
-            --glass-bg-primary: rgba(255, 255, 255, 0.95);
-            --glass-bg-secondary: rgba(255, 255, 255, 0.9);
-            --glass-bg-tertiary: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(0, 0, 0, 0.08);
-            --glass-border-light: rgba(0, 0, 0, 0.05);
-            --glass-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
-            --glass-shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.06);
-            --glass-shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
             
-            /* Border and spacing */
-            --border-color: rgba(0, 0, 0, 0.08);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-full: 9999px;
+            --border-color: #e5e7eb;
+            --border-radius: 8px;
+            --border-radius-lg: 12px;
             
-            /* Spacing */
-            --space-xs: 0.25rem;
-            --space-sm: 0.5rem;
-            --space-md: 1rem;
-            --space-lg: 1.5rem;
-            --space-xl: 2rem;
-            --space-2xl: 3rem;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
             
-            /* Transitions */
-            --transition-fast: 0.15s ease-out;
-            --transition-normal: 0.2s ease-out;
-            --transition-slow: 0.3s ease-out;
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
         }
         
         * {
@@ -64,86 +51,31 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, 
-                #f8fafc 0%,     /* Very light gray */
-                #f1f5f9 25%,    /* Light gray */
-                #e2e8f0 50%,    /* Subtle gray */
-                #cbd5e1 75%,    /* Medium gray */
-                #94a3b8 100%);  /* Accent gray */
-            background-size: 400% 400%;
-            animation: gradientShift 30s ease infinite;
+            background: var(--bg-secondary);
             color: var(--text-primary);
             line-height: 1.6;
             margin: 0;
-            padding: 0;
+            padding: var(--spacing-lg);
             min-height: 100vh;
         }
         
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            25% { background-position: 100% 50%; }
-            50% { background-position: 100% 100%; }
-            75% { background-position: 0% 100%; }
-            100% { background-position: 0% 50%; }
-        }
-        
         .datasheet-container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 var(--space-lg);
-        }
-        
-        /* Header and Navigation */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            padding: var(--space-md) var(--space-lg);
-            background: var(--glass-bg-primary);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition-normal);
-            box-shadow: var(--glass-shadow-light);
-        }
-        
-        .back-button:hover {
-            background: var(--glass-bg-secondary);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--glass-shadow-medium);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: var(--space-md);
-            flex-wrap: wrap;
+            max-width: 210mm; /* A4 width */
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
         }
         
         /* Header Section */
         .datasheet-header {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            color: white;
+            padding: var(--spacing-2xl);
             text-align: center;
-            margin-bottom: 2.5rem;
-            background: var(--glass-bg-primary);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: var(--radius-lg);
-            padding: var(--space-2xl) var(--space-xl);
-            box-shadow: var(--glass-shadow-medium);
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--glass-border);
         }
         
         .datasheet-header::before {
@@ -152,441 +84,411 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--info-color), var(--success-color));
-            opacity: 0.8;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
         }
         
         .datasheet-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .datasheet-header .subtitle {
+            font-size: 1.2rem;
+            font-weight: 400;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .company-logo {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-md);
-            margin: 0 0 var(--space-md);
-            color: var(--text-primary);
-            font-size: 2.25rem;
-            font-weight: 700;
-            line-height: 1.2;
+            font-size: 1.5rem;
+            z-index: 1;
         }
         
-        .datasheet-header p {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .datasheet-header h1 i {
-            color: var(--primary-color);
-            font-size: 2.2rem;
-        }
-        
-        /* Main Content Grid */
+        /* Main Content */
         .datasheet-content {
+            padding: var(--spacing-2xl);
+        }
+        
+        .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--space-lg);
-            margin-bottom: 2.5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
         }
         
-        /* Info Cards */
-        .info-card {
-            background: var(--glass-bg-primary);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl);
-            box-shadow: var(--glass-shadow-medium);
-            transition: var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+        .info-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
         }
         
-        .info-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--glass-shadow-heavy);
-            border-color: var(--glass-border);
-        }
-        
-        .info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
-            opacity: 0.8;
-        }
-        
-        .info-card h3 {
+        .info-section h3 {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
-            color: var(--text-primary);
+            gap: var(--spacing-md);
             font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0 0 var(--space-lg);
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--glass-border-light);
-        }
-        
-        .info-card h3 i {
+            font-weight: 700;
             color: var(--primary-color);
-            font-size: 1.2rem;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--border-color);
         }
         
-        /* Data Table */
-        .data-table {
+        .info-section h3 i {
+            font-size: 1.1rem;
+        }
+        
+        .info-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: var(--glass-bg-secondary);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            margin-bottom: var(--space-lg);
+            border-collapse: collapse;
         }
         
-        .data-table th {
-            background: rgba(59, 130, 246, 0.05);
-            padding: var(--space-md) var(--space-lg);
-            text-align: left;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--glass-border);
-            width: 35%;
+        .info-table tr {
+            border-bottom: 1px solid var(--border-color);
         }
         
-        .data-table td {
-            padding: var(--space-lg) var(--space-lg);
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--glass-border-light);
-            font-family: 'Courier New', monospace;
-            font-weight: 500;
-            font-size: 1rem;
-            vertical-align: middle;
-        }
-        
-        .data-table tr:last-child td {
+        .info-table tr:last-child {
             border-bottom: none;
         }
         
-        .data-table tr:hover td {
-            background-color: rgba(59, 130, 246, 0.02);
+        .info-table td {
+            padding: var(--spacing-md) 0;
+            vertical-align: top;
         }
         
-        .password-display {
-            background: rgba(16, 185, 129, 0.1);
-            color: #065f46;
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+        .info-table td:first-child {
+            font-weight: 600;
+            color: var(--text-secondary);
+            width: 40%;
+            padding-right: var(--spacing-md);
+        }
+        
+        .info-table td:last-child {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .credential-value {
+            background: var(--success-color);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-family: 'Courier New', monospace;
             font-weight: 600;
             letter-spacing: 1px;
-            font-size: 1.1rem;
+            display: inline-block;
         }
         
-        /* QR Code Section */
         .qr-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-md);
-            margin-top: var(--space-lg);
-            padding-top: var(--space-lg);
-            border-top: 1px solid var(--glass-border);
             text-align: center;
-        }
-        
-        .qr-section p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-sm);
-            font-size: 0.95rem;
-        }
-        
-        .login-url {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary-color);
-            padding: var(--space-md) var(--space-lg);
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            font-family: 'Courier New', monospace;
-            font-weight: 500;
-            font-size: 0.9rem;
-            word-break: break-all;
-            text-align: center;
-            margin-bottom: var(--space-sm);
+            padding: var(--spacing-lg);
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-lg);
         }
         
         .qr-code {
-            border-radius: var(--radius-md);
-            box-shadow: var(--glass-shadow-medium);
-            margin: var(--space-md) 0;
+            margin: var(--spacing-md) 0;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
         }
         
-        .qr-caption {
-            color: var(--text-muted);
+        .login-url {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            margin: 0;
+            color: var(--primary-color);
+            word-break: break-all;
+            margin: var(--spacing-md) 0;
+        }
+        
+        /* Full-width sections */
+        .full-width-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .full-width-section h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .instruction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .instruction-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .instruction-card h4 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .instruction-card h4 i {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        .instruction-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .instruction-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .instruction-list li::before {
+            content: '→';
+            color: var(--primary-color);
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+        }
+        
+        .feature-item i {
+            color: var(--success-color);
+            font-size: 0.9rem;
+            width: 16px;
+            text-align: center;
+        }
+        
+        /* Security Notice */
+        .security-notice {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .security-notice h3 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            color: #92400e;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .security-notice h3 i {
+            font-size: 1.3rem;
+        }
+        
+        .security-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .security-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            color: #92400e;
             font-weight: 500;
         }
         
-        /* Buttons */
-        .button-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-lg);
-            margin: var(--space-2xl) 0;
+        .security-list li i {
+            color: #f59e0b;
+            margin-top: 2px;
+            flex-shrink: 0;
         }
         
-        .button-container {
+        /* Action Buttons */
+        .action-section {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: var(--spacing-2xl);
+        }
+        
+        .button-group {
             display: flex;
-            gap: var(--space-md);
-            flex-wrap: wrap;
+            gap: var(--spacing-md);
             justify-content: center;
-            width: 100%;
-            max-width: 600px;
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-lg);
         }
         
-        .print-button,
-        .pdf-button {
+        .btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: var(--space-md);
-            padding: var(--space-lg) var(--space-xl);
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-xl);
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: var(--border-radius);
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: var(--transition-normal);
-            flex: 1;
-            min-width: 180px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .print-button::before,
-        .pdf-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .print-button:hover::before,
-        .pdf-button:hover::before {
-            left: 100%;
-        }
-        
-        .print-button {
-            background: linear-gradient(135deg, var(--primary-color), #2563eb);
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        
-        .print-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-        }
-        
-        .print-button.pdf-button {
-            background: linear-gradient(135deg, var(--danger-color), #dc2626);
-            color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-        
-        .print-button.pdf-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-        }
-        
-        .button-tip {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin: 0;
-            font-style: italic;
-        }
-        
-        /* Notice Sections */
-        .notice-section {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl) var(--space-xl);
-            margin: 2.5rem 0;
-            box-shadow: var(--glass-shadow-light);
-            border-left: 4px solid var(--warning-color);
-        }
-        
-        .notice-section h4 {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            color: #92400e;
-            margin: 0 0 var(--space-md);
-            font-size: 1.1rem;
-        }
-        
-        .notice-section h4 i {
-            color: var(--warning-color);
-        }
-        
-        .notice-section ul {
-            padding-left: var(--space-lg);
-            margin: 0;
-        }
-        
-        .notice-section li {
-            margin-bottom: var(--space-sm);
-            color: #78350f;
-        }
-        
-        .notice-section li:last-child {
-            margin-bottom: 0;
-        }
-        
-        /* Flash Messages */
-        .flash-message {
-            background: rgba(59, 130, 246, 0.1);
-            color: #1e40af;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: var(--radius-md);
-            padding: var(--space-md) var(--space-lg);
-            margin-bottom: var(--space-lg);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-        
-        .flash-message.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #991b1b;
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-        
-        .flash-message i {
-            font-size: 1.25rem;
-        }
-        
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            min-width: 160px;
             justify-content: center;
-            z-index: 1000;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
             color: white;
-            font-size: 1.1rem;
-            font-weight: 500;
-            gap: var(--space-md);
+            box-shadow: var(--shadow-md);
         }
         
-        .loading-overlay i {
-            animation: spin 1s linear infinite;
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
         }
         
         /* Footer */
         .datasheet-footer {
+            background: var(--bg-tertiary);
+            padding: var(--spacing-xl);
             text-align: center;
-            margin-top: var(--space-2xl);
-            padding-top: var(--space-xl);
-            border-top: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
         
         .datasheet-footer p {
-            margin: var(--space-sm) 0;
+            margin-bottom: var(--spacing-sm);
         }
         
-        .datasheet-footer small {
-            font-size: 0.85em;
-            opacity: 0.8;
+        .datasheet-footer .timestamp {
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
         
         /* Print Styles */
         @media print {
             body {
                 background: white !important;
-                color: black !important;
-                font-size: 12pt;
-                line-height: 1.5;
-            }
-            
-            .button-section {
-                display: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
             
             .datasheet-container {
-                max-width: 100%;
-                padding: 0.5in;
-                margin: 0;
+                max-width: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+            }
+            
+            .action-section {
+                display: none !important;
             }
             
             .datasheet-header {
-                background: white !important;
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 0 1rem !important;
-                margin-bottom: 1.5rem !important;
+                background: #3b82f6 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             
-            .datasheet-header h1 {
-                color: black !important;
-                font-size: 18pt !important;
-                background: none !important;
-                -webkit-text-fill-color: black !important;
-            }
-            
-            .info-card {
+            .info-section,
+            .full-width-section,
+            .security-notice {
                 page-break-inside: avoid;
                 break-inside: avoid;
-                margin-bottom: 1rem;
-                border: 1px solid #ddd !important;
-                box-shadow: none !important;
             }
             
-            .notice-section {
-                page-break-inside: avoid;
-                break-inside: avoid;
-                border: 1px solid #ddd !important;
-                background: #f9f9f9 !important;
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
             }
             
             .qr-code {
-                max-width: 2in !important;
+                max-width: 120px !important;
                 height: auto !important;
-            }
-            
-            a {
-                text-decoration: none !important;
-                color: black !important;
             }
             
             @page {
@@ -596,808 +498,368 @@
         }
         
         /* Responsive Design */
-        
-        /* Large Desktop (1200px and up) */
-        @media (min-width: 1200px) {
-            .datasheet-container {
-                max-width: 1200px;
-                padding: 0 var(--space-xl);
-            }
-            
-            .datasheet-content {
-                grid-template-columns: 1fr 1fr;
-                gap: var(--space-xl);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .info-card {
-                padding: var(--space-2xl);
-            }
-        }
-        
-        /* Desktop (992px to 1199px) */
-        @media (max-width: 1199px) and (min-width: 992px) {
-            .datasheet-container {
-                max-width: 1000px;
-                padding: 0 var(--space-lg);
-            }
-            
-            .datasheet-content {
-                grid-template-columns: 1fr 1fr;
-                gap: var(--space-lg);
-            }
-        }
-        
-        /* Tablet Landscape (768px to 991px) */
-        @media (max-width: 991px) and (min-width: 768px) {
-            .datasheet-container {
-                max-width: 100%;
-                padding: 0 var(--space-lg);
-                margin: var(--space-lg) auto;
-            }
-            
-            .datasheet-content {
-                grid-template-columns: 1fr;
-                gap: var(--space-lg);
-            }
-            
-            .datasheet-header {
-                padding: var(--space-xl) var(--space-lg);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 2rem;
-            }
-            
-            .info-card {
-                padding: var(--space-xl);
-            }
-            
-            .button-container {
-                flex-direction: row;
-                justify-content: center;
-                max-width: 500px;
-                margin: 0 auto;
-            }
-            
-            .print-button {
-                flex: 1;
-                min-width: 200px;
-            }
-        }
-        
-        /* Tablet Portrait and Small Laptop (576px to 767px) */
-        @media (max-width: 767px) and (min-width: 576px) {
-            .datasheet-container {
-                padding: 0 var(--space-md);
-                margin: var(--space-md) auto;
-            }
-            
-            .datasheet-header {
-                padding: var(--space-lg) var(--space-md);
-                margin-bottom: var(--space-xl);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 1.8rem;
-                flex-direction: column;
-                gap: var(--space-sm);
-                text-align: center;
-            }
-            
-            .datasheet-header h1 i {
-                font-size: 2rem;
-            }
-            
-            .datasheet-header p {
-                font-size: 1rem;
-                text-align: center;
-            }
-            
-            .datasheet-content {
-                grid-template-columns: 1fr;
-                gap: var(--space-lg);
-                margin-bottom: var(--space-xl);
-            }
-            
-            .info-card {
-                padding: var(--space-lg);
-            }
-            
-            .info-card h3 {
-                font-size: 1.1rem;
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-sm);
-            }
-            
-            .info-card h3 i {
-                font-size: 1.5rem;
-            }
-            
-            /* Responsive Table for Tablets */
-            .data-table {
-                font-size: 0.9rem;
-            }
-            
-            .data-table th,
-            .data-table td {
-                padding: var(--space-md) var(--space-sm);
-            }
-            
-            .data-table th {
-                font-size: 0.8rem;
-            }
-            
-            /* QR Section adjustments */
-            .qr-section {
-                gap: var(--space-sm);
-            }
-            
-            .qr-code {
-                max-width: 120px;
-                height: auto;
-            }
-            
-            .login-url {
-                font-size: 0.85rem;
-                padding: var(--space-sm) var(--space-md);
-            }
-            
-            /* Button adjustments */
-            .button-container {
-                flex-direction: column;
-                align-items: stretch;
-                gap: var(--space-md);
-                max-width: 400px;
-                margin: 0 auto;
-            }
-            
-            .print-button {
-                min-width: auto;
-                width: 100%;
-                padding: var(--space-md) var(--space-lg);
-            }
-            
-            /* Notice section */
-            .notice-section {
-                padding: var(--space-lg);
-                margin: var(--space-xl) 0;
-            }
-            
-            .notice-section h4 {
-                font-size: 1rem;
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-sm);
-            }
-            
-            .notice-section ul {
-                padding-left: var(--space-md);
-            }
-            
-            .notice-section li {
-                font-size: 0.9rem;
-                line-height: 1.5;
-            }
-        }
-        
-        /* Mobile Landscape (480px to 575px) */
-        @media (max-width: 575px) and (min-width: 480px) {
-            .datasheet-container {
-                padding: 0 var(--space-sm);
-                margin: var(--space-sm) auto;
-            }
-            
-            .datasheet-header {
-                padding: var(--space-md);
-                margin-bottom: var(--space-lg);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 1.6rem;
-                flex-direction: column;
-                gap: var(--space-xs);
-            }
-            
-            .datasheet-header h1 i {
-                font-size: 1.8rem;
-            }
-            
-            .datasheet-header p {
-                font-size: 0.95rem;
-            }
-            
-            .info-card {
-                padding: var(--space-md);
-            }
-            
-            .info-card h3 {
-                font-size: 1rem;
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-xs);
-            }
-            
-            /* Mobile-optimized table */
-            .data-table {
-                font-size: 0.85rem;
-            }
-            
-            .data-table th,
-            .data-table td {
-                padding: var(--space-sm);
-                display: block;
-                width: 100%;
-                border-bottom: 1px solid var(--glass-border-light);
-            }
-            
-            .data-table th {
-                background: rgba(59, 130, 246, 0.1);
-                font-weight: 700;
-                text-transform: uppercase;
-                font-size: 0.75rem;
-                letter-spacing: 0.1em;
-                padding: var(--space-sm) var(--space-md);
-                border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-            }
-            
-            .data-table td {
-                background: var(--glass-bg-primary);
-                font-weight: 600;
-                padding: var(--space-md);
-                border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-                margin-bottom: var(--space-sm);
-            }
-            
-            .data-table tr {
-                display: block;
-                margin-bottom: var(--space-md);
-                border-radius: var(--radius-sm);
-                overflow: hidden;
-                box-shadow: var(--glass-shadow-light);
-            }
-            
-            .qr-code {
-                max-width: 100px;
-            }
-            
-            .login-url {
-                font-size: 0.8rem;
-                padding: var(--space-sm);
-                line-height: 1.4;
-            }
-            
-            .button-tip {
-                font-size: 0.85rem;
-                text-align: center;
-                padding: 0 var(--space-sm);
-            }
-        }
-        
-        /* Mobile Portrait (up to 479px) */
-        @media (max-width: 479px) {
-            .datasheet-container {
-                padding: 0 var(--space-xs);
-                margin: var(--space-xs) auto;
-            }
-            
-            .datasheet-header {
-                padding: var(--space-sm);
-                margin-bottom: var(--space-md);
-                border-radius: var(--radius-md);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 1.4rem;
-                flex-direction: column;
-                gap: var(--space-xs);
-                line-height: 1.3;
-            }
-            
-            .datasheet-header h1 i {
-                font-size: 1.6rem;
-            }
-            
-            .datasheet-header p {
-                font-size: 0.9rem;
-                line-height: 1.4;
-            }
-            
-            .datasheet-content {
-                gap: var(--space-md);
-                margin-bottom: var(--space-lg);
-            }
-            
-            .info-card {
-                padding: var(--space-sm);
-                border-radius: var(--radius-md);
-            }
-            
-            .info-card h3 {
-                font-size: 0.95rem;
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-xs);
-                margin-bottom: var(--space-md);
-            }
-            
-            .info-card h3 i {
-                font-size: 1.3rem;
-            }
-            
-            /* Ultra-mobile table layout */
-            .data-table {
-                border: none;
-                background: transparent;
-            }
-            
-            .data-table th,
-            .data-table td {
-                display: block;
-                width: 100%;
-                padding: var(--space-sm) var(--space-md);
-                border: none;
-                text-align: left;
-            }
-            
-            .data-table th {
-                background: linear-gradient(135deg, var(--primary-color), #2563eb);
-                color: white;
-                font-weight: 700;
-                text-transform: uppercase;
-                font-size: 0.7rem;
-                letter-spacing: 0.1em;
-                border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-                margin-top: var(--space-md);
-            }
-            
-            .data-table th:first-child {
-                margin-top: 0;
-            }
-            
-            .data-table td {
-                background: var(--glass-bg-primary);
-                border: 1px solid var(--glass-border);
-                border-top: none;
-                font-weight: 600;
-                font-size: 0.9rem;
-                border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-                box-shadow: var(--glass-shadow-light);
-            }
-            
-            .password-display {
-                font-size: 0.95rem;
-                padding: var(--space-xs) var(--space-sm);
-                letter-spacing: 0.5px;
-                word-break: break-all;
-            }
-            
-            /* QR Section for mobile */
-            .qr-section {
-                gap: var(--space-xs);
-                padding-top: var(--space-md);
-            }
-            
-            .qr-section p {
-                font-size: 0.85rem;
-                margin-bottom: var(--space-xs);
-            }
-            
-            .qr-code {
-                max-width: 90px;
-                margin: var(--space-sm) 0;
-            }
-            
-            .qr-caption {
-                font-size: 0.8rem;
-            }
-            
-            .login-url {
-                font-size: 0.75rem;
-                padding: var(--space-xs) var(--space-sm);
-                line-height: 1.3;
-                word-break: break-all;
-                hyphens: auto;
-            }
-            
-            /* Mobile buttons */
-            .button-section {
-                gap: var(--space-md);
-                margin: var(--space-lg) 0;
-            }
-            
-            .button-container {
-                flex-direction: column;
-                gap: var(--space-sm);
-                max-width: 100%;
-            }
-            
-            .print-button {
-                width: 100%;
-                min-width: auto;
-                padding: var(--space-md);
-                font-size: 0.9rem;
-                border-radius: var(--radius-md);
-            }
-            
-            .button-tip {
-                font-size: 0.8rem;
-                text-align: center;
-                padding: 0 var(--space-xs);
-                line-height: 1.4;
-            }
-            
-            /* Mobile notice section */
-            .notice-section {
-                padding: var(--space-md);
-                margin: var(--space-lg) 0;
-                border-radius: var(--radius-md);
-            }
-            
-            .notice-section h4 {
-                font-size: 0.9rem;
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-xs);
-                margin-bottom: var(--space-sm);
-            }
-            
-            .notice-section h4 i {
-                font-size: 1.2rem;
-            }
-            
-            .notice-section ul {
-                padding-left: var(--space-sm);
-            }
-            
-            .notice-section li {
-                font-size: 0.85rem;
-                line-height: 1.4;
-                margin-bottom: var(--space-xs);
-            }
-            
-            /* Mobile footer */
-            .datasheet-footer {
-                margin-top: var(--space-lg);
-                padding-top: var(--space-md);
-                font-size: 0.8rem;
-            }
-            
-            .datasheet-footer p {
-                margin: var(--space-xs) 0;
-                line-height: 1.4;
-            }
-            
-            /* Flash messages for mobile */
-            .flash-message {
-                padding: var(--space-sm) var(--space-md);
-                margin-bottom: var(--space-md);
-                font-size: 0.9rem;
-                border-radius: var(--radius-md);
-                flex-direction: column;
-                text-align: center;
-                gap: var(--space-sm);
-            }
-            
-            .flash-message i {
-                font-size: 1.5rem;
-            }
-        }
-        
-        /* Ultra-wide screens (1400px and up) */
-        @media (min-width: 1400px) {
-            .datasheet-container {
-                max-width: 1300px;
-                padding: 0 var(--space-2xl);
-            }
-            
-            .datasheet-header {
-                padding: var(--space-2xl);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 2.75rem;
-            }
-            
-            .datasheet-content {
-                grid-template-columns: 1fr 1fr;
-                gap: var(--space-2xl);
-            }
-            
-            .info-card {
-                padding: var(--space-2xl);
-            }
-            
-            .info-card h3 {
-                font-size: 1.4rem;
-            }
-            
-            .data-table th,
-            .data-table td {
-                padding: var(--space-lg) var(--space-xl);
-                font-size: 1.1rem;
-            }
-            
-            .button-container {
-                max-width: 700px;
-                gap: var(--space-lg);
-            }
-            
-            .print-button {
-                min-width: 220px;
-                padding: var(--space-lg) var(--space-2xl);
-                font-size: 1.1rem;
-            }
-        }
-        
-        /* Landscape orientation adjustments */
-        @media (orientation: landscape) and (max-height: 600px) {
-            .datasheet-header {
-                padding: var(--space-md) var(--space-lg);
-                margin-bottom: var(--space-lg);
-            }
-            
-            .datasheet-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .datasheet-content {
-                margin-bottom: var(--space-lg);
-            }
-            
-            .info-card {
-                padding: var(--space-md);
-            }
-            
-            .notice-section {
-                padding: var(--space-md);
-                margin: var(--space-md) 0;
-            }
-            
-            .button-section {
-                margin: var(--space-md) 0;
-            }
-        }
-        
-        /* High DPI / Retina displays */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .qr-code {
-                image-rendering: -webkit-optimize-contrast;
-                image-rendering: crisp-edges;
-            }
-            
-            .datasheet-header h1 i,
-            .info-card h3 i {
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
-        }
-        
-        /* Accessibility: Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            
-            .loading-overlay i {
-                animation: none !important;
-            }
-        }
-        
-        /* Dark mode support (if user prefers dark) */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --text-primary: rgba(255, 255, 255, 0.9);
-                --text-secondary: rgba(255, 255, 255, 0.7);
-                --text-muted: rgba(255, 255, 255, 0.5);
-                --glass-bg-primary: rgba(0, 0, 0, 0.8);
-                --glass-bg-secondary: rgba(0, 0, 0, 0.7);
-                --glass-border: rgba(255, 255, 255, 0.1);
-                --glass-border-light: rgba(255, 255, 255, 0.05);
-            }
-            
+        @media (max-width: 768px) {
             body {
-                background: linear-gradient(135deg, 
-                    #1a1a1a 0%,
-                    #2d2d2d 25%,
-                    #404040 50%,
-                    #525252 75%,
-                    #666666 100%);
+                padding: var(--spacing-md);
+            }
+            
+            .datasheet-header {
+                padding: var(--spacing-xl);
+            }
+            
+            .datasheet-header h1 {
+                font-size: 2rem;
+            }
+            
+            .datasheet-content {
+                padding: var(--spacing-xl);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+            
+            .instruction-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .company-logo {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .datasheet-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .datasheet-header .subtitle {
+                font-size: 1rem;
+            }
+            
+            .info-section,
+            .full-width-section {
+                padding: var(--spacing-lg);
+            }
+            
+            .info-table td:first-child {
+                width: 50%;
             }
         }
     </style>
 </head>
-<body class="glass-morphism-page">
-    <main class="datasheet-container">
+<body>
+    <div class="datasheet-container">
         <!-- Header -->
         <div class="datasheet-header">
-            <h1>
-                <i class="fas fa-id-card"></i>
-                BTZ Zeiterfassung - Benutzerdaten
-            </h1>
-            <p>Zugangsdaten für das Zeiterfassungssystem</p>
+            <div class="company-logo">
+                <i class="fas fa-building"></i>
+            </div>
+            <h1><i class="fas fa-id-card"></i> Benutzerdatenblatt</h1>
+            <p class="subtitle">BTZ Zeiterfassung System - Zugangsdaten & Systemanleitung</p>
         </div>
-        
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
-                        {{ message|safe }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
         
         <!-- Main Content -->
         <div class="datasheet-content">
-            <!-- Credentials Card -->
-            <div class="info-card">
-                <h3>
-                    <i class="fas fa-user-lock"></i>
-                    Zugangsdaten
-                </h3>
-            <table class="data-table">
-                <tr>
-                    <th>Benutzername</th>
-                        <td><strong>{{ username }}</strong></td>
-                </tr>
-                <tr>
-                    <th>Passwort</th>
-                        <td><span class="password-display">{{ password }}</span></td>
-                </tr>
-                <tr>
-                    <th>Erstellungsdatum</th>
-                    <td>{{ creation_date }}</td>
-                </tr>
-            </table>
+            <!-- User Credentials and QR Code -->
+            <div class="content-grid">
+                <!-- Credentials Section -->
+                <div class="info-section">
+                    <h3><i class="fas fa-user-lock"></i> Zugangsdaten</h3>
+                    <table class="info-table">
+                        <tr>
+                            <td>Benutzername:</td>
+                            <td><span class="credential-value">{{ username }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Temporäres Passwort:</td>
+                            <td><span class="credential-value">{{ password }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>Erstellt am:</td>
+                            <td>{{ creation_date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Login-URL:</td>
+                            <td><code>{{ login_url }}</code></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- QR Code Section -->
+                <div class="info-section">
+                    <h3><i class="fas fa-qrcode"></i> Mobiler Zugriff</h3>
+                    <div class="qr-section">
+                        <p><strong>Scannen Sie den QR-Code für schnellen Zugriff:</strong></p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ login_url }}" 
+                             alt="QR-Code für Login" class="qr-code">
+                        <div class="login-url">{{ login_url }}</div>
+                        <p><small>QR-Code für mobilen Zugriff auf das Zeiterfassungssystem</small></p>
+                    </div>
+                </div>
             </div>
             
-            <!-- QR Code Card -->
-            <div class="info-card">
-                <h3>
-                    <i class="fas fa-qrcode"></i>
-                    Mobiler Zugriff
-                </h3>
-                <div class="qr-section">
-                    <p><strong>Login-URL:</strong></p>
-                    <div class="login-url">{{ login_url }}</div>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ login_url }}" 
-                         alt="QR-Code für Login" class="qr-code">
-                    <p class="qr-caption">QR-Code für mobilen Zugriff</p>
+            <!-- Security Notice -->
+            <div class="security-notice">
+                <h3><i class="fas fa-shield-alt"></i> Wichtige Sicherheitshinweise</h3>
+                <ul class="security-list">
+                    <li><i class="fas fa-exclamation-triangle"></i> Ändern Sie Ihr Passwort nach der ersten Anmeldung</li>
+                    <li><i class="fas fa-lock"></i> Bewahren Sie diese Zugangsdaten sicher auf</li>
+                    <li><i class="fas fa-user-secret"></i> Teilen Sie Ihre Zugangsdaten niemals mit anderen</li>
+                    <li><i class="fas fa-eye-slash"></i> Dieses Datenblatt ist nur einmalig abrufbar</li>
+                    <li><i class="fas fa-clock"></i> Melden Sie sich regelmäßig ab, wenn Sie fertig sind</li>
+                </ul>
+            </div>
+            
+            <!-- System Instructions -->
+            <div class="full-width-section">
+                <h3><i class="fas fa-book-open"></i> Anleitung zum Zeiterfassungssystem</h3>
+                <div class="instruction-grid">
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-sign-in-alt"></i> Erste Anmeldung</h4>
+                        <ul class="instruction-list">
+                            <li>Öffnen Sie die Login-URL in Ihrem Browser</li>
+                            <li>Geben Sie Ihren Benutzernamen ein</li>
+                            <li>Verwenden Sie das temporäre Passwort</li>
+                            <li>Folgen Sie den Anweisungen zum Passwort ändern</li>
+                            <li>Bestätigen Sie Ihre Datenschutz-Einstellungen</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-clock"></i> Zeiterfassung</h4>
+                        <ul class="instruction-list">
+                            <li>Klicken Sie auf "Einstempeln" bei Arbeitsbeginn</li>
+                            <li>Klicken Sie auf "Ausstempeln" bei Arbeitsende</li>
+                            <li>Pausen werden automatisch berücksichtigt</li>
+                            <li>Überprüfen Sie Ihre Zeiten regelmäßig</li>
+                            <li>Korrekturen können beantragt werden</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-mobile-alt"></i> Mobile Nutzung</h4>
+                        <ul class="instruction-list">
+                            <li>Scannen Sie den QR-Code mit Ihrem Smartphone</li>
+                            <li>Speichern Sie die Seite als Lesezeichen</li>
+                            <li>Die mobile Version ist touch-optimiert</li>
+                            <li>Alle Funktionen sind verfügbar</li>
+                            <li>Offline-Modus für Notfälle</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-chart-line"></i> Berichte & Übersicht</h4>
+                        <ul class="instruction-list">
+                            <li>Tagesübersicht zeigt aktuelle Arbeitszeit</li>
+                            <li>Wochenberichte für Zeitübersicht</li>
+                            <li>Monatsberichte für Abrechnungen</li>
+                            <li>Export-Funktionen verfügbar</li>
+                            <li>Urlaubsanträge über das System</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Features -->
+            <div class="full-width-section">
+                <h3><i class="fas fa-star"></i> Systemfunktionen</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Automatische Pausenerfassung</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Flexible Arbeitszeiten</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Überstunden-Tracking</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Urlaubsverwaltung</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Projektzeit-Erfassung</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Detaillierte Berichte</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Mobile Optimierung</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Datenschutz-konform</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Support Information -->
+            <div class="full-width-section">
+                <h3><i class="fas fa-life-ring"></i> Support & Hilfe</h3>
+                <div class="instruction-grid">
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-question-circle"></i> Häufige Fragen</h4>
+                        <ul class="instruction-list">
+                            <li>Passwort vergessen? Wenden Sie sich an den Administrator</li>
+                            <li>Falsche Zeiten? Korrektur-Antrag stellen</li>
+                            <li>Technische Probleme? Browser aktualisieren</li>
+                            <li>Mobile Probleme? App-Cache leeren</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="instruction-card">
+                        <h4><i class="fas fa-headset"></i> Kontakt</h4>
+                        <ul class="instruction-list">
+                            <li>IT-Support: support@btz.de</li>
+                            <li>Personalwesen: hr@btz.de</li>
+                            <li>Telefon: +49 (0) 123 456-789</li>
+                            <li>Notfall-Hotline: +49 (0) 123 456-999</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <!-- Security Notice -->
-        <div class="notice-section">
-            <h4>
-                <i class="fas fa-exclamation-triangle"></i>
-                Wichtige Sicherheitshinweise
-            </h4>
-            <ul>
-                <li>Bitte ändern Sie Ihr Passwort nach der ersten Anmeldung</li>
-                <li>Bewahren Sie diese Information sicher auf</li>
-                <li>Teilen Sie Ihre Zugangsdaten nicht mit anderen Personen</li>
-                <li>Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</li>
-            </ul>
+        <!-- Action Buttons -->
+        <div class="action-section">
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    Drucken
+                </button>
+                <button class="btn btn-secondary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    Als PDF speichern
+                </button>
+                <a href="/user_management" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zur Verwaltung
+                </a>
+            </div>
+            <p><small><i class="fas fa-info-circle"></i> Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</small></p>
         </div>
         
-        <!-- Print Buttons -->
-        <div class="button-section">
-        <div class="button-container">
-                <button class="print-button browser-print" onclick="window.print()">
-                    <i class="fas fa-print"></i>
-                    Im Browser drucken
-            </button>
-            
-            <button id="generate-pdf-btn" class="print-button pdf-button">
-                    <i class="fas fa-file-pdf"></i>
-                    PDF erstellen
-            </button>
-            </div>
-            
-            <p class="button-tip">
-                <i class="fas fa-lightbulb"></i>
-                Tipp: Für zuverlässige Ergebnisse empfehlen wir die PDF-Option
-            </p>
-        </div>
-
         <!-- Footer -->
         <div class="datasheet-footer">
-            <p><strong>BTZ Zeiterfassung</strong> | Erstellt am {{ current_date }}</p>
-            <p><small>Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</small></p>
+            <p><strong>BTZ Zeiterfassung</strong> - Professionelle Zeiterfassung für Ihr Unternehmen</p>
+            <p class="timestamp">Erstellt am {{ current_date }} | Dokument-ID: {{ username }}-{{ creation_date.replace(' ', '-').replace(':', '-').replace('.', '-') }}</p>
+            <p><small>© 2024 BTZ Zeiterfassung. Alle Rechte vorbehalten.</small></p>
         </div>
-    </main>
-        
-        <script>
-            // PDF Generator
-            document.addEventListener('DOMContentLoaded', function() {
-                const generatePdfBtn = document.getElementById('generate-pdf-btn');
-                if (!generatePdfBtn) return;
-
-                generatePdfBtn.addEventListener('click', function() {
-                    // Show loading message
-                    const loadingMessage = document.createElement('div');
-                loadingMessage.className = 'loading-overlay';
-                    loadingMessage.innerHTML = '<i class="fas fa-spinner"></i> PDF wird erstellt...';
-                document.body.appendChild(loadingMessage);
+    </div>
+    
+    <script>
+        function generatePDF() {
+            // Show loading state
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF wird erstellt...';
+            button.disabled = true;
+            
+            // Hide action buttons for PDF
+            const actionSection = document.querySelector('.action-section');
+            actionSection.style.display = 'none';
+            
+            // Generate PDF
+            setTimeout(() => {
+                const element = document.querySelector('.datasheet-container');
+                const opt = {
+                    margin: 0.5,
+                    filename: `BTZ-Zeiterfassung_Benutzerdaten_{{ username }}_{{ current_date.replace('.', '-') }}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff'
+                    },
+                    jsPDF: { 
+                        unit: 'in', 
+                        format: 'a4', 
+                        orientation: 'portrait' 
+                    }
+                };
                 
-                    // Store original display values
-                    const backBtn = document.querySelector('.back-button');
-                    const buttonSection = document.querySelector('.button-section');
-                    const originalBackDisplay = backBtn ? backBtn.style.display : '';
-                    const originalButtonDisplay = buttonSection ? buttonSection.style.display : '';
+                html2canvas(element, opt.html2canvas).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', opt.image.quality);
+                    const pdf = new window.jspdf.jsPDF(opt.jsPDF);
+                    const imgWidth = 8.27; // A4 width in inches minus margins
+                    const pageHeight = 11.69; // A4 height in inches minus margins
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 0;
                     
-                    // Hide elements that shouldn't be in PDF
-                    if (backBtn) backBtn.style.display = 'none';
-                    if (buttonSection) buttonSection.style.display = 'none';
+                    pdf.addImage(imgData, 'JPEG', 0.5, position + 0.5, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
                     
-                    // Generate PDF with HTML2Canvas and jsPDF
-                    setTimeout(function() {
-                        const contentElement = document.querySelector('.datasheet-container');
-                        if (!contentElement) {
-                            handleError('Content element not found');
-                            return;
-                        }
-                        
-                        const { jsPDF } = window.jspdf || {};
-                        if (!jsPDF) {
-                            handleError('PDF library not loaded');
-                            return;
-                        }
-                        
-                        html2canvas(contentElement, {
-                            scale: 2,
-                            useCORS: true,
-                            allowTaint: true,
-                            backgroundColor: '#ffffff'
-                        }).then(function(canvas) {
-                            try {
-                                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                                const pdf = new jsPDF('p', 'mm', 'a4');
-                                const width = pdf.internal.pageSize.getWidth();
-                                const height = (canvas.height * width) / canvas.width;
-                                
-                                pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
-                                pdf.save(`BTZ-Zeiterfassung_Zugangsdaten_{{ username or 'user' }}.pdf`);
-                            } catch (error) {
-                                console.error('Error in PDF generation:', error);
-                                alert('Fehler beim Erstellen der PDF-Datei');
-                            } finally {
-                                cleanup(loadingMessage, backBtn, buttonSection, originalBackDisplay, originalButtonDisplay);
-                            }
-                        }).catch(function(error) {
-                            console.error('Error in html2canvas:', error);
-                            alert('Fehler beim Erstellen der PDF-Vorschau');
-                            cleanup(loadingMessage, backBtn, buttonSection, originalBackDisplay, originalButtonDisplay);
-                    });
-                }, 500);
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'JPEG', 0.5, position + 0.5, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                    
+                    pdf.save(opt.filename);
+                    
+                    // Restore UI
+                    actionSection.style.display = 'block';
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }).catch(error => {
+                    console.error('PDF generation failed:', error);
+                    alert('Fehler beim Erstellen der PDF-Datei. Bitte verwenden Sie die Drucken-Funktion.');
+                    
+                    // Restore UI
+                    actionSection.style.display = 'block';
+                    button.innerHTML = originalText;
+                    button.disabled = false;
                 });
-                
-                function cleanup(loadingElement, backBtn, buttonSection, originalBackDisplay, originalButtonDisplay) {
-                    if (loadingElement && loadingElement.parentNode) {
-                        loadingElement.parentNode.removeChild(loadingElement);
-                    }
-                    if (backBtn) backBtn.style.display = originalBackDisplay;
-                    if (buttonSection) buttonSection.style.display = originalButtonDisplay;
-                }
-                
-                function handleError(message) {
-                    console.error(message);
-                    alert('Fehler: ' + message);
-                    const loadingElement = document.querySelector('.loading-overlay');
-                    if (loadingElement && loadingElement.parentNode) {
-                        loadingElement.parentNode.removeChild(loadingElement);
-                    }
+            }, 100);
+        }
+        
+        // Auto-focus for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add print shortcut
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'p') {
+                    e.preventDefault();
+                    window.print();
                 }
             });
-        </script>
+            
+            // Add subtle animations
+            const cards = document.querySelectorAll('.info-section, .instruction-card, .feature-item');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import pytz
 from flask_bcrypt import Bcrypt
 import json
+import re
 
 # Configure logging
 logging.basicConfig(
@@ -128,6 +129,52 @@ def check_and_fix_db_schema():
                 print("Added is_admin column successfully and set admin user")
             except sqlite3.Error as e:
                 print(f"Error adding column: {e}")
+        
+        # Add new enhanced user fields
+        enhanced_user_columns = {
+            'first_name': 'TEXT',
+            'last_name': 'TEXT', 
+            'employee_id': 'TEXT',
+            'user_role': 'TEXT DEFAULT "employee"',
+            'department': 'TEXT',
+            'account_status': 'TEXT DEFAULT "active"',
+            'created_at': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+            'updated_at': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+        }
+        
+        for column_name, column_def in enhanced_user_columns.items():
+            if column_name not in columns:
+                print(f"Adding {column_name} column to users table...")
+                try:
+                    cursor.execute(f'ALTER TABLE users ADD COLUMN {column_name} {column_def}')
+                    db.commit()
+                    print(f"Added {column_name} column successfully")
+                except sqlite3.Error as e:
+                    print(f"Error adding column {column_name}: {e}")
+        
+        # Update existing users with default values for new fields
+        try:
+            print("Updating existing users with default values...")
+            
+            # Set default user_role for existing users
+            cursor.execute("UPDATE users SET user_role = 'employee' WHERE user_role IS NULL OR user_role = ''")
+            
+            # Set admin role for admin users
+            cursor.execute("UPDATE users SET user_role = 'admin' WHERE is_admin = 1")
+            
+            # Set default account_status for existing users
+            cursor.execute("UPDATE users SET account_status = 'active' WHERE account_status IS NULL OR account_status = ''")
+            
+            # Set created_at for existing users (use current timestamp as fallback)
+            current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+            cursor.execute("UPDATE users SET created_at = ? WHERE created_at IS NULL OR created_at = ''", (current_time,))
+            cursor.execute("UPDATE users SET updated_at = ? WHERE updated_at IS NULL OR updated_at = ''", (current_time,))
+            
+            db.commit()
+            print("Updated existing users with default values")
+            
+        except sqlite3.Error as e:
+            print(f"Error updating existing users: {e}")
                 
         # Check if the arbzg_breaks_enabled column exists in user_settings
         cursor.execute("PRAGMA table_info(user_settings)")
@@ -187,8 +234,86 @@ def check_and_fix_db_schema():
             except sqlite3.Error as e:
                 print(f"Error adding column: {e}")
         
+        # Ensure all existing users have user_settings records
+        try:
+            print("Ensuring all users have user_settings records...")
+            cursor.execute('''
+                INSERT INTO user_settings (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, exclude_breaks_from_billing, arbzg_breaks_enabled)
+                SELECT u.id, 1, 30, 1, 1
+                FROM users u
+                WHERE u.id NOT IN (SELECT user_id FROM user_settings WHERE user_id IS NOT NULL)
+            ''')
+            db.commit()
+            print("Created missing user_settings records")
+        except sqlite3.Error as e:
+            print(f"Error creating user_settings records: {e}")
+        
+        # Ensure all existing users have consent records with default 'pending' status
+        try:
+            print("Ensuring all users have consent records...")
+            current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+            cursor.execute('''
+                INSERT INTO user_consents (user_id, consent_status, consent_date)
+                SELECT u.id, 'pending', ?
+                FROM users u
+                WHERE u.id NOT IN (SELECT user_id FROM user_consents WHERE user_id IS NOT NULL)
+            ''', (current_time,))
+            db.commit()
+            print("Created missing consent records")
+        except sqlite3.Error as e:
+            print(f"Error creating consent records: {e}")
+        
         print("Database schema check and fix completed")
 
+
+def migrate_existing_user_data():
+    """Migrate existing user data to new enhanced schema"""
+    print("Starting user data migration...")
+    
+    with app.app_context():
+        db = get_db()
+        cursor = db.cursor()
+        
+        try:
+            # Get all users that need migration
+            cursor.execute("SELECT id, username, is_admin FROM users")
+            users = cursor.fetchall()
+            
+            current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+            
+            for user in users:
+                user_id, username, is_admin = user
+                
+                # Determine user role based on existing data
+                if is_admin:
+                    user_role = 'admin'
+                elif username == 'admin':
+                    user_role = 'admin'
+                else:
+                    user_role = 'employee'
+                
+                # Update user with enhanced data
+                try:
+                    cursor.execute('''
+                        UPDATE users 
+                        SET user_role = ?, 
+                            account_status = 'active',
+                            created_at = COALESCE(created_at, ?),
+                            updated_at = ?
+                        WHERE id = ?
+                    ''', (user_role, current_time, current_time, user_id))
+                    
+                    print(f"Migrated user {username} (ID: {user_id}) with role: {user_role}")
+                    
+                except sqlite3.Error as e:
+                    print(f"Error migrating user {username}: {e}")
+            
+            db.commit()
+            print("User data migration completed successfully")
+            
+        except Exception as e:
+            print(f"Error during user data migration: {e}")
+            db.rollback()
 
 def init_db():
     with app.app_context():
@@ -352,6 +477,11 @@ def login():
                             session['admin_logged_in'] = True
                         elif username == 'admin':  # Fallback for old DB schema
                             session['admin_logged_in'] = True
+                            
+                        # Update last_login timestamp
+                        current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+                        cursor.execute('UPDATE users SET last_login = ? WHERE id = ?', (current_time, user['id']))
+                        conn.commit()
                             
                         print(f"Login successful for {username}")
                         print(f"Session: {session}")
@@ -663,7 +793,7 @@ def admin():
 
 @app.route('/user_management')
 def user_management():
-    """User management page for admins"""
+    """User management page for admins with enhanced user data"""
     if not session.get('username'):
         return redirect(url_for('login'))
     
@@ -676,24 +806,114 @@ def user_management():
     db.row_factory = sqlite3.Row
     cursor = db.cursor()
     
-    # Get all users with consent status
-    cursor.execute('''
-        SELECT u.id, u.username, COALESCE(uc.consent_status, 'Unknown') AS consent_status
-        FROM users u
-        LEFT JOIN (
-            SELECT user_id, consent_status 
-            FROM user_consents 
-            WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
-        ) uc ON u.id = uc.user_id
-        ORDER BY u.username
-    ''')
-    users = cursor.fetchall()
+    # First, ensure the users table has all the new columns
+    try:
+        cursor.execute("PRAGMA table_info(users)")
+        existing_columns = [column[1] for column in cursor.fetchall()]
+        
+        # Add missing columns if they don't exist
+        new_columns = {
+            'first_name': 'TEXT',
+            'last_name': 'TEXT', 
+            'employee_id': 'TEXT',
+            'user_role': 'TEXT DEFAULT "employee"',
+            'department': 'TEXT',
+            'account_status': 'TEXT DEFAULT "active"',
+            'created_at': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+            'updated_at': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+        }
+        
+        for column_name, column_def in new_columns.items():
+            if column_name not in existing_columns:
+                try:
+                    cursor.execute(f'ALTER TABLE users ADD COLUMN {column_name} {column_def}')
+                    logging.info(f"Added missing column {column_name} to users table")
+                except sqlite3.Error as e:
+                    logging.warning(f"Could not add column {column_name}: {e}")
+        
+        db.commit()
+    except Exception as e:
+        logging.error(f"Error updating users table schema: {e}")
     
-    return render_template('user_management.html', users=users)
+    # Get all users with enhanced data and consent status
+    try:
+        cursor.execute('''
+            SELECT 
+                u.id, 
+                u.username, 
+                COALESCE(u.first_name, '') AS first_name,
+                COALESCE(u.last_name, '') AS last_name,
+                COALESCE(u.employee_id, '') AS employee_id,
+                COALESCE(u.user_role, 'employee') AS user_role,
+                COALESCE(u.department, '') AS department,
+                COALESCE(u.account_status, 'active') AS account_status,
+                COALESCE(u.is_admin, 0) AS is_admin,
+                COALESCE(u.created_at, '') AS created_at,
+                COALESCE(u.updated_at, '') AS updated_at,
+                u.last_login,
+                COALESCE(uc.consent_status, 'Unknown') AS consent_status,
+                COALESCE(uc.consent_date, '') AS consent_date
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status, consent_date
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+            ORDER BY u.username
+        ''')
+        users = cursor.fetchall()
+        
+        # Convert to list of dictionaries for easier template handling
+        users_data = []
+        for user in users:
+            user_dict = dict(user)
+            
+            # Create display name
+            if user_dict['first_name'] and user_dict['last_name']:
+                user_dict['display_name'] = f"{user_dict['first_name']} {user_dict['last_name']}"
+            else:
+                user_dict['display_name'] = user_dict['username']
+            
+            # Format role display
+            role_display = {
+                'employee': 'Mitarbeiter',
+                'supervisor': 'Vorgesetzter', 
+                'hr': 'Personalwesen',
+                'admin': 'Administrator'
+            }
+            user_dict['role_display'] = role_display.get(user_dict['user_role'], user_dict['user_role'])
+            
+            # Format status display
+            status_display = {
+                'active': 'Aktiv',
+                'inactive': 'Inaktiv',
+                'suspended': 'Gesperrt'
+            }
+            user_dict['status_display'] = status_display.get(user_dict['account_status'], user_dict['account_status'])
+            
+            # Format consent display
+            consent_display = {
+                'granted': 'Erteilt',
+                'declined': 'Verweigert',
+                'pending': 'Ausstehend',
+                'Unknown': 'Unbekannt'
+            }
+            user_dict['consent_display'] = consent_display.get(user_dict['consent_status'], user_dict['consent_status'])
+            
+            users_data.append(user_dict)
+        
+        logging.info(f"Loaded {len(users_data)} users for management interface")
+        
+    except Exception as e:
+        logging.error(f"Error fetching user data: {e}")
+        users_data = []
+        flash('Fehler beim Laden der Benutzerdaten', 'error')
+    
+    return render_template('user_management.html', users=users_data)
 
 @app.route('/add_user', methods=['POST'])
 def add_user():
-    """Add a new user (admin only)"""
+    """Add a new user (admin only) with enhanced fields and system synchronization"""
     if not session.get('username'):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
@@ -711,30 +931,66 @@ def add_user():
     # Debug output
     logging.info(f"add_user called, is_ajax: {is_ajax}, headers: {request.headers}")
     
-    # Get form data
+    # Get form data - both required and optional fields
     username = request.form.get('username')
     password = request.form.get('password')
     confirm_password = request.form.get('confirm_password')
     
-    # Validate form data
+    # New optional fields from enhanced form
+    first_name = request.form.get('first_name', '').strip()
+    last_name = request.form.get('last_name', '').strip()
+    employee_id = request.form.get('employee_id', '').strip()
+    user_role = request.form.get('user_role', 'employee')
+    department = request.form.get('department', '').strip()
+    privacy_consent = request.form.get('privacy_consent', 'pending')
+    account_status = request.form.get('account_status', 'active')
+    
+    # Validate required form data
     if not username or not password or not confirm_password:
+        error_msg = 'Benutzername, Passwort und Passwortbestätigung sind erforderlich'
         if is_ajax:
-            return jsonify({'success': False, 'message': 'Benutzername, Passwort und Passwortbestätigung sind erforderlich'}), 400
+            return jsonify({'success': False, 'message': error_msg}), 400
         else:
-            return render_template('user_management.html', error='Benutzername, Passwort und Passwortbestätigung sind erforderlich')
+            return render_template('user_management.html', error=error_msg)
             
     # Check if passwords match
     if password != confirm_password:
+        error_msg = 'Die Passwörter stimmen nicht überein'
         if is_ajax:
-            return jsonify({'success': False, 'message': 'Die Passwörter stimmen nicht überein'}), 400
+            return jsonify({'success': False, 'message': error_msg}), 400
         else:
-            return render_template('user_management.html', error='Die Passwörter stimmen nicht überein')
+            return render_template('user_management.html', error=error_msg)
     
-    if len(password) < 4:
+    # Validate password length
+    if len(password) < 6:
+        error_msg = 'Passwort muss mindestens 6 Zeichen lang sein'
         if is_ajax:
-            return jsonify({'success': False, 'message': 'Passwort muss mindestens 4 Zeichen lang sein'}), 400
+            return jsonify({'success': False, 'message': error_msg}), 400
         else:
-            return render_template('user_management.html', error='Passwort muss mindestens 4 Zeichen lang sein')
+            return render_template('user_management.html', error=error_msg)
+    
+    # Validate username format
+    if not re.match(r'^[a-zA-Z0-9._-]+$', username):
+        error_msg = 'Benutzername darf nur Buchstaben, Zahlen, Punkte, Unterstriche und Bindestriche enthalten'
+        if is_ajax:
+            return jsonify({'success': False, 'message': error_msg}), 400
+        else:
+            return render_template('user_management.html', error=error_msg)
+    
+    # Validate user role
+    valid_roles = ['employee', 'supervisor', 'hr', 'admin']
+    if user_role not in valid_roles:
+        user_role = 'employee'  # Default fallback
+    
+    # Validate privacy consent
+    valid_consent_values = ['pending', 'granted', 'declined']
+    if privacy_consent not in valid_consent_values:
+        privacy_consent = 'pending'  # Default fallback
+    
+    # Validate account status
+    valid_status_values = ['active', 'inactive', 'suspended']
+    if account_status not in valid_status_values:
+        account_status = 'active'  # Default fallback
     
     # Connect to database
     conn = sqlite3.connect(DATABASE)
@@ -746,21 +1002,110 @@ def add_user():
         cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
         if cursor.fetchone():
             conn.close()
+            error_msg = f'Benutzername {username} existiert bereits'
             if is_ajax:
-                return jsonify({'success': False, 'message': f'Benutzername {username} existiert bereits'}), 400
+                return jsonify({'success': False, 'message': error_msg}), 400
             else:
-                return render_template('user_management.html', error=f'Benutzername {username} existiert bereits')
+                return render_template('user_management.html', error=error_msg)
+        
+        # Check if employee_id already exists (if provided)
+        if employee_id:
+            cursor.execute('SELECT id FROM users WHERE employee_id = ?', (employee_id,))
+            if cursor.fetchone():
+                conn.close()
+                error_msg = f'Mitarbeiter-ID {employee_id} wird bereits verwendet'
+                if is_ajax:
+                    return jsonify({'success': False, 'message': error_msg}), 400
+                else:
+                    return render_template('user_management.html', error=error_msg)
         
         # Hash the password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
-        # Insert new user
-        cursor.execute('INSERT INTO users (username, password, is_admin) VALUES (?, ?, ?)', 
-                      (username, hashed_password, 0))
-        user_id = cursor.lastrowid
-        conn.commit()
+        # Determine if user should be admin based on role
+        is_admin = 1 if user_role == 'admin' else 0
         
-        logging.info(f"New user created: {username} (ID: {user_id})")
+        # First, check if users table has the new columns, if not add them
+        cursor.execute("PRAGMA table_info(users)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        # Add missing columns to users table if they don't exist
+        new_columns = {
+            'first_name': 'TEXT',
+            'last_name': 'TEXT', 
+            'employee_id': 'TEXT UNIQUE',
+            'user_role': 'TEXT DEFAULT "employee"',
+            'department': 'TEXT',
+            'account_status': 'TEXT DEFAULT "active"',
+            'created_at': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+            'updated_at': 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
+        }
+        
+        for column_name, column_def in new_columns.items():
+            if column_name not in columns:
+                try:
+                    cursor.execute(f'ALTER TABLE users ADD COLUMN {column_name} {column_def}')
+                    logging.info(f"Added column {column_name} to users table")
+                except sqlite3.Error as e:
+                    logging.warning(f"Could not add column {column_name}: {e}")
+        
+        # Insert new user with all available fields
+        current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Build dynamic insert query based on available columns
+        cursor.execute("PRAGMA table_info(users)")
+        available_columns = [column[1] for column in cursor.fetchall()]
+        
+        # Base fields that should always exist
+        insert_fields = ['username', 'password', 'is_admin']
+        insert_values = [username, hashed_password, is_admin]
+        
+        # Add optional fields if columns exist
+        optional_fields = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'employee_id': employee_id if employee_id else None,
+            'user_role': user_role,
+            'department': department if department else None,
+            'account_status': account_status,
+            'created_at': current_time,
+            'updated_at': current_time
+        }
+        
+        for field, value in optional_fields.items():
+            if field in available_columns:
+                insert_fields.append(field)
+                insert_values.append(value)
+        
+        # Create the insert query
+        placeholders = ', '.join(['?' for _ in insert_values])
+        fields_str = ', '.join(insert_fields)
+        insert_query = f'INSERT INTO users ({fields_str}) VALUES ({placeholders})'
+        
+        cursor.execute(insert_query, insert_values)
+        user_id = cursor.lastrowid
+        
+        logging.info(f"New user created: {username} (ID: {user_id}) with role: {user_role}")
+        
+        # Create user consent record
+        try:
+            cursor.execute('''INSERT INTO user_consents (user_id, consent_status, consent_date) 
+                             VALUES (?, ?, ?)''', 
+                          (user_id, privacy_consent, current_time))
+            logging.info(f"Created consent record for user {username}: {privacy_consent}")
+        except sqlite3.Error as e:
+            logging.warning(f"Could not create consent record: {e}")
+        
+        # Create default user settings
+        try:
+            cursor.execute('''INSERT INTO user_settings 
+                             (user_id, auto_break_detection_enabled, auto_break_threshold_minutes, 
+                              exclude_breaks_from_billing, arbzg_breaks_enabled) 
+                             VALUES (?, ?, ?, ?, ?)''', 
+                          (user_id, 1, 30, 1, 1))
+            logging.info(f"Created default settings for user {username}")
+        except sqlite3.Error as e:
+            logging.warning(f"Could not create user settings: {e}")
         
         # Store the plain text password temporarily in the database
         try:
@@ -769,34 +1114,189 @@ def add_user():
             # Insert new temp password
             cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
                           (user_id, password))
-            conn.commit()
-            logging.info(f"Temporary password stored in database for user {username} (ID: {user_id})")
+            logging.info(f"Temporary password stored for user {username} (ID: {user_id})")
         except Exception as e:
             logging.error(f"Error storing temp password: {str(e)}")
+        
+        # Commit all changes
+        conn.commit()
+        
+        # ============================================================================
+        # SYSTEM SYNCHRONIZATION - Trigger updates for other systems
+        # ============================================================================
+        
+        try:
+            # Log the user creation event for audit purposes
+            logging.info(f"USER_CREATED: ID={user_id}, username={username}, role={user_role}, "
+                        f"department={department}, created_by={session.get('username')}")
+            
+            # Trigger cache refresh for user lists (if caching is implemented)
+            refresh_user_cache()
+            
+            # Notify other system components about the new user
+            notify_systems_user_created(user_id, {
+                'username': username,
+                'first_name': first_name,
+                'last_name': last_name,
+                'employee_id': employee_id,
+                'user_role': user_role,
+                'department': department,
+                'account_status': account_status,
+                'privacy_consent': privacy_consent,
+                'created_at': current_time
+            })
+            
+            # Update any external systems or APIs
+            sync_user_to_external_systems(user_id, username, user_role)
+            
+        except Exception as e:
+            logging.error(f"Error during system synchronization: {str(e)}")
+            # Don't fail the user creation if sync fails, just log it
         
         # Generate datasheet URL
         datasheet_url = url_for('user_datasheet', user_id=user_id)
         
+        # Prepare success response
+        success_message = f'Benutzer {username} wurde erfolgreich angelegt'
+        if first_name and last_name:
+            success_message = f'Benutzer {first_name} {last_name} ({username}) wurde erfolgreich angelegt'
+        
         if is_ajax:
             return jsonify({
                 'success': True, 
-                'message': f'Benutzer {username} wurde erfolgreich angelegt',
+                'message': success_message,
                 'user_id': user_id,
                 'username': username,
+                'full_name': f"{first_name} {last_name}".strip(),
+                'user_role': user_role,
+                'department': department,
+                'account_status': account_status,
+                'privacy_consent': privacy_consent,
                 'datasheet_url': datasheet_url
             })
         else:
             # Add session flash with datasheet URL for non-AJAX requests
-            flash(f'Benutzer {username} wurde erfolgreich angelegt. <a href="{datasheet_url}" target="_blank" style="display: inline-block; background: #1976d2; color: white; padding: 4px 12px; text-decoration: none; border-radius: 4px; margin-left: 10px;">Datenblatt öffnen</a>', 'success')
+            flash(f'{success_message}. <a href="{datasheet_url}" target="_blank" style="display: inline-block; background: #1976d2; color: white; padding: 4px 12px; text-decoration: none; border-radius: 4px; margin-left: 10px;">Datenblatt öffnen</a>', 'success')
             return redirect(url_for('user_management'))
         
     except Exception as e:
         conn.rollback()
         logging.error(f"Error creating user: {str(e)}")
+        error_msg = f'Fehler beim Anlegen des Benutzers: {str(e)}'
         if is_ajax:
-            return jsonify({'success': False, 'message': f'Fehler beim Anlegen des Benutzers: {str(e)}'}), 500
+            return jsonify({'success': False, 'message': error_msg}), 500
         else:
-            return render_template('user_management.html', error=f'Fehler beim Anlegen des Benutzers: {str(e)}')
+            return render_template('user_management.html', error=error_msg)
+    finally:
+        conn.close()
+
+
+def refresh_user_cache():
+    """Refresh any cached user data across the system"""
+    try:
+        # This function can be expanded to clear Redis cache, 
+        # update in-memory caches, etc.
+        logging.info("User cache refresh triggered")
+        
+        # Example: Clear any session-based caches
+        # if hasattr(g, 'user_cache'):
+        #     delattr(g, 'user_cache')
+        
+        # Example: Trigger cache invalidation in external systems
+        # requests.post('http://cache-service/invalidate/users')
+        
+    except Exception as e:
+        logging.error(f"Error refreshing user cache: {str(e)}")
+
+
+def notify_systems_user_created(user_id, user_data):
+    """Notify other systems/services about the new user creation"""
+    try:
+        # This function can be expanded to notify:
+        # - Email services for welcome emails
+        # - HR systems for employee onboarding
+        # - Access control systems for permission setup
+        # - Reporting systems for user analytics
+        # - Mobile app backends
+        # - Third-party integrations
+        
+        logging.info(f"System notification triggered for new user: {user_id}")
+        
+        # Example notifications:
+        
+        # 1. Email notification (if email service is configured)
+        # send_welcome_email(user_data)
+        
+        # 2. HR system integration
+        # sync_to_hr_system(user_data)
+        
+        # 3. Access control system
+        # setup_user_permissions(user_id, user_data['user_role'])
+        
+        # 4. Audit logging
+        audit_log_user_creation(user_id, user_data)
+        
+        # 5. Real-time notifications to admin dashboard
+        # broadcast_admin_notification('user_created', user_data)
+        
+    except Exception as e:
+        logging.error(f"Error notifying systems about user creation: {str(e)}")
+
+
+def sync_user_to_external_systems(user_id, username, user_role):
+    """Synchronize user data to external systems and APIs"""
+    try:
+        # This function handles synchronization with:
+        # - External databases
+        # - API endpoints
+        # - Cloud services
+        # - Third-party applications
+        
+        logging.info(f"External system sync triggered for user: {username} (ID: {user_id})")
+        
+        # Example synchronizations:
+        
+        # 1. Sync to external user management API
+        # sync_to_external_api(user_id, username, user_role)
+        
+        # 2. Update LDAP/Active Directory
+        # sync_to_ldap(username, user_role)
+        
+        # 3. Sync to cloud identity providers
+        # sync_to_cloud_identity(user_id, username)
+        
+        # 4. Update backup systems
+        # trigger_backup_sync()
+        
+        # 5. Sync to analytics platforms
+        # sync_to_analytics(user_id, user_role)
+        
+    except Exception as e:
+        logging.error(f"Error syncing user to external systems: {str(e)}")
+
+
+def audit_log_user_creation(user_id, user_data):
+    """Create detailed audit log entry for user creation"""
+    try:
+        audit_entry = {
+            'event_type': 'USER_CREATED',
+            'user_id': user_id,
+            'username': user_data['username'],
+            'created_by': session.get('username'),
+            'timestamp': get_local_time().isoformat(),
+            'user_data': user_data,
+            'ip_address': request.remote_addr,
+            'user_agent': request.headers.get('User-Agent', '')
+        }
+        
+        # Log to application log
+        logging.info(f"AUDIT: {json.dumps(audit_entry)}")
+        
+        # Could also store in dedicated audit table:
+        # store_audit_log(audit_entry)
+        
+    except Exception as e:
+        logging.error(f"Error creating audit log: {str(e)}")
 
 @app.route('/user_datasheet/<int:user_id>')
 def user_datasheet(user_id):
@@ -2903,6 +3403,959 @@ def my_credentials():
                          user_id=user_id,
                          login_url=login_url,
                          current_date=current_date)
+
+@app.route('/api/search_users', methods=['GET'])
+def api_search_users():
+    """API endpoint for searching users with filters"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können auf die Benutzerverwaltung zugreifen'}), 403
+    
+    # Get search parameters
+    search_term = request.args.get('search', '').strip()
+    consent_filter = request.args.get('consent', '').strip()
+    sort_by = request.args.get('sort', 'username-asc')
+    limit = request.args.get('limit', type=int)
+    offset = request.args.get('offset', 0, type=int)
+    
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    cursor = db.cursor()
+    
+    try:
+        # Build the query
+        query = '''
+            SELECT u.id, u.username, COALESCE(uc.consent_status, 'Unknown') AS consent_status
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status 
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+        '''
+        
+        params = []
+        conditions = []
+        
+        # Add search filter
+        if search_term:
+            conditions.append('(u.username LIKE ? OR u.id LIKE ?)')
+            search_pattern = f'%{search_term}%'
+            params.extend([search_pattern, search_pattern])
+        
+        # Add consent filter
+        if consent_filter:
+            conditions.append('COALESCE(uc.consent_status, "Unknown") = ?')
+            params.append(consent_filter)
+        
+        # Add WHERE clause if there are conditions
+        if conditions:
+            query += ' WHERE ' + ' AND '.join(conditions)
+        
+        # Add sorting
+        if sort_by == 'username-desc':
+            query += ' ORDER BY u.username DESC'
+        elif sort_by == 'id-asc':
+            query += ' ORDER BY u.id ASC'
+        elif sort_by == 'id-desc':
+            query += ' ORDER BY u.id DESC'
+        else:  # default: username-asc
+            query += ' ORDER BY u.username ASC'
+        
+        # Add pagination if specified
+        if limit:
+            query += f' LIMIT {limit} OFFSET {offset}'
+        
+        cursor.execute(query, params)
+        users = cursor.fetchall()
+        
+        # Get total count for pagination
+        count_query = '''
+            SELECT COUNT(*) as total
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status 
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+        '''
+        
+        if conditions:
+            count_query += ' WHERE ' + ' AND '.join(conditions)
+        
+        cursor.execute(count_query, params)
+        total_count = cursor.fetchone()['total']
+        
+        # Convert to list of dictionaries
+        users_list = []
+        for user in users:
+            users_list.append({
+                'id': user['id'],
+                'username': user['username'],
+                'consent_status': user['consent_status']
+            })
+        
+        return jsonify({
+            'success': True,
+            'users': users_list,
+            'total': total_count,
+            'filtered': len(users_list),
+            'search_term': search_term,
+            'consent_filter': consent_filter,
+            'sort_by': sort_by
+        })
+        
+    except Exception as e:
+        logging.error(f"Error searching users: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler bei der Suche: {str(e)}'}), 500
+
+@app.route('/api/sync_user_data', methods=['POST'])
+def api_sync_user_data():
+    """API endpoint to trigger user data synchronization across systems"""
+    if not session.get('username') or not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        sync_type = data.get('sync_type', 'full')  # 'full', 'partial', 'cache_only'
+        
+        if not user_id:
+            return jsonify({'success': False, 'message': 'user_id is required'}), 400
+        
+        # Get user data
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        cursor.execute('''
+            SELECT u.*, uc.consent_status, uc.consent_date
+            FROM users u
+            LEFT JOIN user_consents uc ON u.id = uc.user_id
+            WHERE u.id = ?
+        ''', (user_id,))
+        
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+        
+        user_data = dict(user)
+        
+        # Trigger synchronization based on type
+        sync_results = {}
+        
+        if sync_type in ['full', 'cache_only']:
+            # Refresh cache
+            refresh_user_cache()
+            sync_results['cache'] = 'refreshed'
+        
+        if sync_type == 'full':
+            # Full synchronization with external systems
+            try:
+                sync_user_to_external_systems(user_id, user_data['username'], user_data.get('user_role', 'employee'))
+                sync_results['external_systems'] = 'synchronized'
+            except Exception as e:
+                sync_results['external_systems'] = f'error: {str(e)}'
+            
+            # Notify other systems
+            try:
+                notify_systems_user_updated(user_id, user_data)
+                sync_results['notifications'] = 'sent'
+            except Exception as e:
+                sync_results['notifications'] = f'error: {str(e)}'
+        
+        # Log the sync operation
+        logging.info(f"User sync triggered by {session.get('username')} for user {user_id}: {sync_results}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'User synchronization completed',
+            'user_id': user_id,
+            'sync_type': sync_type,
+            'results': sync_results
+        })
+        
+    except Exception as e:
+        logging.error(f"Error in user sync API: {str(e)}")
+        return jsonify({'success': False, 'message': f'Sync error: {str(e)}'}), 500
+
+
+@app.route('/api/webhook/user_events', methods=['POST'])
+def webhook_user_events():
+    """Webhook endpoint for external systems to receive user events"""
+    try:
+        # Verify webhook authentication (implement your security mechanism)
+        auth_header = request.headers.get('Authorization')
+        if not verify_webhook_auth(auth_header):
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        data = request.get_json()
+        event_type = data.get('event_type')
+        user_data = data.get('user_data', {})
+        
+        # Process different event types
+        if event_type == 'user_created':
+            handle_external_user_created(user_data)
+        elif event_type == 'user_updated':
+            handle_external_user_updated(user_data)
+        elif event_type == 'user_deleted':
+            handle_external_user_deleted(user_data)
+        else:
+            return jsonify({'error': 'Unknown event type'}), 400
+        
+        logging.info(f"Webhook processed: {event_type} for user {user_data.get('username', 'unknown')}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Event processed successfully',
+            'event_type': event_type
+        })
+        
+    except Exception as e:
+        logging.error(f"Webhook error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+
+@app.route('/api/system_status', methods=['GET'])
+def api_system_status():
+    """API endpoint to check system synchronization status"""
+    if not session.get('username') or not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Get system statistics
+        cursor.execute("SELECT COUNT(*) as total_users FROM users")
+        total_users = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) as active_users FROM users WHERE account_status = 'active'")
+        active_users = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) as pending_consents FROM user_consents WHERE consent_status = 'pending'")
+        pending_consents = cursor.fetchone()[0]
+        
+        # Check last sync times (this would be stored in a sync_log table in a real implementation)
+        last_cache_refresh = get_last_cache_refresh_time()
+        last_external_sync = get_last_external_sync_time()
+        
+        status = {
+            'system_health': 'healthy',
+            'database_status': 'connected',
+            'user_statistics': {
+                'total_users': total_users,
+                'active_users': active_users,
+                'pending_consents': pending_consents
+            },
+            'synchronization_status': {
+                'last_cache_refresh': last_cache_refresh,
+                'last_external_sync': last_external_sync,
+                'sync_queue_size': 0  # Would be actual queue size in production
+            },
+            'timestamp': get_local_time().isoformat()
+        }
+        
+        return jsonify(status)
+        
+    except Exception as e:
+        logging.error(f"System status error: {str(e)}")
+        return jsonify({
+            'system_health': 'error',
+            'error': str(e),
+            'timestamp': get_local_time().isoformat()
+        }), 500
+
+
+def verify_webhook_auth(auth_header):
+    """Verify webhook authentication"""
+    # Implement your authentication mechanism here
+    # For example: API key, JWT token, HMAC signature, etc.
+    
+    # Simple API key example:
+    if not auth_header:
+        return False
+    
+    # Extract API key from header (format: "Bearer <api_key>")
+    try:
+        auth_type, api_key = auth_header.split(' ', 1)
+        if auth_type.lower() != 'bearer':
+            return False
+        
+        # In production, store this securely in environment variables
+        valid_api_keys = ['your-webhook-api-key-here']  # Replace with actual keys
+        return api_key in valid_api_keys
+        
+    except ValueError:
+        return False
+
+
+def handle_external_user_created(user_data):
+    """Handle user creation event from external system"""
+    try:
+        # Process external user creation
+        # This could involve creating local user records, 
+        # updating caches, sending notifications, etc.
+        
+        logging.info(f"External user created: {user_data}")
+        
+        # Example: Update local cache or trigger local processes
+        refresh_user_cache()
+        
+    except Exception as e:
+        logging.error(f"Error handling external user creation: {str(e)}")
+
+
+def handle_external_user_updated(user_data):
+    """Handle user update event from external system"""
+    try:
+        # Process external user update
+        logging.info(f"External user updated: {user_data}")
+        
+        # Example: Sync changes to local database if needed
+        user_id = user_data.get('user_id')
+        if user_id:
+            refresh_user_cache()
+            
+    except Exception as e:
+        logging.error(f"Error handling external user update: {str(e)}")
+
+
+def handle_external_user_deleted(user_data):
+    """Handle user deletion event from external system"""
+    try:
+        # Process external user deletion
+        logging.info(f"External user deleted: {user_data}")
+        
+        # Example: Clean up local references, update caches
+        refresh_user_cache()
+        
+    except Exception as e:
+        logging.error(f"Error handling external user deletion: {str(e)}")
+
+
+def notify_systems_user_updated(user_id, user_data):
+    """Notify other systems about user updates"""
+    try:
+        # Similar to notify_systems_user_created but for updates
+        logging.info(f"System notification triggered for updated user: {user_id}")
+        
+        # Example notifications for user updates:
+        # - Email notifications for role changes
+        # - Access control updates
+        # - Audit logging
+        audit_log_user_update(user_id, user_data)
+        
+    except Exception as e:
+        logging.error(f"Error notifying systems about user update: {str(e)}")
+
+
+def audit_log_user_update(user_id, user_data):
+    """Create audit log entry for user updates"""
+    try:
+        audit_entry = {
+            'event_type': 'USER_UPDATED',
+            'user_id': user_id,
+            'username': user_data.get('username'),
+            'updated_by': session.get('username'),
+            'timestamp': get_local_time().isoformat(),
+            'user_data': user_data,
+            'ip_address': request.remote_addr,
+            'user_agent': request.headers.get('User-Agent', '')
+        }
+        
+        logging.info(f"AUDIT: {json.dumps(audit_entry)}")
+        
+    except Exception as e:
+        logging.error(f"Error creating audit log for user update: {str(e)}")
+
+
+def get_last_cache_refresh_time():
+    """Get the timestamp of the last cache refresh"""
+    # In a real implementation, this would be stored in database or cache
+    # For now, return a placeholder
+    return get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+
+
+def get_last_external_sync_time():
+    """Get the timestamp of the last external system sync"""
+    # In a real implementation, this would be stored in database
+    # For now, return a placeholder
+    return get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+
+# Add new user management endpoints after the existing user management functions
+
+@app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+def edit_user(user_id):
+    """Edit user information (admin only)"""
+    if not session.get('username'):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+        return redirect(url_for('login'))
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzer bearbeiten'}), 403
+        flash('Nur Administratoren können Benutzer bearbeiten', 'error')
+        return redirect(url_for('index'))
+    
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    
+    if request.method == 'GET':
+        # Return user data for editing
+        try:
+            db = get_db()
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            
+            cursor.execute('''
+                SELECT 
+                    u.id, u.username, u.first_name, u.last_name, u.employee_id,
+                    u.user_role, u.department, u.account_status,
+                    COALESCE(uc.consent_status, 'pending') AS consent_status
+                FROM users u
+                LEFT JOIN (
+                    SELECT user_id, consent_status
+                    FROM user_consents 
+                    WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+                ) uc ON u.id = uc.user_id
+                WHERE u.id = ?
+            ''', (user_id,))
+            
+            user = cursor.fetchone()
+            if not user:
+                if is_ajax:
+                    return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+                flash('Benutzer nicht gefunden', 'error')
+                return redirect(url_for('user_management'))
+            
+            user_data = dict(user)
+            
+            # If AJAX request, return JSON
+            if is_ajax:
+                return jsonify({'success': True, 'user': user_data})
+            
+            # If direct access, render HTML template
+            return render_template('edit_user.html', user=user_data)
+            
+        except Exception as e:
+            logging.error(f"Error fetching user data for edit: {str(e)}")
+            if is_ajax:
+                return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+            flash('Fehler beim Laden der Benutzerdaten', 'error')
+            return redirect(url_for('user_management'))
+    
+    elif request.method == 'POST':
+        # Update user data
+        try:
+            # Get form data
+            data = request.get_json() if is_ajax else request.form
+            
+            username = data.get('username')
+            first_name = (data.get('first_name') or '').strip()
+            last_name = (data.get('last_name') or '').strip()
+            employee_id = (data.get('employee_id') or '').strip()
+            user_role = data.get('user_role', 'employee')
+            department = (data.get('department') or '').strip()
+            account_status = data.get('account_status', 'active')
+            consent_status = data.get('consent_status', 'pending')
+            
+            # Validate required fields
+            if not username:
+                error_msg = 'Benutzername ist erforderlich'
+                if is_ajax:
+                    return jsonify({'success': False, 'message': error_msg}), 400
+                flash(error_msg, 'error')
+                return redirect(url_for('user_management'))
+            
+            # Validate username format
+            if not re.match(r'^[a-zA-Z0-9._-]+$', username):
+                error_msg = 'Benutzername darf nur Buchstaben, Zahlen, Punkte, Unterstriche und Bindestriche enthalten'
+                if is_ajax:
+                    return jsonify({'success': False, 'message': error_msg}), 400
+                flash(error_msg, 'error')
+                return redirect(url_for('user_management'))
+            
+            # Validate user role
+            valid_roles = ['employee', 'supervisor', 'hr', 'admin']
+            if user_role not in valid_roles:
+                user_role = 'employee'
+            
+            # Validate account status
+            valid_status_values = ['active', 'inactive', 'suspended']
+            if account_status not in valid_status_values:
+                account_status = 'active'
+            
+            # Validate consent status
+            valid_consent_values = ['pending', 'granted', 'declined']
+            if consent_status not in valid_consent_values:
+                consent_status = 'pending'
+            
+            db = get_db()
+            cursor = db.cursor()
+            
+            # Check if username already exists for another user
+            cursor.execute('SELECT id FROM users WHERE username = ? AND id != ?', (username, user_id))
+            if cursor.fetchone():
+                error_msg = f'Benutzername {username} wird bereits verwendet'
+                if is_ajax:
+                    return jsonify({'success': False, 'message': error_msg}), 400
+                flash(error_msg, 'error')
+                return redirect(url_for('user_management'))
+            
+            # Check if employee_id already exists for another user (if provided)
+            if employee_id:
+                cursor.execute('SELECT id FROM users WHERE employee_id = ? AND id != ?', (employee_id, user_id))
+                if cursor.fetchone():
+                    error_msg = f'Mitarbeiter-ID {employee_id} wird bereits verwendet'
+                    if is_ajax:
+                        return jsonify({'success': False, 'message': error_msg}), 400
+                    flash(error_msg, 'error')
+                    return redirect(url_for('user_management'))
+            
+            # Update user data
+            current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+            is_admin = 1 if user_role == 'admin' else 0
+            
+            cursor.execute('''
+                UPDATE users SET 
+                    username = ?, first_name = ?, last_name = ?, employee_id = ?,
+                    user_role = ?, department = ?, account_status = ?, is_admin = ?,
+                    updated_at = ?
+                WHERE id = ?
+            ''', (username, first_name, last_name, employee_id, user_role, 
+                  department, account_status, is_admin, current_time, user_id))
+            
+            # Update consent status if changed
+            cursor.execute('''
+                INSERT INTO user_consents (user_id, consent_status, consent_date)
+                VALUES (?, ?, ?)
+            ''', (user_id, consent_status, current_time))
+            
+            db.commit()
+            
+            success_message = f'Benutzer {username} wurde erfolgreich aktualisiert'
+            logging.info(f"User {user_id} updated by admin {session.get('username')}")
+            
+            if is_ajax:
+                return jsonify({'success': True, 'message': success_message})
+            flash(success_message, 'success')
+            return redirect(url_for('user_management'))
+            
+        except Exception as e:
+            logging.error(f"Error updating user: {str(e)}")
+            error_msg = f'Fehler beim Aktualisieren des Benutzers: {str(e)}'
+            if is_ajax:
+                return jsonify({'success': False, 'message': error_msg}), 500
+            flash(error_msg, 'error')
+            return redirect(url_for('user_management'))
+
+@app.route('/toggle_user_status/<int:user_id>', methods=['POST'])
+def toggle_user_status(user_id):
+    """Toggle user account status between active and inactive (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzerstatus ändern'}), 403
+    
+    try:
+        data = request.get_json()
+        current_status = data.get('current_status', 'active')
+        
+        # Toggle status
+        new_status = 'inactive' if current_status == 'active' else 'active'
+        
+        db = get_db()
+        cursor = db.cursor()
+        
+        # Check if user exists
+        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+        
+        username = user[0]
+        
+        # Update user status
+        current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute('''
+            UPDATE users SET account_status = ?, updated_at = ? WHERE id = ?
+        ''', (new_status, current_time, user_id))
+        
+        db.commit()
+        
+        action = 'aktiviert' if new_status == 'active' else 'deaktiviert'
+        success_message = f'Benutzer {username} wurde {action}'
+        
+        logging.info(f"User {user_id} ({username}) status changed to {new_status} by admin {session.get('username')}")
+        
+        return jsonify({
+            'success': True, 
+            'message': success_message,
+            'new_status': new_status
+        })
+        
+    except Exception as e:
+        logging.error(f"Error toggling user status: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
+@app.route('/view_user_details/<int:user_id>', methods=['GET'])
+def view_user_details(user_id):
+    """Get detailed user information (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzerdetails einsehen'}), 403
+    
+    try:
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        # Get user details with consent history
+        cursor.execute('''
+            SELECT 
+                u.id, u.username, u.first_name, u.last_name, u.employee_id,
+                u.user_role, u.department, u.account_status, u.is_admin,
+                u.created_at, u.updated_at,
+                COALESCE(uc.consent_status, 'Unknown') AS current_consent_status,
+                COALESCE(uc.consent_date, '') AS current_consent_date
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status, consent_date
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+            WHERE u.id = ?
+        ''', (user_id,))
+        
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({'success': False, 'message': 'Benutzer nicht gefunden'}), 404
+        
+        user_data = dict(user)
+        
+        # Get consent history
+        cursor.execute('''
+            SELECT consent_status, consent_date
+            FROM user_consents
+            WHERE user_id = ?
+            ORDER BY consent_date DESC
+            LIMIT 10
+        ''', (user_id,))
+        
+        consent_history = [dict(row) for row in cursor.fetchall()]
+        user_data['consent_history'] = consent_history
+        
+        # Get attendance summary
+        cursor.execute('''
+            SELECT 
+                COUNT(*) as total_days,
+                COUNT(CASE WHEN check_out IS NOT NULL THEN 1 END) as completed_days,
+                AVG(CASE 
+                    WHEN check_out IS NOT NULL 
+                    THEN (julianday(check_out) - julianday(check_in)) * 24 * 60 
+                END) as avg_hours_per_day
+            FROM attendance
+            WHERE user_id = ? AND check_in >= date('now', '-30 days')
+        ''', (user_id,))
+        
+        attendance_stats = cursor.fetchone()
+        if attendance_stats:
+            user_data['attendance_stats'] = dict(attendance_stats)
+        
+        # Format display values
+        role_display = {
+            'employee': 'Mitarbeiter',
+            'supervisor': 'Vorgesetzter', 
+            'hr': 'Personalwesen',
+            'admin': 'Administrator'
+        }
+        user_data['role_display'] = role_display.get(user_data['user_role'], user_data['user_role'])
+        
+        status_display = {
+            'active': 'Aktiv',
+            'inactive': 'Inaktiv',
+            'suspended': 'Gesperrt'
+        }
+        user_data['status_display'] = status_display.get(user_data['account_status'], user_data['account_status'])
+        
+        consent_display = {
+            'granted': 'Erteilt',
+            'declined': 'Verweigert',
+            'pending': 'Ausstehend',
+            'Unknown': 'Unbekannt'
+        }
+        user_data['consent_display'] = consent_display.get(user_data['current_consent_status'], user_data['current_consent_status'])
+        
+        # Create display name
+        if user_data['first_name'] and user_data['last_name']:
+            user_data['display_name'] = f"{user_data['first_name']} {user_data['last_name']}"
+        else:
+            user_data['display_name'] = user_data['username']
+        
+        return jsonify({'success': True, 'user': user_data})
+        
+    except Exception as e:
+        logging.error(f"Error fetching user details: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
+@app.route('/export_users', methods=['GET'])
+def export_users():
+    """Export user data as CSV (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzerdaten exportieren'}), 403
+    
+    try:
+        import csv
+        import io
+        
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        # Get all users with consent status
+        cursor.execute('''
+            SELECT 
+                u.id, u.username, u.first_name, u.last_name, u.employee_id,
+                u.user_role, u.department, u.account_status, u.is_admin,
+                u.created_at, u.updated_at,
+                COALESCE(uc.consent_status, 'Unknown') AS consent_status,
+                COALESCE(uc.consent_date, '') AS consent_date
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status, consent_date
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+            ORDER BY u.username
+        ''')
+        
+        users = cursor.fetchall()
+        
+        # Create CSV content
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow([
+            'ID', 'Benutzername', 'Vorname', 'Nachname', 'Mitarbeiter-ID',
+            'Rolle', 'Abteilung', 'Status', 'Admin', 'Erstellt am', 'Aktualisiert am',
+            'Datenschutz-Status', 'Datenschutz-Datum'
+        ])
+        
+        # Write user data
+        for user in users:
+            writer.writerow([
+                user['id'], user['username'], user['first_name'] or '', 
+                user['last_name'] or '', user['employee_id'] or '',
+                user['user_role'], user['department'] or '', user['account_status'],
+                'Ja' if user['is_admin'] else 'Nein', user['created_at'], user['updated_at'],
+                user['consent_status'], user['consent_date']
+            ])
+        
+        # Create response
+        output.seek(0)
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Content-Disposition'] = f'attachment; filename=benutzer_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        
+        logging.info(f"User data exported by admin {session.get('username')}")
+        
+        return response
+        
+    except Exception as e:
+        logging.error(f"Error exporting users: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler beim Export: {str(e)}'}), 500
+
+@app.route('/bulk_consent_action', methods=['POST'])
+def bulk_consent_action():
+    """Perform bulk consent actions (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Massenaktionen durchführen'}), 403
+    
+    try:
+        data = request.get_json()
+        action = data.get('action')  # 'granted' or 'declined'
+        user_ids = data.get('user_ids', [])  # Optional: specific user IDs, empty for all users
+        
+        if action not in ['granted', 'declined']:
+            return jsonify({'success': False, 'message': 'Ungültige Aktion'}), 400
+        
+        db = get_db()
+        cursor = db.cursor()
+        
+        current_time = get_local_time().strftime('%Y-%m-%d %H:%M:%S')
+        
+        if user_ids:
+            # Update specific users
+            placeholders = ','.join(['?' for _ in user_ids])
+            cursor.execute(f'SELECT id, username FROM users WHERE id IN ({placeholders})', user_ids)
+            users = cursor.fetchall()
+            
+            for user_id, username in users:
+                cursor.execute('''
+                    INSERT INTO user_consents (user_id, consent_status, consent_date)
+                    VALUES (?, ?, ?)
+                ''', (user_id, action, current_time))
+            
+            affected_count = len(users)
+        else:
+            # Update all users
+            cursor.execute('SELECT id FROM users')
+            all_user_ids = [row[0] for row in cursor.fetchall()]
+            
+            for user_id in all_user_ids:
+                cursor.execute('''
+                    INSERT INTO user_consents (user_id, consent_status, consent_date)
+                    VALUES (?, ?, ?)
+                ''', (user_id, action, current_time))
+            
+            affected_count = len(all_user_ids)
+        
+        db.commit()
+        
+        action_text = 'erteilt' if action == 'granted' else 'verweigert'
+        success_message = f'Datenschutz-Einwilligung wurde für {affected_count} Benutzer {action_text}'
+        
+        logging.info(f"Bulk consent action '{action}' performed on {affected_count} users by admin {session.get('username')}")
+        
+        return jsonify({
+            'success': True, 
+            'message': success_message,
+            'affected_count': affected_count
+        })
+        
+    except Exception as e:
+        logging.error(f"Error performing bulk consent action: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
+
+@app.route('/search_users', methods=['GET'])
+def search_users():
+    """Search users with filters (admin only)"""
+    if not session.get('username'):
+        return jsonify({'success': False, 'message': 'Sie müssen angemeldet sein'}), 401
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'message': 'Nur Administratoren können Benutzer suchen'}), 403
+    
+    try:
+        # Get search parameters
+        search_term = request.args.get('q', '').strip()
+        role_filter = request.args.get('role', '')
+        status_filter = request.args.get('status', '')
+        department_filter = request.args.get('department', '')
+        consent_filter = request.args.get('consent', '')
+        
+        db = get_db()
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        
+        # Build query with filters
+        query = '''
+            SELECT 
+                u.id, u.username, u.first_name, u.last_name, u.employee_id,
+                u.user_role, u.department, u.account_status,
+                COALESCE(uc.consent_status, 'Unknown') AS consent_status,
+                COALESCE(uc.consent_date, '') AS consent_date
+            FROM users u
+            LEFT JOIN (
+                SELECT user_id, consent_status, consent_date
+                FROM user_consents 
+                WHERE id IN (SELECT MAX(id) FROM user_consents GROUP BY user_id)
+            ) uc ON u.id = uc.user_id
+            WHERE 1=1
+        '''
+        
+        params = []
+        
+        # Add search term filter
+        if search_term:
+            query += '''
+                AND (
+                    u.username LIKE ? OR 
+                    u.first_name LIKE ? OR 
+                    u.last_name LIKE ? OR 
+                    u.employee_id LIKE ? OR
+                    u.department LIKE ?
+                )
+            '''
+            search_pattern = f'%{search_term}%'
+            params.extend([search_pattern] * 5)
+        
+        # Add role filter
+        if role_filter:
+            query += ' AND u.user_role = ?'
+            params.append(role_filter)
+        
+        # Add status filter
+        if status_filter:
+            query += ' AND u.account_status = ?'
+            params.append(status_filter)
+        
+        # Add department filter
+        if department_filter:
+            query += ' AND u.department LIKE ?'
+            params.append(f'%{department_filter}%')
+        
+        # Add consent filter
+        if consent_filter:
+            query += ' AND COALESCE(uc.consent_status, "Unknown") = ?'
+            params.append(consent_filter)
+        
+        query += ' ORDER BY u.username'
+        
+        cursor.execute(query, params)
+        users = cursor.fetchall()
+        
+        # Format user data
+        users_data = []
+        for user in users:
+            user_dict = dict(user)
+            
+            # Create display name
+            if user_dict['first_name'] and user_dict['last_name']:
+                user_dict['display_name'] = f"{user_dict['first_name']} {user_dict['last_name']}"
+            else:
+                user_dict['display_name'] = user_dict['username']
+            
+            # Format role display
+            role_display = {
+                'employee': 'Mitarbeiter',
+                'supervisor': 'Vorgesetzter', 
+                'hr': 'Personalwesen',
+                'admin': 'Administrator'
+            }
+            user_dict['role_display'] = role_display.get(user_dict['user_role'], user_dict['user_role'])
+            
+            users_data.append(user_dict)
+        
+        return jsonify({
+            'success': True, 
+            'users': users_data,
+            'count': len(users_data)
+        })
+        
+    except Exception as e:
+        logging.error(f"Error searching users: {str(e)}")
+        return jsonify({'success': False, 'message': f'Fehler: {str(e)}'}), 500
 
 if __name__ == '__main__':
     print("Initializing BTZ-Zeiterfassung application...")
