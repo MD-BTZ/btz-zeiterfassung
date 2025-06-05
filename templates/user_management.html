@@ -1959,7 +1959,7 @@
                         <i class="fas fa-plus"></i>
                         Neuer Benutzer
                     </button>
-                </div>
+        </div>
             </div>
 
             <!-- Search and Filter Bar -->
@@ -1971,12 +1971,12 @@
                                placeholder="Benutzer suchen (Name, E-Mail, ID...)"
                                aria-label="Benutzer durchsuchen"
                                role="searchbox">
-                    </div>
+            </div>
                     <button class="btn btn-outline" onclick="toggleAdvancedFilters()">
                         <i class="fas fa-filter"></i>
                         Filter
                     </button>
-                </div>
+            </div>
                 
                 <!-- Active Filters -->
                 <div class="filter-chips" id="active-filters" style="display: none;">
@@ -1987,8 +1987,8 @@
             <!-- Users Table -->
             <div class="data-table-container">
                 <table class="data-table" id="users-table">
-                    <thead>
-                        <tr>
+                <thead>
+                    <tr>
                             <th><i class="fas fa-user"></i> Benutzer</th>
                             <th><i class="fas fa-id-badge"></i> ID</th>
                             <th><i class="fas fa-user-tag"></i> Rolle</th>
@@ -1997,10 +1997,10 @@
                             <th><i class="fas fa-shield-alt"></i> Datenschutz</th>
                             <th><i class="fas fa-clock"></i> Letzter Login</th>
                             <th><i class="fas fa-ellipsis-v"></i> Aktionen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
                         <tr class="user-row" data-user-id="{{ user.id }}">
                             <td data-label="Benutzer">
                                 <div class="user-profile">
@@ -2025,7 +2025,7 @@
                                 <span class="status-badge role-{{ user.user_role or 'employee' }}">
                                     <i class="fas fa-user-tag"></i>
                                     {{ user.role_display or 'Mitarbeiter' }}
-                                </span>
+                            </span>
                             </td>
                             <td data-label="Abteilung">
                                 <span class="department-name">{{ user.department or 'Nicht zugewiesen' }}</span>
@@ -2034,13 +2034,13 @@
                                 <span class="status-badge status-{{ 'active' if user.account_status == 'active' else 'inactive' }}">
                                     <i class="fas fa-circle"></i>
                                     {{ 'Aktiv' if user.account_status == 'active' else 'Inaktiv' }}
-                                </span>
+                            </span>
                             </td>
                             <td data-label="Datenschutz">
                                 <span class="status-badge status-{{ 'active' if user.consent_status == 'granted' else 'pending' if user.consent_status == 'pending' else 'inactive' }}">
                                     <i class="fas fa-shield-alt"></i>
                                     {{ 'Erteilt' if user.consent_status == 'granted' else 'Ausstehend' if user.consent_status == 'pending' else 'Verweigert' }}
-                                </span>
+                            </span>
                             </td>
                             <td data-label="Letzter Login">
                                 <span class="last-login">
@@ -2049,12 +2049,12 @@
                                             {{ user.last_login }}
                                         {% else %}
                                             {{ user.last_login.strftime('%d.%m.%Y %H:%M') }}
-                                        {% endif %}
+                        {% endif %}
                                     {% else %}
                                         Nie
                                     {% endif %}
                                 </span>
-                            </td>
+                    </td>
                             <td data-label="Aktionen">
                                 <div class="action-menu-container" data-user-id="{{ user.id }}">
                                     <button class="action-menu-trigger" onclick="toggleActionMenu({{ user.id }})">
@@ -2088,15 +2088,15 @@
                                             </button>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         </section>
-
+        
         <!-- Add User Section -->
         <section class="content-section" id="section-add-user">
             <div class="section-header">
@@ -2104,7 +2104,7 @@
                     <i class="fas fa-user-plus"></i>
                     Neuen Benutzer hinzufügen
                 </h2>
-            </div>
+                    </div>
 
             <form class="form-grid" id="add-user-form" method="POST" action="/add_user">
                 <div class="form-card">
@@ -2215,8 +2215,8 @@
                             Benutzer erstellen
                         </button>
                     </div>
-                </div>
-            </form>
+                    </div>
+                </form>
         </section>
 
         <!-- Consent Management Section -->
@@ -2342,9 +2342,9 @@
                 </div>
             </div>
         </section>
-    </div>
-
-    <script>
+        </div>
+        
+        <script>
         // ============================================================================
         // CLEAN USER MANAGEMENT SYSTEM
         // ============================================================================
@@ -2593,25 +2593,25 @@
             };
             
             fetch(`/edit_user/${userId}`, {
-                method: 'POST',
-                headers: {
+                            method: 'POST',
+                            headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
                     alert('Benutzer wurde erfolgreich aktualisiert!');
                     closeEditUserModal();
                     location.reload();
-                } else {
+                            } else {
                     alert('Fehler: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
                 alert('Ein Fehler ist aufgetreten beim Speichern.');
             });
         }
@@ -2677,7 +2677,7 @@
             }
             
             fetch(`/reset_password/${userId}`, {
-                method: 'POST',
+                    method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -2686,16 +2686,16 @@
                     new_password: newPassword,
                     confirm_password: confirmPassword
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
                     alert('Passwort wurde erfolgreich zurückgesetzt!');
                     closeResetPasswordModal();
                     if (data.datasheet_url) {
                         window.open(data.datasheet_url, '_blank');
                     }
-                } else {
+                    } else {
                     alert('Fehler: ' + data.message);
                 }
             })
@@ -2714,9 +2714,9 @@
             if (confirm(`Möchten Sie diesen Benutzer wirklich ${action}?`)) {
                 fetch(`/toggle_user_status/${userId}`, {
                     method: 'POST',
-                    headers: {
+                    headers: { 
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest' 
                     },
                     body: JSON.stringify({
                         current_status: currentStatus
@@ -2749,9 +2749,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
+                    if (data.success) {
                     showUserDetailsModal(data.user);
-                } else {
+                            } else {
                     alert('Fehler beim Laden der Benutzerdetails: ' + data.message);
                 }
             })
@@ -2983,9 +2983,9 @@
             if (confirm(message)) {
                 fetch('/bulk_consent_action', {
                     method: 'POST',
-                    headers: {
+                    headers: { 
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest' 
                     },
                     body: JSON.stringify({
                         action: action,
@@ -3043,7 +3043,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
+                    if (data.success) {
                             alert('Benutzer erfolgreich erstellt!');
                             this.reset();
                             // Clear password feedback after reset
@@ -3068,8 +3068,8 @@
                     .catch(error => {
                         console.error('Error:', error);
                         alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
-                    });
                 });
+            });
             }
 
             // Handle consent form submission
@@ -3188,6 +3188,6 @@
                 }
             }
         });
-    </script>
+        </script>
 </body>
 </html>

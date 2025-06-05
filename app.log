@@ -29052,3 +29052,283 @@ Connection: keep-alive
 2025-06-05 08:58:14,712 - werkzeug - INFO -  * Restarting with stat
 2025-06-05 08:58:14,866 - werkzeug - WARNING -  * Debugger is active!
 2025-06-05 08:58:14,875 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 10:09:23,602 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://10.42.0.187:8091
+2025-06-05 10:09:23,602 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 10:09:23,605 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 10:09:23,756 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 10:09:23,764 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 10:09:28,019 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 10:09:28,034 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:09:28,048 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/auth-wrapper.js HTTP/1.1" 200 -
+2025-06-05 10:09:28,049 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/modern-menu.js HTTP/1.1" 200 -
+2025-06-05 10:09:28,051 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 10:09:28,052 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/glass-morphism-animations.js HTTP/1.1" 200 -
+2025-06-05 10:09:28,053 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/css/menu-fix-consolidated.css HTTP/1.1" 200 -
+2025-06-05 10:09:28,053 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/js/dropdown-fix-consolidated.js HTTP/1.1" 200 -
+2025-06-05 10:09:28,054 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:28] "GET /static/script.js HTTP/1.1" 200 -
+2025-06-05 10:09:31,774 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:31] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-05 10:09:44,035 - root - INFO - User admin logged in successfully
+2025-06-05 10:09:44,036 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 10:09:44,054 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "GET / HTTP/1.1" 200 -
+2025-06-05 10:09:44,065 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:44,068 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:09:44,068 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:09:44,069 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:44,069 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:44,069 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "GET /static/checkin-checkout.js HTTP/1.1" 200 -
+2025-06-05 10:09:44,069 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:44] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:48,457 - root - INFO - Loaded 21 users for management interface
+2025-06-05 10:09:48,480 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 10:09:48,486 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:48,491 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:48,491 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:09:48,491 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:48,492 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:09:48,492 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:09:48] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "GET / HTTP/1.1" 200 -
+2025-06-05 10:10:33,512 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,514 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,515 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,516 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,516 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,516 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:33,516 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:33] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,220 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "GET / HTTP/1.1" 200 -
+2025-06-05 10:10:34,228 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,230 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,231 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,232 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,232 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,234 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:34,235 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:34] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,296 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 10:10:35,303 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 10:10:35,309 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:10:35,316 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,318 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,319 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,320 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,320 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,322 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:10:35,323 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:10:35] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:07,991 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:07] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 10:21:07,997 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:07] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:21:08,004 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:08,008 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:21:08,009 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:08,009 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:21:08,009 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:08,010 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:08,010 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:08] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,101 - root - INFO - User admin logged in successfully
+2025-06-05 10:21:13,101 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 10:21:13,111 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "GET / HTTP/1.1" 200 -
+2025-06-05 10:21:13,118 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,120 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,120 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,121 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,121 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,121 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:21:13,122 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:13] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:15,608 - root - INFO - Loaded 21 users for management interface
+2025-06-05 10:21:15,611 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 10:21:15,617 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:15,622 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:15,622 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:21:15,622 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:21:15,623 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:21:15,623 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:21:15] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,173 - root - INFO - Loaded 21 users for management interface
+2025-06-05 10:28:55,176 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 10:28:55,186 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,191 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,191 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,191 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,192 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,193 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:28:55,222 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-05 10:28:55,325 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:28:55] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-05 10:29:23,307 - root - INFO - Loaded 21 users for management interface
+2025-06-05 10:29:23,309 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 10:29:23,317 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:23,321 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:29:23,321 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:23,321 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:29:23,322 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:23,322 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:23] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:27,647 - root - INFO - Loaded 21 users for management interface
+2025-06-05 10:29:27,649 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 10:29:27,654 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:27,658 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:27,659 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:29:27,659 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:29:27,659 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:29:27,659 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:29:27] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,073 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "GET / HTTP/1.1" 200 -
+2025-06-05 10:30:11,081 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,084 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,084 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,084 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,086 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,086 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:30:11,087 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:11] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,004 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 10:30:13,013 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 10:30:13,019 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:30:13,030 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,030 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,031 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,032 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,032 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,033 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:30:13,033 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:30:13] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:35:46,621 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:35:46,627 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:46,629 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 10:35:46,629 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:46,629 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:46,630 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:46,630 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:35:46,631 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:46] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,474 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:35:50,480 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,483 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,484 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,484 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,484 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,485 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:50,486 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:50] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:53,106 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "GET /privacy_policy HTTP/1.1" 200 -
+2025-06-05 10:35:53,116 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:53,118 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:35:53,119 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "GET /static/mobile-menu.js HTTP/1.1" 200 -
+2025-06-05 10:35:53,119 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:53,120 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:53,121 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:35:53,121 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:35:53] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:38:58,294 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:38:58,303 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:38:58,307 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:38:58,307 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:38:58,308 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 10:38:58,308 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:38:58,308 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:38:58,309 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:38:58] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,490 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:44:37,499 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,501 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,502 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,504 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:44:37,505 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:44:37] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,781 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:45:59,787 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,789 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,790 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,790 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,790 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,790 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:45:59,791 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:45:59] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 10:46:36,612 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:46:36,617 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:46:36,619 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:46:36,619 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:46:36,620 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:46:36,620 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:46:36,620 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:46:36,621 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:46:36] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:00,684 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:54:00,692 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:00,696 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:00,697 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:00,697 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:00,698 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 10:54:00,698 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:00,699 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:00] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:20,268 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://10.42.0.187:8091
+2025-06-05 10:54:20,268 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 10:54:20,281 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 10:54:20,433 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 10:54:20,443 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 10:54:27,154 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 10:54:27,174 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:54:27,188 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:27,189 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:27,191 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:27,191 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:27,192 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:27,192 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:27,192 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:27] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,432 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:54:28,441 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,443 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,443 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,444 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,446 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,446 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:28,447 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:28] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,810 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "GET /login HTTP/1.1" 200 -
+2025-06-05 10:54:46,821 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,824 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,825 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,825 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,825 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,825 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 10:54:46,826 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 10:54:46] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:09,466 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 11:09:09,479 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "GET /login HTTP/1.1" 200 -
+2025-06-05 11:09:09,486 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:09,488 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 11:09:09,489 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:09,490 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 11:09:09,491 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:09,492 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:09,493 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:09,493 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:09] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,340 - root - INFO - User admin logged in successfully
+2025-06-05 11:09:16,340 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 11:09:16,360 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "GET / HTTP/1.1" 200 -
+2025-06-05 11:09:16,367 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,369 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,370 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,371 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,371 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,372 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,373 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:16,373 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:16] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,872 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "GET /admin HTTP/1.1" 200 -
+2025-06-05 11:09:18,880 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,885 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,887 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,888 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,888 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,888 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,888 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:18,889 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:18] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,382 - root - INFO - Loaded 21 users for management interface
+2025-06-05 11:09:20,406 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 11:09:20,417 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,419 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,419 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,420 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,420 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,421 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 11:09:20,421 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:09:20] "[36mGET /static/universal-glass-morphism.css HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,062 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "GET /login HTTP/1.1" 200 -
+2025-06-05 11:11:59,072 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,074 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,074 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,076 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "GET /static/universal-glass-morphism.css HTTP/1.1" 200 -
+2025-06-05 11:11:59,077 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,077 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/glass-morphism-animations.js HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,080 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,080 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 11:11:59,089 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "GET /get_user_settings HTTP/1.1" 200 -
+2025-06-05 11:11:59,095 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 11:11:59] "GET /get_today_attendance/1 HTTP/1.1" 200 -

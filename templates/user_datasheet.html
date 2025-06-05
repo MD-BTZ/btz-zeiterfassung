@@ -569,7 +569,7 @@
         <div class="datasheet-header">
             <div class="company-logo">
                 <i class="fas fa-building"></i>
-            </div>
+        </div>
             <h1><i class="fas fa-id-card"></i> Benutzerdatenblatt</h1>
             <p class="subtitle">BTZ Zeiterfassung System - Zugangsdaten & Systemanleitung</p>
         </div>
@@ -585,20 +585,20 @@
                         <tr>
                             <td>Benutzername:</td>
                             <td><span class="credential-value">{{ username }}</span></td>
-                        </tr>
-                        <tr>
+                </tr>
+                <tr>
                             <td>Temporäres Passwort:</td>
                             <td><span class="credential-value">{{ password }}</span></td>
-                        </tr>
-                        <tr>
+                </tr>
+                <tr>
                             <td>Erstellt am:</td>
-                            <td>{{ creation_date }}</td>
-                        </tr>
+                    <td>{{ creation_date }}</td>
+                </tr>
                         <tr>
                             <td>Login-URL:</td>
                             <td><code>{{ login_url }}</code></td>
                         </tr>
-                    </table>
+            </table>
                 </div>
                 
                 <!-- QR Code Section -->
@@ -748,11 +748,11 @@
                 <button class="btn btn-primary" onclick="window.print()">
                     <i class="fas fa-print"></i>
                     Drucken
-                </button>
+            </button>
                 <button class="btn btn-secondary" onclick="generatePDF()">
                     <i class="fas fa-file-pdf"></i>
                     Als PDF speichern
-                </button>
+            </button>
                 <a href="/user_management" class="btn btn-outline">
                     <i class="fas fa-arrow-left"></i>
                     Zurück zur Verwaltung
@@ -760,16 +760,16 @@
             </div>
             <p><small><i class="fas fa-info-circle"></i> Dieses Datenblatt ist aus Sicherheitsgründen nur einmalig abrufbar</small></p>
         </div>
-        
+
         <!-- Footer -->
         <div class="datasheet-footer">
             <p><strong>BTZ Zeiterfassung</strong> - Professionelle Zeiterfassung für Ihr Unternehmen</p>
             <p class="timestamp">Erstellt am {{ current_date }} | Dokument-ID: {{ username }}-{{ creation_date.replace(' ', '-').replace(':', '-').replace('.', '-') }}</p>
             <p><small>© 2024 BTZ Zeiterfassung. Alle Rechte vorbehalten.</small></p>
         </div>
-    </div>
-    
-    <script>
+        </div>
+        
+        <script>
         function generatePDF() {
             // Show loading state
             const button = event.target;
@@ -859,7 +859,7 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
-        });
-    </script>
+            });
+        </script>
 </body>
 </html>
