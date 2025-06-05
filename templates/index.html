@@ -118,7 +118,7 @@
         }
         
         /* Prevent attendance card effects from interfering with navigation */
-        .glass-container {
+        .container {
             position: relative;
             z-index: 1;
         }
@@ -154,18 +154,18 @@
         }
         
         /* Ensure no invisible overlays */
-        .glass-morphism-page::before,
-        .glass-morphism-page::after,
-        .glass-container::before,
-        .glass-container::after {
+        body::before,
+        body::after,
+        .container::before,
+        .container::after {
             pointer-events: none !important;
         }
         
         /* CRITICAL FIX: Override all navigation blocking styles */
         .modern-nav,
         .modern-nav *,
-        .glass-nav,
-        .glass-nav *,
+        .nav,
+        .nav *,
         .nav-menu,
         .nav-menu *,
         .nav-link,
@@ -189,10 +189,10 @@
         }
         
         /* Force navigation to be clickable even when cards are active */
-        body.glass-morphism-page .modern-nav,
-        body.glass-morphism-page .modern-nav *,
-        body.glass-morphism-page .glass-nav,
-        body.glass-morphism-page .glass-nav * {
+        body .modern-nav,
+        body .modern-nav *,
+        body .nav,
+        body .nav * {
             pointer-events: auto !important;
             z-index: 1000 !important;
         }
@@ -206,18 +206,18 @@
         }
         
         /* Ensure main content stays below navigation */
-        .glass-container {
+        .container {
             z-index: 1 !important;
             position: relative !important;
         }
         
         /* Override any universal CSS that might block navigation */
-        .glass-nav .dropdown-menu {
+        .nav .dropdown-menu {
             pointer-events: auto !important;
             z-index: 1002 !important;
         }
         
-        .glass-nav .nav-item.dropdown:hover .dropdown-menu {
+        .nav .nav-item.dropdown:hover .dropdown-menu {
             pointer-events: auto !important;
             z-index: 1002 !important;
         }
@@ -233,7 +233,6 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
             z-index: 10001;
             display: flex;
             align-items: flex-start;
@@ -252,9 +251,8 @@
         }
         
         .report-modal-content {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-xl);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
             max-width: 95vw;
@@ -283,9 +281,9 @@
         }
         
         .report-modal-header {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            background: var(--bg-secondary);
             padding: var(--space-xl);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -398,7 +396,7 @@
         }
     </style>
 </head>
-<body class="glass-morphism-page">
+<body>
     {% include 'menu.html' %}
     
     <!-- Store user ID in sessionStorage after successful login -->
@@ -408,7 +406,7 @@
     </script>
     {% endif %}
     
-    <main class="glass-container">
+    <main class="container">
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -424,7 +422,7 @@
         <!-- Attendance Actions - Directly under menu -->
         <div class="d-grid gap-4 mb-4" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
             <!-- Check-in Card -->
-            <div class="glass-card text-center attendance-button-card checkin">
+            <div class="card text-center attendance-button-card checkin">
                 <div class="mb-3">
                     <div class="d-flex align-center justify-center mb-3 checkin-icon" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); color: white; font-size: 2rem; transition: all 0.3s ease;">
                         <i class="fas fa-sign-in-alt"></i>
@@ -446,7 +444,7 @@
                 </div>
                 
             <!-- Check-out Card -->
-            <div class="glass-card text-center attendance-button-card checkout">
+            <div class="card text-center attendance-button-card checkout">
                 <div class="mb-3">
                     <div class="d-flex align-center justify-center mb-3 checkout-icon" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 2rem; transition: all 0.3s ease;">
                         <i class="fas fa-sign-out-alt"></i>
@@ -469,7 +467,7 @@
             </div>
             
         <!-- Current Time Card -->
-        <div class="glass-card mb-4 text-center">
+        <div class="card mb-4 text-center">
             <h3 class="mb-3 d-flex align-center justify-center gap-2">
                 <i class="far fa-clock text-primary"></i>
                 Aktuelle Zeit
@@ -482,7 +480,7 @@
         
         <!-- User Selection Card -->
         {% if session.get('admin_logged_in') %}
-        <div class="glass-card mb-4">
+        <div class="card mb-4">
             <h3 class="mb-3 d-flex align-center gap-2">
                 <i class="fas fa-users text-primary"></i>
                 Benutzer auswählen
@@ -504,7 +502,7 @@
         <!-- Dashboard Grid -->
         <div class="d-grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
             <!-- Quick Actions -->
-            <div class="glass-card">
+            <div class="card">
                 <h3 class="mb-3 d-flex align-center gap-2">
                     <i class="fas fa-bolt text-primary"></i>
                     Schnellzugriff
@@ -532,7 +530,7 @@
         </div>
         
             <!-- Report Generation -->
-            <div class="glass-card">
+            <div class="card">
                 <h3 class="mb-3 d-flex align-center gap-2">
                     <i class="fas fa-chart-bar text-primary"></i>
                 Bericht generieren
@@ -876,7 +874,7 @@
                 ${message}
             `;
             
-            const container = document.querySelector('.glass-container');
+            const container = document.querySelector('.container');
             container.insertBefore(alertDiv, container.firstChild);
             
             setTimeout(() => {

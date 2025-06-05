@@ -7,12 +7,12 @@
     {% include 'head_includes.html' %}
     <style>
         .export-section {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-primary);
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
         .export-buttons {
             display: grid;
@@ -28,15 +28,15 @@
             padding: 1.5rem;
             transition: all 0.3s ease;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             color: white;
             text-decoration: none;
         }
         .export-button:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--bg-tertiary);
         }
         .export-button i {
             font-size: 2.5rem;
@@ -65,9 +65,9 @@
         .input {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-primary);
             color: #f8f9fa;
             transition: all 0.3s ease;
         }
@@ -75,7 +75,7 @@
             border-color: #86b7fe;
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
             outline: 0;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-secondary);
         }
         textarea.input {
             min-height: 120px;
@@ -107,7 +107,7 @@
             .export-buttons {
                 grid-template-columns: 1fr;
             }
-            .glass-container {
+            .container {
                 padding: 1rem;
             }
             .export-section {
@@ -116,9 +116,9 @@
         }
     </style>
 </head>
-<body class="glass-morphism-page">
+<body>
     {% include 'menu.html' %}
-    <div class="glass-container">
+    <div class="container">
         <div class="main-card">
             <h1 class="mb-3 text-center"><i class="fas fa-database"></i> Datenzugriff & Export</h1>
             <div class="export-section">

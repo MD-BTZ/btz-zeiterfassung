@@ -4,32 +4,32 @@
     <title>BTZ Zeiterfassung - Meine Arbeitszeiten</title>
     {% include 'head_includes.html' %}
     <style>
-        /* Custom styles for attendance table */
+        /* Clean professional styles for attendance table */
         .attendance-table {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-primary);
             border-radius: 12px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
         
         .attendance-table th {
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--bg-tertiary);
             color: var(--text-primary);
             font-weight: 600;
             padding: 1rem;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
         
         .attendance-table td {
             padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-light);
             color: var(--text-secondary);
         }
         
         .attendance-table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-secondary);
         }
         
         .attendance-table tbody tr:last-child td {
@@ -60,12 +60,12 @@
         }
         
         .search-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-primary);
             border-radius: 12px;
             padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
             margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
         }
         
         .search-form {
@@ -127,12 +127,12 @@
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-primary);
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
         
         .stat-value {
@@ -164,12 +164,12 @@
         }
     </style>
 </head>
-<body class="glass-morphism-page">
+<body>
     {% include 'menu.html' %}
     
-    <main class="glass-container">
+    <main class="container">
         <!-- Page Header -->
-        <div class="glass-card mb-4 text-center">
+        <div class="card mb-4 text-center">
             <h1 class="mb-2 d-flex align-center justify-center gap-2">
                 <i class="far fa-calendar-check text-primary"></i>
                 Meine Arbeitszeiten
@@ -190,7 +190,7 @@
         {% endwith %}
         
         <!-- Search and Filter -->
-        <div class="glass-card mb-4">
+        <div class="card mb-4">
             <h3 class="mb-3 d-flex align-center gap-2">
                 <i class="fas fa-search text-primary"></i>
                 Suchen & Filtern
@@ -265,7 +265,7 @@
         
         <!-- Debug Information (temporary) -->
         {% if records and session.get('admin_logged_in') %}
-        <div class="glass-card mb-4" style="background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);">
+        <div class="card mb-4" style="background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);">
             <h4 class="mb-3" style="color: #f59e0b;">
                 <i class="fas fa-bug"></i>
                 Debug Information (nur für Admins sichtbar)
@@ -288,7 +288,7 @@
         {% endif %}
         
         <!-- Attendance Records -->
-        <div class="glass-card">
+        <div class="card">
             <h3 class="mb-3 d-flex align-center gap-2">
                 <i class="fas fa-table text-primary"></i>
                 Zeiterfassung
@@ -414,7 +414,7 @@
     </div>
         
         <!-- Quick Actions -->
-        <div class="glass-card mt-4">
+        <div class="card mt-4">
             <h3 class="mb-3 d-flex align-center gap-2">
                 <i class="fas fa-bolt text-primary"></i>
                 Schnellzugriff

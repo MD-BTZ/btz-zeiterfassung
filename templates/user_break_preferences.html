@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script></head>
-<body class="glass-morphism-page">
+<body>
     {% include 'menu.html' %}
-    <div class="glass-container main-card">
+    <div class="container main-card">
         <h1><i class="fas fa-user-cog"></i> Persönliche Pauseneinstellungen</h1>
         
-        <div class="glass-card break-settings-container">
+        <div class="card break-settings-container">
             <h2><i class="fas fa-sliders-h"></i> Meine Pausenpräferenzen</h2>
             
             {% if message %}
@@ -124,7 +124,7 @@
                 </div>
             </form>
             
-            <div class="glass-card settings-info-panel">
+            <div class="card settings-info-panel">
                 <h3><i class="fas fa-info-circle"></i> Hinweise zu Pauseneinstellungen</h3>
                 <p>Diese Einstellungen beeinflussen, wie das System automatische ArbZG-Pausen für Sie platziert. Die gesetzliche Mindestpausendauer (30 Minuten bei über 6 Stunden Arbeit, 45 Minuten bei über 9 Stunden) wird dabei immer eingehalten.</p>
                 <p>Ihre persönlichen Einstellungen überschreiben die systemweiten Standardeinstellungen.</p>

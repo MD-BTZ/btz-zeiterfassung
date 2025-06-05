@@ -5,7 +5,7 @@
 :root {
     --nav-height: 70px;
     --nav-height-mobile: 60px;
-    --nav-bg: rgba(255, 255, 255, 0.95);
+    --nav-bg: rgba(255, 255, 255, 1.0);
     --nav-border: rgba(0, 0, 0, 0.1);
     --nav-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     --nav-blur: 16px;
@@ -56,8 +56,6 @@
     right: 0;
     z-index: 1000;
     background: var(--nav-bg);
-    backdrop-filter: blur(var(--nav-blur));
-    -webkit-backdrop-filter: blur(var(--nav-blur));
     border-bottom: 1px solid var(--nav-border);
     box-shadow: var(--nav-shadow);
     height: var(--nav-height);
@@ -139,7 +137,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
     transition: left 0.6s ease;
 }
 
@@ -318,7 +316,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
     transition: left 0.5s ease;
 }
 

@@ -33,15 +33,11 @@
   transform: translateY(-10px) scale(0.95) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   
-  /* Glass morphism background */
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  border-radius: 12px !important;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.15) !important,
-    0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  /* Clean professional background */
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
   
   /* Reset any conflicting transforms */
   margin-top: 0 !important;
@@ -146,13 +142,13 @@
   
   .dropdown-item {
     color: #ffffff !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     padding: 0.8rem 2rem !important;
   }
   
   .dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: rgba(255, 255, 255, 0.9) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
     transform: none !important;
   }
 }
@@ -171,20 +167,6 @@
 
 .menu-nav-container {
   position: relative !important;
-}
-
-/* ===========================
-   GLASS MORPHISM OVERRIDES
-   =========================== */
-
-/* Override any glass morphism conflicts */
-.menu-nav-link::before {
-  z-index: -1 !important;
-}
-
-/* Ensure menu items don't get masked by glass effects */
-.menu-nav-item {
-  isolation: isolate !important;
 }
 
 /* ===========================

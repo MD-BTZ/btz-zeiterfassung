@@ -40,13 +40,12 @@
             }
         
             .edit-form-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
         }
         
         .section-title {
@@ -55,7 +54,7 @@
             gap: 0.75rem;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid var(--border-color);
         }
         
         .section-title h2 {
@@ -66,7 +65,7 @@
         }
         
         .attendance-info {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            background: var(--bg-secondary);
             border: 1px solid rgba(59, 130, 246, 0.3);
             border-radius: 12px;
             padding: 1rem;
@@ -117,8 +116,8 @@
         }
         
         .field-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 0.75rem 1rem;
             color: var(--text-primary);
@@ -129,7 +128,7 @@
         .field-input:focus {
             outline: none;
             border-color: var(--primary-color);
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--bg-primary);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
         
@@ -170,7 +169,7 @@
             justify-content: flex-end;
             margin-top: 2rem;
             padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid var(--border-color);
         }
         
         .btn-group {
@@ -179,7 +178,7 @@
         }
         
         .auto-breaks-info {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            background: var(--bg-secondary);
             border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 12px;
             padding: 1.5rem;
@@ -219,19 +218,19 @@
         
         .breaks-table {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-primary);
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
         }
         
         .breaks-table th {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--bg-tertiary);
             padding: 1rem;
             text-align: left;
             color: var(--text-primary);
             font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
         
         .breaks-table td {
@@ -415,12 +414,19 @@
             align-items: center;
             gap: 0.5rem;
         }
+        
+        .edit-modal {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: var(--shadow-xl);
+        }
     </style>
 </head>
-<body class="glass-morphism-page">
+<body>
     
     
-    <main class="glass-container">
+    <main class="container">
         <div class="edit-container">
             <!-- Page Header -->
             <div class="edit-header">
