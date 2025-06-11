@@ -40,6 +40,26 @@
             --spacing-2xl: 3rem;
         }
         
+        /* Hide database ID column */
+        .data-table th:nth-child(2),
+        .data-table td:nth-child(2) {
+            display: none;
+        }
+        
+        /* Hide action button text, keep only icons */
+        .user-actions .user-options-btn span {
+            display: none;
+        }
+        
+        /* Adjust action button styling for icon-only display */
+        .user-actions .user-options-btn {
+            min-width: auto;
+            padding: var(--spacing-sm);
+            width: 36px;
+            height: 36px;
+            justify-content: center;
+        }
+        
         /* Clean professional body styling */
         body {
             background: var(--bg-secondary);
@@ -397,12 +417,6 @@
         .data-table td:nth-child(1) {
             width: 30%;
             padding-left: 20px;
-        }
-        
-        .data-table th:nth-child(2), 
-        .data-table td:nth-child(2) {
-            width: 8%;
-            text-align: center;
         }
         
         .data-table th:nth-child(3), 
@@ -841,6 +855,234 @@
                 padding: 6px 10px;
             }
         }
+
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .btn.loading .btn-text {
+            display: none;
+        }
+        
+        .btn.loading #submit-spinner {
+            display: inline-block !important;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+        }
+        
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            padding: var(--spacing-xl);
+            position: relative;
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .modal-body {
+            padding: var(--spacing-xl);
+        }
+        
+        /* Print styles for modal */
+        @media print {
+            /* Hide everything except the modal content when printing */
+            body * {
+                visibility: hidden;
+            }
+            
+            .modal, .modal * {
+                visibility: visible;
+            }
+            
+            .modal {
+                position: static !important;
+                background: white !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                z-index: auto !important;
+                height: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            
+            .modal-content {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-height: none !important;
+                overflow: visible !important;
+                animation: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 20px !important;
+                font-size: 14px !important;
+            }
+            
+            .modal-header {
+                border-radius: 0 !important;
+                page-break-inside: avoid;
+                background: #10b981 !important;
+                color: white !important;
+                padding: 15px !important;
+                margin-bottom: 20px !important;
+            }
+            
+            .modal-header h2 {
+                font-size: 18px !important;
+                margin: 0 !important;
+            }
+            
+            .modal-close {
+                display: none !important;
+            }
+            
+            .modal-body {
+                page-break-inside: avoid;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
+            /* Hide non-essential buttons in print */
+            .btn-secondary, .btn-info {
+                display: none !important;
+            }
+            
+            /* Keep only the print button visible but hide it too */
+            .btn-primary {
+                display: none !important;
+            }
+            
+            /* Style credentials for print - compact layout */
+            .credentials-box {
+                border: 2px solid #000 !important;
+                background: #f9f9f9 !important;
+                page-break-inside: avoid;
+                padding: 15px !important;
+                margin: 10px 0 !important;
+                border-radius: 5px !important;
+            }
+            
+            .credentials-box h4 {
+                font-size: 16px !important;
+                margin: 0 0 10px 0 !important;
+                color: #000 !important;
+                text-align: center !important;
+            }
+            
+            .credentials-box p {
+                font-size: 12px !important;
+                margin: 0 0 10px 0 !important;
+                color: #000 !important;
+            }
+            
+            /* Ensure important info is visible and compact */
+            .credentials-password {
+                background: #ffeb3b !important;
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                font-weight: bold !important;
+                padding: 3px 6px !important;
+                border-radius: 3px !important;
+                font-family: monospace !important;
+            }
+            
+            /* User info section - compact */
+            #created-user-name {
+                font-size: 16px !important;
+                margin: 0 0 5px 0 !important;
+                color: #000 !important;
+            }
+            
+            #created-user-details {
+                font-size: 12px !important;
+                margin: 0 0 15px 0 !important;
+                color: #666 !important;
+            }
+            
+            /* Warning section - compact */
+            .modal-body > div:last-child {
+                background: #fff3cd !important;
+                border-left: 4px solid #f59e0b !important;
+                padding: 10px !important;
+                margin: 15px 0 0 0 !important;
+                border-radius: 3px !important;
+                font-size: 11px !important;
+                color: #000 !important;
+            }
+            
+            /* User icon */
+            .fas.fa-user-circle {
+                font-size: 2rem !important;
+                color: #10b981 !important;
+                margin-bottom: 10px !important;
+            }
+            
+            /* Ensure single page */
+            @page {
+                margin: 1cm;
+                size: A4;
+            }
+            
+            body {
+                font-size: 12px !important;
+                line-height: 1.3 !important;
+            }
+        }
     </style>
 </head>
 
@@ -987,7 +1229,6 @@
                                 <div class="user-actions">
                                     <button class="user-options-btn" onclick="openUserOptions({{ user.id }})" type="button" title="Benutzer-Optionen öffnen">
                                         <i class="fas fa-cog"></i>
-                                        <span>Optionen</span>
                                     </button>
                                 </div>
                             </td>
@@ -1005,7 +1246,7 @@
                     <i class="fas fa-user-plus"></i>
                     Neuen Benutzer hinzufügen
                 </h2>
-                    </div>
+            </div>
 
             <form class="form-grid" id="add-user-form" method="POST" action="/add_user">
                 <div class="form-card">
@@ -1111,9 +1352,10 @@
                             <i class="fas fa-undo"></i>
                             Zurücksetzen
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="submit-user-btn">
                             <i class="fas fa-user-plus"></i>
-                            Benutzer erstellen
+                            <span class="btn-text">Benutzer erstellen</span>
+                            <i class="fas fa-spinner fa-spin" style="display: none;" id="submit-spinner"></i>
                         </button>
                     </div>
                 </div>
@@ -1121,7 +1363,69 @@
         </section>
     </div>
 
+    <!-- User Created Success Modal -->
+    <div id="user-created-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="background: var(--success-color); color: white;">
+                <h2 style="margin: 0; display: flex; align-items: center; gap: var(--spacing-md);">
+                    <i class="fas fa-check-circle"></i>
+                    Benutzer erfolgreich erstellt
+                </h2>
+                <button type="button" class="modal-close" onclick="closeUserCreatedModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: var(--spacing-xl);">
+                    <div style="background: var(--bg-secondary); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); margin-bottom: var(--spacing-lg);">
+                        <i class="fas fa-user-circle" style="font-size: 4rem; color: var(--success-color); margin-bottom: var(--spacing-md);"></i>
+                        <h3 id="created-user-name" style="color: var(--text-primary); margin: 0 0 var(--spacing-sm) 0;">Benutzername</h3>
+                        <p id="created-user-details" style="color: var(--text-secondary); margin: 0;">Benutzer Details</p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, var(--primary-color), #2563eb); color: white; border-radius: var(--border-radius-lg); padding: var(--spacing-xl); margin-bottom: var(--spacing-lg);" class="credentials-box">
+                        <h4 style="margin: 0 0 var(--spacing-md) 0; display: flex; align-items: center; justify-content: center; gap: var(--spacing-sm);">
+                            <i class="fas fa-key"></i>
+                            Zugangsdaten
+                        </h4>
+                        <p style="margin: 0 0 var(--spacing-sm) 0; font-size: 0.9rem; opacity: 0.9;">
+                            Diese Zugangsdaten werden dem Benutzer benötigt:
+                        </p>
+                        <div style="background: rgba(255, 255, 255, 0.2); border-radius: var(--border-radius); padding: var(--spacing-md); margin-top: var(--spacing-md);">
+                            <strong>Benutzername:</strong> <span id="modal-username"></span><br>
+                            <strong>Temporäres Passwort:</strong> <span id="modal-password" class="credentials-password" style="font-family: monospace; font-weight: bold;"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-primary" onclick="printCredentials()">
+                        <i class="fas fa-print"></i>
+                        Zugangsdaten drucken
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="openUserDatasheet()">
+                        <i class="fas fa-external-link-alt"></i>
+                        Datenblatt anzeigen
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="createAnotherUser()">
+                        <i class="fas fa-user-plus"></i>
+                        Weiteren Benutzer erstellen
+                    </button>
+                </div>
+                
+                <div style="margin-top: var(--spacing-xl); padding: var(--spacing-md); background: var(--bg-tertiary); border-radius: var(--border-radius); border-left: 4px solid var(--warning-color);">
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">
+                        <i class="fas fa-info-circle" style="color: var(--warning-color); margin-right: var(--spacing-sm);"></i>
+                        <strong>Wichtig:</strong> Bitte geben Sie diese Zugangsdaten sicher an den Benutzer weiter. 
+                        Das temporäre Passwort sollte beim ersten Login geändert werden.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let currentCreatedUserId = null;
+        let currentDatasheetUrl = null;
+
         // Tab navigation
         function showSection(sectionName) {
             // Hide all sections
@@ -1209,15 +1513,126 @@
             window.location.href = '/export_users';
         }
 
-        // Form submission handling
+        // Form submission handling - Use AJAX to show modal
         document.getElementById('add-user-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('password_confirm').value;
             
             if (password !== confirmPassword) {
-                e.preventDefault();
                 alert('Passwörter stimmen nicht überein!');
                 return false;
+            }
+            
+            // Show loading state
+            const submitBtn = document.getElementById('submit-user-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('#submit-spinner');
+            
+            submitBtn.classList.add('loading');
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            submitBtn.disabled = true;
+            
+            // Prepare form data
+            const formData = new FormData(this);
+            
+            // Submit via AJAX
+            fetch('/add_user', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reset loading state
+                submitBtn.classList.remove('loading');
+                btnText.style.display = 'inline';
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
+                
+                console.log('Server response:', data); // Debug log
+                
+                if (data.success) {
+                    console.log('Calling showUserCredentials with:', data); // Debug log
+                    // Show credentials modal
+                    showUserCredentials(data);
+                    // Reset form
+                    resetForm();
+                } else {
+                    alert('Fehler: ' + data.message);
+                }
+            })
+            .catch(error => {
+                // Reset loading state
+                submitBtn.classList.remove('loading');
+                btnText.style.display = 'inline';
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
+                
+                console.error('Error:', error);
+                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+            });
+        });
+
+        // Show credentials modal after user creation
+        function showUserCredentials(userData) {
+            // Store data for modal functions
+            currentCreatedUserId = userData.user_id;
+            currentDatasheetUrl = userData.datasheet_url;
+            
+            // Populate the existing modal with user data
+            document.getElementById('created-user-name').textContent = userData.username;
+            document.getElementById('created-user-details').textContent = userData.full_name || userData.user_role;
+            document.getElementById('modal-username').textContent = userData.username;
+            document.getElementById('modal-password').textContent = userData.temp_password;
+            
+            // Show the modal
+            document.getElementById('user-created-modal').style.display = 'flex';
+        }
+
+        function closeUserCreatedModal() {
+            document.getElementById('user-created-modal').style.display = 'none';
+            currentCreatedUserId = null;
+            currentDatasheetUrl = null;
+        }
+
+        function openUserDatasheet() {
+            if (currentDatasheetUrl) {
+                window.open(currentDatasheetUrl, '_blank');
+            }
+        }
+
+        function printCredentials() {
+            // Print the modal content directly
+            window.print();
+        }
+
+        function createAnotherUser() {
+            closeUserCreatedModal();
+            // Clear form and focus on username field
+            resetForm();
+            document.querySelector('input[name="username"]').focus();
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('user-created-modal');
+            if (e.target === modal) {
+                closeUserCreatedModal();
+            }
+        });
+
+        // Handle escape key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('user-created-modal');
+                if (modal && modal.style.display === 'flex') {
+                    closeUserCreatedModal();
+                }
             }
         });
     </script>

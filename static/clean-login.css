@@ -1,87 +1,75 @@
-/* Clean Login Page Styles - Override purple background */
+/* Clean Login Page Overrides - Minimal styles to ensure professional design works */
+
+/* Remove any potential glass morphism conflicts */
+.login-page *,
+.login-container *,
+.login-form * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Ensure no menu interference on login page */
+.login-page .navbar {
+    display: none !important;
+}
+
+/* Remove body padding from navbar when on login page */
 body.login-page {
-    background: #f8fafc !important;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 20px;
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 0 !important;
 }
 
-/* Clean login card */
-.login-card {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 16px !important;
-    padding: 3rem 2.5rem;
-    max-width: 420px;
-    width: 100%;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.2s ease-out !important;
-}
-
-.login-card:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-}
-
-/* Remove glass morphism effects */
-.login-card::before {
-    display: none !important;
-}
-
-/* Clean form inputs */
-.login-form input[type="text"],
-.login-form input[type="password"] {
-    background: #ffffff !important;
-    border: 2px solid #e2e8f0 !important;
-    border-radius: 8px !important;
+/* Ensure clean slate for login page */
+.login-page .glass-morphism-page,
+.login-page .glass-container,
+.login-page .glass-card {
+    background: transparent !important;
+    border: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
 
-.login-form input[type="text"]:focus,
-.login-form input[type="password"]:focus {
-    background: #ffffff !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    transform: none !important;
-}
-
-/* Clean login button */
-.login-form button[type="submit"] {
-    background: #3b82f6 !important;
-    border-radius: 8px !important;
-}
-
-.login-form button[type="submit"]:hover {
-    background: #2563eb !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    transform: translateY(-1px) !important;
-}
-
-.login-form button[type="submit"]::before {
-    display: none !important;
-}
-
-/* Clean flash messages */
-.login-card .flash-message {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important;
+/* Override any inherited glass morphism styles */
+.login-page input,
+.login-page button,
+.login-page .flash-message,
+.login-page .back-link {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
 
-/* Clean back link */
-.login-card .back-link {
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+/* Ensure proper font loading */
+.login-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .login-page * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .login-page .form-input {
+        border-width: 3px !important;
+    }
+    
+    .login-page .submit-button {
+        border: 2px solid currentColor !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .login-page {
+        background: white !important;
+    }
+    
+    .login-container {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
 } 

@@ -31458,3 +31458,1216 @@ Connection: keep-alive
 2025-06-05 15:43:28,582 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:43:28] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
 2025-06-05 15:43:28,589 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:43:28] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
 2025-06-05 15:43:28,589 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:43:28] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:04,209 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://10.42.0.187:8091
+2025-06-05 15:46:04,209 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 15:46:04,212 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 15:46:04,365 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 15:46:04,377 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 15:46:08,449 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "GET / HTTP/1.1" 200 -
+2025-06-05 15:46:08,460 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:08,460 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:08,461 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:08,462 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:08,462 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:08,462 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:08,464 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:08] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,238 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 15:46:10,245 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 15:46:10,253 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:46:10,259 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,261 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,263 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,263 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,263 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,264 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:10,264 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:10] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,182 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:46:58,194 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,195 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,199 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,201 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,202 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,211 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:46:58,212 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:46:58] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,304 - root - INFO - User admin logged in successfully
+2025-06-05 15:47:30,304 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 15:47:30,316 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "GET / HTTP/1.1" 200 -
+2025-06-05 15:47:30,326 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,329 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,329 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,330 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,330 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,330 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:30,331 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:30] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,938 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "GET /admin HTTP/1.1" 200 -
+2025-06-05 15:47:36,945 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,948 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,948 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,948 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,949 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,949 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:36,949 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:36] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:38,481 - root - INFO - Loaded 24 users for management interface
+2025-06-05 15:47:38,492 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 15:47:38,499 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:38,502 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:38,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:38,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:38,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:38,504 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:38] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:41,082 - root - INFO - User options page accessed for user 34 by admin admin
+2025-06-05 15:47:41,092 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "GET /user_options/34 HTTP/1.1" 200 -
+2025-06-05 15:47:41,097 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:41,100 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:41,100 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:41,100 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:47:41,101 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:47:41,101 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:47:41] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:19,398 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 15:50:19,404 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 15:50:19,411 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:50:19,419 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:19,420 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[33mGET /static/clean-login.css HTTP/1.1[0m" 404 -
+2025-06-05 15:50:19,420 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:50:19,422 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:19,422 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:19,422 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:19,422 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:19] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:50:43,708 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:50:43,713 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:43,715 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 15:50:43,716 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:50:43,717 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:43,717 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:43,717 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:50:43,717 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:50:43] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:51:14,650 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://10.42.0.187:8091
+2025-06-05 15:51:14,651 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 15:51:14,654 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 15:51:14,807 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 15:51:14,815 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 15:51:19,586 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 15:51:19,604 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:51:19,623 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:51:19,628 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:51:19,633 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:51:19,636 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:51:19,637 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:51:19,638 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:51:19,639 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:51:19] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:23,268 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:52:23,281 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:23,283 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:23,284 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:23,285 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 15:52:23,285 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:23,288 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:23,288 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:23] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,883 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 15:52:28,893 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:52:28,922 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,923 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,924 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,924 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,925 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,928 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:28,928 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:28] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,611 - root - INFO - User admin logged in successfully
+2025-06-05 15:52:33,612 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 15:52:33,631 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "GET / HTTP/1.1" 200 -
+2025-06-05 15:52:33,666 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,666 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,668 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,668 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,672 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,672 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:33,677 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:33] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:37,972 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:37] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 15:52:37,976 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 15:52:37,979 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:37] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:52:38,021 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:38,022 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:38,022 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:38,023 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:52:38,024 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:38,029 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:52:38,029 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:52:38] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,475 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:54:34,499 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,501 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,502 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:54:34,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:54:34] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:05,901 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:05] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:05,902 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:05] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:05,902 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:05] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:48,456 - root - INFO - User admin logged in successfully
+2025-06-05 15:55:48,457 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 15:55:48,462 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "GET / HTTP/1.1" 200 -
+2025-06-05 15:55:48,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:48,507 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:48,508 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:48,509 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 15:55:48,511 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:48,511 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:48,520 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:48] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,509 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "GET /admin HTTP/1.1" 200 -
+2025-06-05 15:55:51,532 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,533 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,533 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,534 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,537 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,539 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:51,542 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:51] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:52,580 - root - INFO - Loaded 24 users for management interface
+2025-06-05 15:55:52,595 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 15:55:52,617 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:52,622 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:52,622 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:52,622 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:55:52,625 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:55:52,625 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:55:52] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,601 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 15:56:09,608 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 15:56:09,614 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "GET /login HTTP/1.1" 200 -
+2025-06-05 15:56:09,651 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,651 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,653 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,653 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,653 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,655 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:09,657 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:09] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,461 - root - INFO - User admin logged in successfully
+2025-06-05 15:56:24,462 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 15:56:24,468 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "GET / HTTP/1.1" 200 -
+2025-06-05 15:56:24,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,507 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,511 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,512 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:24,518 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:24] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:27,076 - root - INFO - Loaded 24 users for management interface
+2025-06-05 15:56:27,077 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 15:56:27,099 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:27,103 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:27,104 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:27,105 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 15:56:27,108 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 15:56:27,108 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 15:56:27] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,002 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "GET / HTTP/1.1" 200 -
+2025-06-05 16:01:21,031 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,033 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,035 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,035 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,041 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,042 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:21,049 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:21] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,229 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 16:01:23,232 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 16:01:23,235 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "GET /login HTTP/1.1" 200 -
+2025-06-05 16:01:23,277 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,278 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,279 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,279 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,280 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,282 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:23,283 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:23] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,275 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "GET /login HTTP/1.1" 200 -
+2025-06-05 16:01:59,296 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,300 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,301 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,301 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,302 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,308 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:01:59,308 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:01:59] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,138 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "GET /login HTTP/1.1" 200 -
+2025-06-05 16:02:23,157 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,158 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,159 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,160 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,160 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,164 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:23,164 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:23] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,396 - root - INFO - User admin logged in successfully
+2025-06-05 16:02:43,397 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 16:02:43,402 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "GET / HTTP/1.1" 200 -
+2025-06-05 16:02:43,442 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,445 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,445 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,446 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,450 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,450 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:02:43,459 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:02:43] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 16:04:38,478 - root - INFO - Loaded 24 users for management interface
+2025-06-05 16:04:38,490 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:04:38,505 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:04:38,505 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:04:38,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:04:38,507 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:04:38,511 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:04:38,511 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:04:38] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:05:15,593 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/app.py', reloading
+2025-06-05 16:05:15,613 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 16:05:15,773 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 16:05:15,781 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 16:08:17,218 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/app.py', reloading
+2025-06-05 16:08:17,238 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 16:08:17,405 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 16:08:17,414 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 16:08:31,294 - root - INFO - Loaded 24 users for management interface
+2025-06-05 16:08:31,310 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:08:31,328 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:08:31,331 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:08:31,331 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:08:31,333 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:08:31,335 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:08:31,335 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:08:31] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,054 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "GET / HTTP/1.1" 200 -
+2025-06-05 16:09:04,078 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,080 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,081 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,082 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,086 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,086 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:04,093 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:04] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:06,291 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "GET /my_attendance HTTP/1.1" 200 -
+2025-06-05 16:09:06,313 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:06,313 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:06,314 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:06,315 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:06,319 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:06,319 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:06] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,271 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "GET / HTTP/1.1" 200 -
+2025-06-05 16:09:09,303 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,304 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,305 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,306 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,312 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,313 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:09,318 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:09] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,211 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "GET /admin HTTP/1.1" 200 -
+2025-06-05 16:09:11,233 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,233 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,235 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,235 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,238 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,241 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:11,247 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:11] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:12,325 - root - INFO - Loaded 24 users for management interface
+2025-06-05 16:09:12,326 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:09:12,351 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:12,359 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:12,359 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:12,359 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:12,362 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:12,363 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:12] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,195 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "GET /admin HTTP/1.1" 200 -
+2025-06-05 16:09:15,216 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,219 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,223 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,223 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,226 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,226 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:15,233 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:15] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:16,471 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "GET /deletion_requests HTTP/1.1" 200 -
+2025-06-05 16:09:16,493 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:16,498 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:16,499 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:16,499 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:16,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:16,506 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:16] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:17,699 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "GET /my_credentials HTTP/1.1" 200 -
+2025-06-05 16:09:17,724 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:17,725 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:17,726 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:17,726 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:17,731 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:17,731 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:17] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:22,520 - root - INFO - Loaded 24 users for management interface
+2025-06-05 16:09:22,521 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:09:22,546 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:22,553 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:22,554 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:22,554 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:09:22,556 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:09:22,556 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:09:22] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:10:33,984 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/app.py', reloading
+2025-06-05 16:10:34,007 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 16:10:34,166 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 16:10:34,175 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 16:15:05,005 - root - INFO - Loaded 24 users for management interface
+2025-06-05 16:15:05,023 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:15:05,045 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:05,047 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:05,047 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:05,048 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:05,051 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:05,051 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:05] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:18,243 - root - INFO - add_user called, is_ajax: False, headers: Host: 10.42.0.187:8091
+Connection: keep-alive
+Content-Length: 150
+Cache-Control: max-age=0
+Origin: http://10.42.0.187:8091
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://10.42.0.187:8091/user_management
+Accept-Encoding: gzip, deflate
+Accept-Language: en,pl-PL;q=0.9,pl;q=0.8,de-DE;q=0.7,de;q=0.6,en-US;q=0.5
+Cookie: session=eyJhZG1pbl9sb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.aEGjgw.nch0gWtMQEiAt-6GynWMiWBYuF0
+
+
+2025-06-05 16:15:18,529 - root - INFO - New user created: testasa (ID: 41) with role: employee
+2025-06-05 16:15:18,529 - root - INFO - Created consent record for user testasa: pending
+2025-06-05 16:15:18,529 - root - INFO - Created default settings for user testasa
+2025-06-05 16:15:18,529 - root - INFO - Temporary password stored for user testasa (ID: 41)
+2025-06-05 16:15:18,530 - root - INFO - USER_CREATED: ID=41, username=testasa, role=employee, department=, created_by=admin
+2025-06-05 16:15:18,530 - root - INFO - User cache refresh triggered
+2025-06-05 16:15:18,531 - root - INFO - System notification triggered for new user: 41
+2025-06-05 16:15:18,531 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 41, "username": "testasa", "created_by": "admin", "timestamp": "2025-06-05T16:15:18.531061+02:00", "user_data": {"username": "testasa", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 16:15:18"}, "ip_address": "10.42.0.187", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"}
+2025-06-05 16:15:18,531 - root - INFO - External system sync triggered for user: testasa (ID: 41)
+2025-06-05 16:15:18,531 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2025-06-05 16:15:18,538 - root - INFO - Loaded 25 users for management interface
+2025-06-05 16:15:18,539 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:15:18,571 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:18,573 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:18,574 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:18,574 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:18,580 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:18,580 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:18] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:40,946 - root - INFO - User options page accessed for user 34 by admin admin
+2025-06-05 16:15:40,959 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "GET /user_options/34 HTTP/1.1" 200 -
+2025-06-05 16:15:40,971 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:40,972 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:40,972 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:40,975 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:15:40,976 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:15:40,983 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:15:40] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:16:30,668 - root - INFO - add_user called, is_ajax: False, headers: Host: 10.42.0.187:8091
+Connection: keep-alive
+Content-Length: 148
+Cache-Control: max-age=0
+Origin: http://10.42.0.187:8091
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://10.42.0.187:8091/user_management
+Accept-Encoding: gzip, deflate
+Accept-Language: en,pl-PL;q=0.9,pl;q=0.8,de-DE;q=0.7,de;q=0.6,en-US;q=0.5
+Cookie: session=.eJzFkkFu2zAQRa8yYLdWJRlp2lCOF0HP0EXrQKDIETUwPRTIUe00yN1Ly2jQAxToigTnc_j_47yqfgwmT5iV_vGqQMqi8mIt5qw26gl5kV-YQDCLyQbOS3IImMYYfEKyExj2GNDLR9g5-glZXgI-HtTJJE9cSZw1tJ_mS1daXKQygTxrsMiCqTuo_c7AlHAsN-o5EUu_ZEy9TeiKhEzI9V17KL5KO5Si6odg-FhO_jzkKM_BvGggDsRYDSHaYweDsUef4sJOw4f24fO923ZgY4hJw3kiwQ5m4xyxL_628wW2zbtJhzYmIxSLU45cpEMssVOVjKMla7i_Sm8JNazhxshSnZH8JKXcNGs0AlvY5mJyNBlGU60Jr5Wa9vB98YVddkaQwaXFHpF3tfmbyMqiCK4fhPJPSDTDw5f2_5MYKWAZhncY32IIWQ5L0-AdO_KY4esVTMkoslKpy3Tt1fPb80YZdyLuQ_QeXU-stKQFN2qlRU7p9rZnc0Klb2r19hvTcgBc.aEGmdg.W67EFP_wZb8P_Jkkfnxc-hRbgHc
+
+
+2025-06-05 16:16:30,956 - root - INFO - New user created: fsafa (ID: 42) with role: employee
+2025-06-05 16:16:30,956 - root - INFO - Created consent record for user fsafa: pending
+2025-06-05 16:16:30,956 - root - INFO - Created default settings for user fsafa
+2025-06-05 16:16:30,956 - root - INFO - Temporary password stored for user fsafa (ID: 42)
+2025-06-05 16:16:30,957 - root - INFO - USER_CREATED: ID=42, username=fsafa, role=employee, department=, created_by=admin
+2025-06-05 16:16:30,957 - root - INFO - User cache refresh triggered
+2025-06-05 16:16:30,957 - root - INFO - System notification triggered for new user: 42
+2025-06-05 16:16:30,957 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 42, "username": "fsafa", "created_by": "admin", "timestamp": "2025-06-05T16:16:30.957917+02:00", "user_data": {"username": "fsafa", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 16:16:30"}, "ip_address": "10.42.0.187", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"}
+2025-06-05 16:16:30,957 - root - INFO - External system sync triggered for user: fsafa (ID: 42)
+2025-06-05 16:16:30,958 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:30] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2025-06-05 16:16:30,966 - root - INFO - Loaded 26 users for management interface
+2025-06-05 16:16:30,967 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:30] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:16:31,001 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:31] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:16:31,001 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:31] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:16:31,002 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:31] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:16:31,003 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:31] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:16:31,007 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:31] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:16:31,007 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:16:31] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:00,909 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[32mGET /user_management HTTP/1.1[0m" 302 -
+2025-06-05 16:20:00,917 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "GET /login HTTP/1.1" 200 -
+2025-06-05 16:20:00,924 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:00,927 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:00,927 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:00,928 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:00,928 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 16:20:00,928 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:00,929 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:00] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,078 - root - INFO - User admin logged in successfully
+2025-06-05 16:20:05,079 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 16:20:05,095 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "GET / HTTP/1.1" 200 -
+2025-06-05 16:20:05,102 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,104 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,104 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,105 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,105 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,106 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:05,106 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:05] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:07,484 - root - INFO - Loaded 26 users for management interface
+2025-06-05 16:20:07,493 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:20:07,500 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:07,502 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:07,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:07,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:07,503 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:07,504 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:07] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,947 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "GET / HTTP/1.1" 200 -
+2025-06-05 16:20:08,958 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,961 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,962 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,962 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,962 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,962 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:08,964 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:08] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:11,683 - root - INFO - Loaded 26 users for management interface
+2025-06-05 16:20:11,685 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:20:11,695 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:11,698 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:11,698 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:11,698 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:11,698 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:11,699 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:11] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:17,194 - root - INFO - User options page accessed for user 34 by admin admin
+2025-06-05 16:20:17,196 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "GET /user_options/34 HTTP/1.1" 200 -
+2025-06-05 16:20:17,202 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:17,205 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:17,205 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:17,207 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:17,208 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:17,208 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:17] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:52,082 - root - INFO - Loaded 26 users for management interface
+2025-06-05 16:20:52,083 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:20:52,095 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:52,097 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:20:52,098 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:52,098 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:52,098 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:20:52,099 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:20:52] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:21:28,404 - root - INFO - Loaded 26 users for management interface
+2025-06-05 16:21:28,405 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:21:28,412 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:21:28,415 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:21:28,415 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:21:28,417 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:21:28,417 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:21:28,417 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:21:28] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:21:51,320 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/app.py', reloading
+2025-06-05 16:21:51,343 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 16:21:51,500 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 16:21:51,509 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 16:22:36,265 - werkzeug - INFO -  * Detected change in '/Users/michalkopecki/Desktop/Projects/BTZ Zeiterfassung/btz-zeiterfassung/app.py', reloading
+2025-06-05 16:22:36,285 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 16:22:36,436 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 16:22:36,444 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 16:22:57,890 - root - INFO - Loaded 26 users for management interface
+2025-06-05 16:22:57,907 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:22:57,918 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:22:57,919 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:22:57,919 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:22:57,920 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:22:57,921 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:22:57,922 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:22:57] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:23:17,365 - root - INFO - add_user called, is_ajax: False, headers: Host: 10.42.0.187:8091
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Origin: http://10.42.0.187:8091
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15
+Referer: http://10.42.0.187:8091/user_management
+Content-Length: 153
+Accept-Language: de-DE,de;q=0.9
+Priority: u=0, i
+Accept-Encoding: gzip, deflate
+Cookie: session=eyJhZG1pbl9sb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.aEGnlQ.eGiKAyFknstnziSoT5egM6ypU4E
+Connection: keep-alive
+
+
+2025-06-05 16:23:17,655 - root - INFO - New user created: safafsafsa (ID: 43) with role: employee
+2025-06-05 16:23:17,655 - root - INFO - Created consent record for user safafsafsa: pending
+2025-06-05 16:23:17,655 - root - INFO - Created default settings for user safafsafsa
+2025-06-05 16:23:17,655 - root - INFO - Temporary password stored for user safafsafsa (ID: 43)
+2025-06-05 16:23:17,656 - root - INFO - USER_CREATED: ID=43, username=safafsafsa, role=employee, department=, created_by=admin
+2025-06-05 16:23:17,656 - root - INFO - User cache refresh triggered
+2025-06-05 16:23:17,656 - root - INFO - System notification triggered for new user: 43
+2025-06-05 16:23:17,656 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 43, "username": "safafsafsa", "created_by": "admin", "timestamp": "2025-06-05T16:23:17.656624+02:00", "user_data": {"username": "safafsafsa", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 16:23:17"}, "ip_address": "10.42.0.187", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15"}
+2025-06-05 16:23:17,656 - root - INFO - External system sync triggered for user: safafsafsa (ID: 43)
+2025-06-05 16:23:17,657 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2025-06-05 16:23:17,669 - root - INFO - Loaded 27 users for management interface
+2025-06-05 16:23:17,670 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 16:23:17,676 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:23:17,680 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:23:17,680 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:23:17,680 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:23:17,680 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:23:17,681 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:17] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:23:38,795 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:38] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 16:23:50,268 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:23:50] "GET /print_user_credentials/40 HTTP/1.1" 200 -
+2025-06-05 16:24:08,153 - root - INFO - User options page accessed for user 34 by admin admin
+2025-06-05 16:24:08,166 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "GET /user_options/34 HTTP/1.1" 200 -
+2025-06-05 16:24:08,172 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 16:24:08,174 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 16:24:08,175 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 16:24:08,175 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 16:24:08,175 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 16:24:08,176 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:08] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 16:24:11,494 - werkzeug - INFO - 10.42.0.187 - - [05/Jun/2025 16:24:11] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 21:05:37,974 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://192.168.178.52:8091
+2025-06-05 21:05:37,974 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 21:05:37,978 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 21:05:38,132 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 21:05:38,143 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 21:05:45,382 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 21:05:45,411 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:05:45,441 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "GET /static/clean-professional.css HTTP/1.1" 200 -
+2025-06-05 21:05:45,442 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "GET /static/modern-menu.js HTTP/1.1" 200 -
+2025-06-05 21:05:45,442 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 21:05:45,443 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "GET /static/js/dropdown-fix-consolidated.js HTTP/1.1" 200 -
+2025-06-05 21:05:45,444 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "GET /static/css/menu-fix-consolidated.css HTTP/1.1" 200 -
+2025-06-05 21:05:45,444 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:05:45,449 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:05:45,496 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-05 21:05:45,510 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-05 21:05:45,520 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-05 21:05:45,528 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-05 21:05:45,530 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-05 21:05:45,833 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:05:45] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-05 21:06:15,297 - root - INFO - User admin logged in successfully
+2025-06-05 21:06:15,297 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 21:06:15,322 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "GET / HTTP/1.1" 200 -
+2025-06-05 21:06:15,330 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,333 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,333 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,333 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,334 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,334 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,335 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:06:15,392 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-05 21:06:15,392 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-05 21:06:15,393 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:15] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-05 21:06:19,012 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "GET /my_credentials HTTP/1.1" 200 -
+2025-06-05 21:06:19,023 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:06:19,025 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:06:19,026 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:06:19,026 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:06:19,026 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:06:19,026 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:06:19] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:30,929 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://192.168.178.52:8091
+2025-06-05 21:07:30,929 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 21:07:30,933 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 21:07:31,087 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 21:07:31,096 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 21:07:36,499 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "GET / HTTP/1.1" 200 -
+2025-06-05 21:07:36,510 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:36,510 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:07:36,510 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:07:36,510 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:07:36,513 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:36,514 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:36,514 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:36] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:41,174 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:07:41,190 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:07:41,200 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:41,204 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:07:41,204 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:07:41,204 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:07:41,205 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:07:41,205 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:07:41] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:00,695 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:00] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 21:09:30,724 - root - INFO - User options page accessed for user 1 by admin admin
+2025-06-05 21:09:30,738 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "GET /user_options/1 HTTP/1.1" 200 -
+2025-06-05 21:09:30,744 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:30,745 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:09:30,746 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:09:30,747 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:30,747 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:30,747 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:30] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:09:46,654 - root - INFO - User options page accessed for user 42 by admin admin
+2025-06-05 21:09:46,655 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "GET /user_options/42 HTTP/1.1" 200 -
+2025-06-05 21:09:46,661 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:46,664 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:09:46,664 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:46,666 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:09:46,667 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:09:46,667 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:46] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:09:50,810 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:50] "[31m[1mPOST /reset_password/42 HTTP/1.1[0m" 400 -
+2025-06-05 21:09:56,729 - root - INFO - Temporary password generated for user 42 by admin admin
+2025-06-05 21:09:56,730 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:09:56] "POST /generate_temp_password/42 HTTP/1.1" 200 -
+2025-06-05 21:18:17,530 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:18:17,544 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:18:17,549 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:18:17,552 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:18:17,553 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:18:17,553 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:18:17,554 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:18:17,554 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:17] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:18:22,770 - root - INFO - User options page accessed for user 34 by admin admin
+2025-06-05 21:18:22,771 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "GET /user_options/34 HTTP/1.1" 200 -
+2025-06-05 21:18:22,782 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:18:22,784 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:18:22,787 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:18:22,787 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:18:22,788 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:18:22,788 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:22] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:18:26,006 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:26] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 21:18:34,930 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:34] "GET /print_user_credentials/42 HTTP/1.1" 200 -
+2025-06-05 21:18:41,340 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:18:41] "GET /print_user_credentials/1 HTTP/1.1" 200 -
+2025-06-05 21:19:26,753 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:19:26,754 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:19:26,760 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:26,762 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:26,763 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:26,764 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:26,764 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:26,764 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:26] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,937 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 21:19:27,944 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 21:19:27,954 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:19:27,961 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,962 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,964 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,964 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,964 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,965 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:27,965 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:27] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,612 - root - INFO - User admin logged in successfully
+2025-06-05 21:19:31,612 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 21:19:31,621 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "GET / HTTP/1.1" 200 -
+2025-06-05 21:19:31,629 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,630 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,631 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,632 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,632 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,633 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:31,633 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:31] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:35,550 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:19:35,560 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:19:35,565 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:35,568 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:35,569 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:35,569 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:35,569 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:35,569 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:35] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:45,557 - root - INFO - User options page accessed for user 1 by admin admin
+2025-06-05 21:19:45,557 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "GET /user_options/1 HTTP/1.1" 200 -
+2025-06-05 21:19:45,562 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:45,564 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:45,565 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:19:45,566 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:45,566 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:19:45,566 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:19:45] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:09,603 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:20:09,612 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:20:09,617 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:09,620 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:09,621 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:09,621 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:09,621 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:09,622 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:09] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:11,210 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:11] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 21:20:17,998 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:17] "GET /print_user_credentials/1 HTTP/1.1" 200 -
+2025-06-05 21:20:23,337 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:23] "GET /print_user_credentials/1 HTTP/1.1" 200 -
+2025-06-05 21:20:30,982 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:30] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 21:20:30,988 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:30] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 21:20:30,992 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:30] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:20:30,998 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:30] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:31,000 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:31] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:31,002 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:31] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:31,002 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:31] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:31,002 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:31] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:31,002 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:31] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:31,003 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:31] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,972 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "POST /login HTTP/1.1" 200 -
+2025-06-05 21:20:35,982 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,985 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,985 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,985 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,985 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,986 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:35,987 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:35] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,780 - root - INFO - User admin logged in successfully
+2025-06-05 21:20:40,780 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 21:20:40,789 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "GET / HTTP/1.1" 200 -
+2025-06-05 21:20:40,795 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,799 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,799 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,799 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,799 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,800 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:40,800 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:40] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:42,966 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:20:42,967 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:20:42,972 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:42,975 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:42,975 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:42,975 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:42,976 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:42,976 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:42] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:45,099 - root - INFO - User options page accessed for user 1 by admin admin
+2025-06-05 21:20:45,100 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "GET /user_options/1 HTTP/1.1" 200 -
+2025-06-05 21:20:45,106 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:45,109 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:45,109 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:45,110 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:45,113 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:20:45,113 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:45] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:20:48,844 - root - INFO - Temporary password generated for user 1 by admin admin
+2025-06-05 21:20:48,844 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:48] "POST /generate_temp_password/1 HTTP/1.1" 200 -
+2025-06-05 21:20:56,324 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:20:56] "GET /print_user_credentials/1 HTTP/1.1" 200 -
+2025-06-05 21:21:01,170 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:01] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 21:21:01,198 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:01] "GET /print_user_credentials/34 HTTP/1.1" 200 -
+2025-06-05 21:21:04,776 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:04] "GET /print_user_credentials/39 HTTP/1.1" 200 -
+2025-06-05 21:21:07,577 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 21:21:07,587 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 21:21:07,593 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:21:07,603 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:07,604 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:07,605 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:07,606 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:07,606 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:07,607 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:07,607 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:07] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,051 - root - INFO - User admin logged in successfully
+2025-06-05 21:21:12,051 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 21:21:12,063 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "GET / HTTP/1.1" 200 -
+2025-06-05 21:21:12,073 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,075 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,075 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,076 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,076 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,076 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:12,077 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:12] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:14,616 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:21:14,618 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:21:14,627 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:14,630 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:14,630 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:21:14,631 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:14,631 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:14,631 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:14] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:21:20,522 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:21:20] "GET /print_user_credentials/1 HTTP/1.1" 200 -
+2025-06-05 21:27:39,965 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8091
+ * Running on http://192.168.178.52:8091
+2025-06-05 21:27:39,965 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-05 21:27:39,968 - werkzeug - INFO -  * Restarting with stat
+2025-06-05 21:27:40,124 - werkzeug - WARNING -  * Debugger is active!
+2025-06-05 21:27:40,133 - werkzeug - INFO -  * Debugger PIN: 122-582-706
+2025-06-05 21:27:47,147 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "GET / HTTP/1.1" 200 -
+2025-06-05 21:27:47,158 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:27:47,159 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:27:47,160 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:27:47,161 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:27:47,161 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:27:47,162 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:27:47,163 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:47] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:27:52,214 - root - INFO - Loaded 27 users for management interface
+2025-06-05 21:27:52,230 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:27:52,236 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:27:52,239 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:27:52,241 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:27:52,241 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:27:52,242 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:27:52,242 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:27:52] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:28:11,025 - root - INFO - add_user called, is_ajax: False, headers: Host: 192.168.178.52:8091
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Origin: http://192.168.178.52:8091
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15
+Referer: http://192.168.178.52:8091/user_management
+Content-Length: 150
+Accept-Language: de-DE,de;q=0.9
+Priority: u=0, i
+Accept-Encoding: gzip, deflate
+Cookie: session=eyJhZG1pbl9sb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.aEHuKA.A0Br43KUNkIWF5etluXHlKY4zn4
+Connection: keep-alive
+
+
+2025-06-05 21:28:11,313 - root - INFO - New user created: ttttttt (ID: 44) with role: employee
+2025-06-05 21:28:11,314 - root - INFO - Created consent record for user ttttttt: pending
+2025-06-05 21:28:11,314 - root - INFO - Created default settings for user ttttttt
+2025-06-05 21:28:11,314 - root - INFO - Temporary password stored for user ttttttt (ID: 44)
+2025-06-05 21:28:11,315 - root - INFO - USER_CREATED: ID=44, username=ttttttt, role=employee, department=, created_by=admin
+2025-06-05 21:28:11,315 - root - INFO - User cache refresh triggered
+2025-06-05 21:28:11,315 - root - INFO - System notification triggered for new user: 44
+2025-06-05 21:28:11,315 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 44, "username": "ttttttt", "created_by": "admin", "timestamp": "2025-06-05T21:28:11.315412+02:00", "user_data": {"username": "ttttttt", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 21:28:11"}, "ip_address": "192.168.178.52", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15"}
+2025-06-05 21:28:11,315 - root - INFO - External system sync triggered for user: ttttttt (ID: 44)
+2025-06-05 21:28:11,316 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2025-06-05 21:28:11,328 - root - INFO - Loaded 28 users for management interface
+2025-06-05 21:28:11,329 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:28:11,336 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:28:11,340 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:28:11,340 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:28:11,340 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:28:11,341 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:28:11,341 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:28:11] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:29:57,417 - root - INFO - add_user called, is_ajax: False, headers: Host: 192.168.178.52:8091
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Origin: http://192.168.178.52:8091
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15
+Referer: http://192.168.178.52:8091/user_management
+Content-Length: 149
+Accept-Language: de-DE,de;q=0.9
+Priority: u=0, i
+Accept-Encoding: gzip, deflate
+Cookie: session=.eJzFktGO2yAQRX9lRF_j2onSbReneaj6DX1os7IIjPEoZLBgaLJd7b-XOOqqH1CpvICYC9x7mBc1jMHkCbPSP14USJ1ULtZizmqlviAX-YUJ5D7gUpJDwDTG4BOSncCwx4Be3sPO0U_I8hzw80GdTfLEjcRZw_rDfO1B8CqNCeRZg0UWTP1B7XcGpoRjPdHOiViGkjENNqGrEjIht9vtofqq16FU1XAMhk91589DjvIczLMG4kCMzTFEe-rhaOzJp1jYaXi3fvz44DY92Bhi0nCZSLCH2ThH7Ku_zXyFTfdm0qGNyQjF6pQjV-kx1tipScZRyRoebtJ7Qg1LuDGyNBckP0ktd90SjcBWtrmaHE2G0TRLwlulpT18L76yy84IMrhU7Al515q_iSwsquD2QSj_hER3fPy0_v8kRgpYm-ENxrcYQpZD6TrcsiOPGb7ewNSMIguVtnbXXj29Pq2UcWfiIUTv0Q3ESksquFILLXJKr-9rNmdU-q5Wr78BdOEAmQ.aEHvyw.-NECRAm_IlaC7T1EZIRE2F65btI
+Connection: keep-alive
+
+
+2025-06-05 21:29:57,706 - root - INFO - New user created: yasdda (ID: 45) with role: employee
+2025-06-05 21:29:57,706 - root - INFO - Created consent record for user yasdda: pending
+2025-06-05 21:29:57,706 - root - INFO - Created default settings for user yasdda
+2025-06-05 21:29:57,706 - root - INFO - Temporary password stored for user yasdda (ID: 45)
+2025-06-05 21:29:57,707 - root - INFO - USER_CREATED: ID=45, username=yasdda, role=employee, department=, created_by=admin
+2025-06-05 21:29:57,707 - root - INFO - User cache refresh triggered
+2025-06-05 21:29:57,707 - root - INFO - System notification triggered for new user: 45
+2025-06-05 21:29:57,707 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 45, "username": "yasdda", "created_by": "admin", "timestamp": "2025-06-05T21:29:57.707631+02:00", "user_data": {"username": "yasdda", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 21:29:57"}, "ip_address": "192.168.178.52", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15"}
+2025-06-05 21:29:57,707 - root - INFO - External system sync triggered for user: yasdda (ID: 45)
+2025-06-05 21:29:57,708 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[32mPOST /add_user HTTP/1.1[0m" 302 -
+2025-06-05 21:29:57,719 - root - INFO - Loaded 29 users for management interface
+2025-06-05 21:29:57,729 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:29:57,736 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:29:57,740 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:29:57,741 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:29:57,741 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:29:57,742 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:29:57,742 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:29:57] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:30:57,945 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:30:57] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-05 21:30:57,946 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:30:57] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-05 21:30:57,946 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:30:57] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-05 21:31:01,495 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "[32mGET /user_management HTTP/1.1[0m" 302 -
+2025-06-05 21:31:01,500 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:31:01,516 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "GET /static/clean-login.css HTTP/1.1" 200 -
+2025-06-05 21:31:01,516 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "GET /static/clean-professional.css HTTP/1.1" 200 -
+2025-06-05 21:31:01,517 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "GET /static/css/menu-fix-consolidated.css HTTP/1.1" 200 -
+2025-06-05 21:31:01,518 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:01,518 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:01,534 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "GET /static/js/dropdown-fix-consolidated.js HTTP/1.1" 200 -
+2025-06-05 21:31:01,535 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:01] "GET /static/modern-menu.js HTTP/1.1" 200 -
+2025-06-05 21:31:09,655 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "POST /login HTTP/1.1" 200 -
+2025-06-05 21:31:09,681 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:09,681 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:09,683 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:09,683 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:09,684 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:09,686 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:09,687 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:09] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,397 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "POST /login HTTP/1.1" 200 -
+2025-06-05 21:31:18,418 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,422 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,423 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,423 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,424 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,427 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:18,427 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:18] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,705 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "POST /login HTTP/1.1" 200 -
+2025-06-05 21:31:31,725 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,729 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,729 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,730 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,731 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,733 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:31,733 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:31] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,812 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "POST /login HTTP/1.1" 200 -
+2025-06-05 21:31:37,835 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,836 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,837 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,837 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,838 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,840 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:37,841 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:37] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,208 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "POST /login HTTP/1.1" 200 -
+2025-06-05 21:31:46,224 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,231 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,231 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,231 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,233 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,238 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:46,238 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:46] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,360 - root - INFO - User test logged in successfully
+2025-06-05 21:31:49,361 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 21:31:49,367 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "GET / HTTP/1.1" 200 -
+2025-06-05 21:31:49,403 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,404 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,404 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,406 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,412 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,412 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,419 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:31:49,439 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "GET /get_attendance_status?user_id=2 HTTP/1.1" 200 -
+2025-06-05 21:31:49,440 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:31:49] "GET /get_attendance_status?user_id=2 HTTP/1.1" 200 -
+2025-06-05 21:32:06,943 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "GET /my_attendance HTTP/1.1" 200 -
+2025-06-05 21:32:06,962 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:06,967 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:06,967 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:06,968 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:06,971 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:06,971 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:06] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:08,398 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "GET /my_credentials HTTP/1.1" 200 -
+2025-06-05 21:32:08,418 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:08,424 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:08,425 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:08,425 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:08,428 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:08,428 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:08] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:10,497 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "GET /data_access HTTP/1.1" 200 -
+2025-06-05 21:32:10,516 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:10,521 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:10,521 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:10,523 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:10,525 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:10,525 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:10] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:12,678 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "GET /change_password HTTP/1.1" 200 -
+2025-06-05 21:32:12,700 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:12,705 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:12,706 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:12,706 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:12,708 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:12,709 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:12] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,073 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-06-05 21:32:15,075 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 21:32:15,078 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:32:15,116 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,117 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,117 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,118 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,118 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,120 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:15,121 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:15] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,930 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-05 21:32:28,934 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "GET /login HTTP/1.1" 200 -
+2025-06-05 21:32:28,963 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,963 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,964 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,965 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,966 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,967 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:32:28,967 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:32:28] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,829 - root - INFO - User m.kopecki logged in successfully
+2025-06-05 21:33:03,829 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-06-05 21:33:03,836 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "GET / HTTP/1.1" 200 -
+2025-06-05 21:33:03,877 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,878 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,879 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,879 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,881 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,881 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:03,903 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:03] "[36mGET /static/checkin-checkout.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:08,500 - root - INFO - Loaded 29 users for management interface
+2025-06-05 21:33:08,516 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:33:08,544 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:08,545 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:33:08,547 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:33:08,547 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:33:08,550 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:33:08,550 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:33:08] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:34:59,420 - root - INFO - add_user called, is_ajax: True, headers: Host: 192.168.178.52:8091
+Connection: keep-alive
+Content-Length: 967
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryqV3PEw5lU9PuXD4b
+X-Requested-With: XMLHttpRequest
+Accept: */*
+Origin: http://192.168.178.52:8091
+Referer: http://192.168.178.52:8091/user_management
+Accept-Encoding: gzip, deflate
+Accept-Language: en,pl-PL;q=0.9,pl;q=0.8,de-DE;q=0.7,de;q=0.6,en-US;q=0.5
+Cookie: session=eyJhZG1pbl9sb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOjMyLCJ1c2VybmFtZSI6Im0ua29wZWNraSJ9.aEHw7w.gIwA5uROnB1vfKAjQXmr7iG4678
+
+
+2025-06-05 21:34:59,705 - root - INFO - New user created: testssdadagaga (ID: 46) with role: employee
+2025-06-05 21:34:59,706 - root - INFO - Created consent record for user testssdadagaga: pending
+2025-06-05 21:34:59,706 - root - INFO - Created default settings for user testssdadagaga
+2025-06-05 21:34:59,706 - root - INFO - Temporary password stored for user testssdadagaga (ID: 46)
+2025-06-05 21:34:59,707 - root - INFO - USER_CREATED: ID=46, username=testssdadagaga, role=employee, department=, created_by=m.kopecki
+2025-06-05 21:34:59,707 - root - INFO - User cache refresh triggered
+2025-06-05 21:34:59,707 - root - INFO - System notification triggered for new user: 46
+2025-06-05 21:34:59,707 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 46, "username": "testssdadagaga", "created_by": "m.kopecki", "timestamp": "2025-06-05T21:34:59.707385+02:00", "user_data": {"username": "testssdadagaga", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 21:34:59"}, "ip_address": "192.168.178.52", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"}
+2025-06-05 21:34:59,707 - root - INFO - External system sync triggered for user: testssdadagaga (ID: 46)
+2025-06-05 21:34:59,707 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:34:59] "POST /add_user HTTP/1.1" 200 -
+2025-06-05 21:35:19,880 - root - INFO - >>> Entering user_datasheet function for user_id: 46
+2025-06-05 21:35:19,881 - root - ERROR - Error generating user datasheet: no such table: daily_summaries
+2025-06-05 21:35:19,881 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[32mGET /user_datasheet/46 HTTP/1.1[0m" 302 -
+2025-06-05 21:35:19,885 - root - INFO - Loaded 30 users for management interface
+2025-06-05 21:35:19,886 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:35:19,914 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:19,918 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:19,918 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:19,918 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:19,921 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:19,922 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:19] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:27,084 - root - INFO - >>> Entering user_datasheet function for user_id: 46
+2025-06-05 21:35:27,085 - root - ERROR - Error generating user datasheet: no such table: daily_summaries
+2025-06-05 21:35:27,085 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[32mGET /user_datasheet/46 HTTP/1.1[0m" 302 -
+2025-06-05 21:35:27,090 - root - INFO - Loaded 30 users for management interface
+2025-06-05 21:35:27,091 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:35:27,120 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:27,121 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:27,122 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:27,122 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:27,125 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:27,125 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:27] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:40,875 - root - INFO - >>> Entering user_datasheet function for user_id: 46
+2025-06-05 21:35:40,876 - root - ERROR - Error generating user datasheet: no such table: daily_summaries
+2025-06-05 21:35:40,876 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[32mGET /user_datasheet/46 HTTP/1.1[0m" 302 -
+2025-06-05 21:35:40,882 - root - INFO - Loaded 30 users for management interface
+2025-06-05 21:35:40,885 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:35:40,914 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:40,914 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:40,915 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:40,916 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:35:40,919 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:35:40,919 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:35:40] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:38:24,710 - root - INFO - Loaded 30 users for management interface
+2025-06-05 21:38:24,720 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:38:24,732 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:38:24,734 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:38:24,735 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:38:24,735 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:38:24,739 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:38:24,740 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:24] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:38:32,845 - root - INFO - add_user called, is_ajax: True, headers: Host: 192.168.178.52:8091
+Connection: keep-alive
+Content-Length: 960
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWiqxpTs5mY34YBCA
+X-Requested-With: XMLHttpRequest
+Accept: */*
+Origin: http://192.168.178.52:8091
+Referer: http://192.168.178.52:8091/user_management
+Accept-Encoding: gzip, deflate
+Accept-Language: en,pl-PL;q=0.9,pl;q=0.8,de-DE;q=0.7,de;q=0.6,en-US;q=0.5
+Cookie: session=.eJzVzDEOwjAMQNGrWJ4jBtgyA5dAVeQ2po3qJMhOhqrq3anEKZi-_vJ2DG8hW9jQv3aEdgZZtSo6fPIirDByyvBQayzCBSIb3KlxGYVaMw-lgvVpgUajsIdISbZgPWfSdLrD4f4OHhxSzKkEqfPMMaSCvmlnh91YQ4rob9ffFMqMHvNlrR-e1oTHF3p1d-Q.aEHxjA.HPmqAa3lBCJ-LBtSpdrixdtJoco
+
+
+2025-06-05 21:38:33,129 - root - INFO - New user created: tsafsca (ID: 47) with role: employee
+2025-06-05 21:38:33,129 - root - INFO - Created consent record for user tsafsca: pending
+2025-06-05 21:38:33,129 - root - INFO - Created default settings for user tsafsca
+2025-06-05 21:38:33,129 - root - INFO - Temporary password stored for user tsafsca (ID: 47)
+2025-06-05 21:38:33,130 - root - INFO - USER_CREATED: ID=47, username=tsafsca, role=employee, department=, created_by=m.kopecki
+2025-06-05 21:38:33,130 - root - INFO - User cache refresh triggered
+2025-06-05 21:38:33,130 - root - INFO - System notification triggered for new user: 47
+2025-06-05 21:38:33,130 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 47, "username": "tsafsca", "created_by": "m.kopecki", "timestamp": "2025-06-05T21:38:33.130880+02:00", "user_data": {"username": "tsafsca", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 21:38:33"}, "ip_address": "192.168.178.52", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"}
+2025-06-05 21:38:33,130 - root - INFO - External system sync triggered for user: tsafsca (ID: 47)
+2025-06-05 21:38:33,131 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:38:33] "POST /add_user HTTP/1.1" 200 -
+2025-06-05 21:39:01,029 - root - INFO - >>> Entering user_datasheet function for user_id: 47
+2025-06-05 21:39:01,030 - root - ERROR - Error generating user datasheet: no such table: daily_summaries
+2025-06-05 21:39:01,031 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[32mGET /user_datasheet/47 HTTP/1.1[0m" 302 -
+2025-06-05 21:39:01,036 - root - INFO - Loaded 31 users for management interface
+2025-06-05 21:39:01,038 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:39:01,065 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:39:01,068 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:39:01,069 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:39:01,069 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:39:01,075 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:39:01,076 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:39:01] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:43:23,214 - root - INFO - add_user called, is_ajax: True, headers: Host: 192.168.178.52:8091
+Connection: keep-alive
+Content-Length: 958
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundarywQc2UNglfJryvLt4
+X-Requested-With: XMLHttpRequest
+Accept: */*
+Origin: http://192.168.178.52:8091
+Referer: http://192.168.178.52:8091/user_management
+Accept-Encoding: gzip, deflate
+Accept-Language: en,pl-PL;q=0.9,pl;q=0.8,de-DE;q=0.7,de;q=0.6,en-US;q=0.5
+Cookie: session=.eJztzDEOwjAMQNGrWJ4jBtgyA5dAVeQ2po3qJMhOBlT17lRC3ILp6y9vw_AUsoUN_WNDaEeQVauiwzsvwgojpww3tcYiXCCywZUal1GoNfNQKlifFmg0CnuIlOQdrOdMmg532N0f_sGDQ4o5lSB1njmGVNA37eywG2tIEf3l_J1CmdFjPq31xdOacP8AmECXVw.aEHyVQ.moyZw2QjcUSSl0peD8lqq-_DpEU
+
+
+2025-06-05 21:43:23,504 - root - INFO - New user created: yadsa (ID: 48) with role: employee
+2025-06-05 21:43:23,504 - root - INFO - Created consent record for user yadsa: pending
+2025-06-05 21:43:23,504 - root - INFO - Created default settings for user yadsa
+2025-06-05 21:43:23,504 - root - INFO - Temporary password stored for user yadsa (ID: 48)
+2025-06-05 21:43:23,505 - root - INFO - USER_CREATED: ID=48, username=yadsa, role=employee, department=, created_by=m.kopecki
+2025-06-05 21:43:23,505 - root - INFO - User cache refresh triggered
+2025-06-05 21:43:23,505 - root - INFO - System notification triggered for new user: 48
+2025-06-05 21:43:23,505 - root - INFO - AUDIT: {"event_type": "USER_CREATED", "user_id": 48, "username": "yadsa", "created_by": "m.kopecki", "timestamp": "2025-06-05T21:43:23.505849+02:00", "user_data": {"username": "yadsa", "first_name": "", "last_name": "", "employee_id": "", "user_role": "employee", "department": "", "account_status": "active", "privacy_consent": "pending", "created_at": "2025-06-05 21:43:23"}, "ip_address": "192.168.178.52", "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"}
+2025-06-05 21:43:23,505 - root - INFO - External system sync triggered for user: yadsa (ID: 48)
+2025-06-05 21:43:23,506 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:23] "POST /add_user HTTP/1.1" 200 -
+2025-06-05 21:43:26,748 - root - INFO - >>> Entering user_datasheet function for user_id: 48
+2025-06-05 21:43:26,749 - root - ERROR - Error generating user datasheet: no such table: daily_summaries
+2025-06-05 21:43:26,749 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[32mGET /user_datasheet/48 HTTP/1.1[0m" 302 -
+2025-06-05 21:43:26,755 - root - INFO - Loaded 32 users for management interface
+2025-06-05 21:43:26,770 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:43:26,797 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:43:26,798 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:43:26,798 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:43:26,799 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:43:26,801 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:43:26,802 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:43:26] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-05 21:44:26,346 - root - INFO - >>> Entering user_datasheet function for user_id: 48
+2025-06-05 21:44:26,347 - root - ERROR - Error generating user datasheet: no such table: daily_summaries
+2025-06-05 21:44:26,347 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[32mGET /user_datasheet/48 HTTP/1.1[0m" 302 -
+2025-06-05 21:44:26,353 - root - INFO - Loaded 32 users for management interface
+2025-06-05 21:44:26,355 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "GET /user_management HTTP/1.1" 200 -
+2025-06-05 21:44:26,386 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-05 21:44:26,386 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-05 21:44:26,388 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-05 21:44:26,388 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-05 21:44:26,390 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-05 21:44:26,393 - werkzeug - INFO - 192.168.178.52 - - [05/Jun/2025 21:44:26] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:13,182 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "GET /my_attendance HTTP/1.1" 200 -
+2025-06-06 12:26:13,215 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:13,217 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:13,217 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:13,218 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:13,223 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:13,223 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:13] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:23,048 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "GET /my_attendance HTTP/1.1" 200 -
+2025-06-06 12:26:23,067 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:23,068 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:23,069 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:23,069 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:23,072 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:23,072 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:23] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:31,327 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "GET /my_attendance HTTP/1.1" 200 -
+2025-06-06 12:26:31,349 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:31,350 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:31,351 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:31,351 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:31,355 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:31,355 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:31] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,483 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "GET /admin HTTP/1.1" 200 -
+2025-06-06 12:26:32,504 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,509 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,510 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,510 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,516 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,519 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:32,519 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:32] "[36mGET /static/mobile-menu.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:39,941 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:39] "GET /get_breaks/44 HTTP/1.1" 200 -
+2025-06-06 12:26:39,945 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:39] "GET /get_breaks/44 HTTP/1.1" 200 -
+2025-06-06 12:26:42,822 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:42] "GET /get_breaks/41 HTTP/1.1" 200 -
+2025-06-06 12:26:42,825 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:42] "GET /get_breaks/41 HTTP/1.1" 200 -
+2025-06-06 12:26:46,961 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "GET /my_credentials HTTP/1.1" 200 -
+2025-06-06 12:26:46,985 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "[36mGET /static/auth-wrapper.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:46,990 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:46,991 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:46,991 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-06 12:26:46,995 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "[36mGET /static/modern-menu.js HTTP/1.1[0m" 304 -
+2025-06-06 12:26:46,995 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:26:46] "[36mGET /static/js/dropdown-fix-consolidated.js HTTP/1.1[0m" 304 -
+2025-06-06 12:28:48,525 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:28:48] "[36mGET /static/clean-login.css HTTP/1.1[0m" 304 -
+2025-06-06 12:28:48,526 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:28:48] "[36mGET /static/clean-professional.css HTTP/1.1[0m" 304 -
+2025-06-06 12:28:48,526 - werkzeug - INFO - 192.168.178.52 - - [06/Jun/2025 12:28:48] "[36mGET /static/css/menu-fix-consolidated.css HTTP/1.1[0m" 304 -
+2025-06-09 21:45:03,688 - werkzeug - INFO - 192.168.178.52 - - [09/Jun/2025 21:45:03] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-09 21:45:03,688 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 21:45:03] "[33mGET /apple-touch-icon-precomposed.png HTTP/1.1[0m" 404 -
+2025-06-09 21:45:03,690 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 21:45:03] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-09 21:45:03,690 - werkzeug - INFO - 192.168.178.52 - - [09/Jun/2025 21:45:03] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-09 21:45:03,691 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 21:45:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-09 21:45:03,691 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 21:45:03] "[32mGET / HTTP/1.1[0m" 302 -
+2025-06-09 21:45:03,692 - werkzeug - INFO - 192.168.178.52 - - [09/Jun/2025 21:45:03] "[33mGET /apple-touch-icon.png HTTP/1.1[0m" 404 -
+2025-06-09 21:45:03,693 - werkzeug - INFO - 192.168.178.52 - - [09/Jun/2025 21:45:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-09 21:45:03,698 - werkzeug - INFO - 192.168.178.52 - - [09/Jun/2025 21:45:03] "GET /login HTTP/1.1" 200 -
+2025-06-09 21:45:03,698 - werkzeug - INFO - 127.0.0.1 - - [09/Jun/2025 21:45:03] "GET /login HTTP/1.1" 200 -

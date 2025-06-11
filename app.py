@@ -1155,6 +1155,7 @@ def add_user():
         
         # Generate datasheet URL
         datasheet_url = url_for('user_datasheet', user_id=user_id)
+        print_credentials_url = url_for('print_user_credentials', user_id=user_id)
         
         # Prepare success response
         success_message = f'Benutzer {username} wurde erfolgreich angelegt'
@@ -1172,11 +1173,23 @@ def add_user():
                 'department': department,
                 'account_status': account_status,
                 'privacy_consent': privacy_consent,
-                'datasheet_url': datasheet_url
+                'datasheet_url': datasheet_url,
+                'print_credentials_url': print_credentials_url,
+                'temp_password': password  # Include the temporary password for immediate access
             })
         else:
-            # Add session flash with datasheet URL for non-AJAX requests
-            flash(f'{success_message}. <a href="{datasheet_url}" target="_blank" style="display: inline-block; background: #1976d2; color: white; padding: 4px 12px; text-decoration: none; border-radius: 4px; margin-left: 10px;">Datenblatt öffnen</a>', 'success')
+            # Enhanced flash message with multiple options for non-AJAX requests
+            flash(f'{success_message}. '
+                  f'<div style="margin-top: 15px; text-align: center;">'
+                  f'<a href="{print_credentials_url}" target="_blank" '
+                  f'style="display: inline-block; background: #1976d2; color: white; padding: 12px 20px; '
+                  f'text-decoration: none; border-radius: 6px; margin: 5px; font-weight: 600;">'
+                  f'<i class="fas fa-print"></i> Zugangsdaten drucken</a>'
+                  f'<a href="{datasheet_url}" target="_blank" '
+                  f'style="display: inline-block; background: #10b981; color: white; padding: 12px 20px; '
+                  f'text-decoration: none; border-radius: 6px; margin: 5px; font-weight: 600;">'
+                  f'<i class="fas fa-file-alt"></i> Vollständiges Datenblatt</a>'
+                  f'</div>', 'success')
             return redirect(url_for('user_management'))
         
     except Exception as e:
@@ -1311,68 +1324,140 @@ def user_datasheet(user_id):
         flash('Nur Administratoren können Benutzerdatenblätter erstellen', 'error')
         return redirect(url_for('index'))
     
-    # Debug output
-    logging.info(f"user_datasheet called, user_id: {user_id}")
-    
-    # Connect to database
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
     try:
-        # Get the temp password from the database
-        cursor.execute('SELECT temp_password FROM temp_passwords WHERE user_id = ?', (user_id,))
-        result = cursor.fetchone()
+        # Get user data with all details
+        cursor.execute('''
+            SELECT u.*, 
+                   CASE WHEN u.first_name IS NOT NULL AND u.last_name IS NOT NULL 
+                        THEN u.first_name || ' ' || u.last_name 
+                        ELSE u.username END as display_name,
+                   uc.consent_status, uc.consent_date,
+                   tp.temp_password
+            FROM users u
+            LEFT JOIN user_consents uc ON u.id = uc.user_id
+            LEFT JOIN temp_passwords tp ON u.id = tp.user_id
+            WHERE u.id = ?
+        ''', (user_id,))
         
-        temp_password = result['temp_password'] if result else None
-        logging.info(f"temp_password found in database: {bool(temp_password)}")
-    except Exception as e:
-        logging.error(f"Error retrieving temp password: {str(e)}")
-        temp_password = None
-    
-    if not temp_password:
-        flash('Datenblatt ist nicht mehr verfügbar. Bitte setzen Sie das Passwort zurück, um ein neues Datenblatt zu erstellen.', 'error')
-        return redirect(url_for('user_management'))
-    
-    # Delete the temp password after use (one-time use)
-    try:
-        cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
-        conn.commit()
-        logging.info(f"Deleted temp password for user_id: {user_id}")
-    except Exception as e:
-        logging.error(f"Error deleting temp password: {str(e)}")
-        conn.rollback()
-    
-    try:
-        # Get user information
-        cursor.execute('SELECT username FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
-        
         if not user:
             flash('Benutzer nicht gefunden', 'error')
             return redirect(url_for('user_management'))
         
-        # Create data for the template
-        username = user['username']
-        creation_date = datetime.now().strftime("%d.%m.%Y %H:%M")
-        current_date = datetime.now().strftime("%d.%m.%Y")
+        # Get user statistics
+        cursor.execute('''
+            SELECT 
+                COUNT(*) as total_days,
+                SUM(CASE WHEN total_minutes > 0 THEN 1 ELSE 0 END) as worked_days,
+                AVG(CASE WHEN total_minutes > 0 THEN total_minutes ELSE NULL END) as avg_minutes,
+                SUM(total_minutes) as total_minutes
+            FROM daily_summaries 
+            WHERE user_id = ?
+        ''', (user_id,))
         
-        # Get the base URL for login
-        if request.host.startswith('localhost') or request.host.startswith('127.0.0.1'):
-            login_url = f"http://{request.host}"
-        else:
-            login_url = f"https://{request.host}"
+        stats = cursor.fetchone()
         
-        return render_template('user_datasheet.html',
-                               username=username,
-                               password=temp_password,
-                               creation_date=creation_date,
-                               current_date=current_date,
-                               login_url=login_url)
+        # Generate QR code for user profile
+        import qrcode
+        from io import BytesIO
+        import base64
+        
+        qr_data = f"BTZ-User: {user['username']} | ID: {user['id']} | Role: {user.get('user_role', 'employee')}"
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+        buffer = BytesIO()
+        qr_img.save(buffer, format='PNG')
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode()
+        
+        conn.close()
+        
+        return render_template('user_datasheet.html', 
+                             user=user, 
+                             stats=stats,
+                             qr_code=qr_code_base64,
+                             current_datetime=get_local_time().strftime('%d.%m.%Y %H:%M'))
     
     except Exception as e:
         logging.error(f"Error generating user datasheet: {str(e)}")
-        flash(f'Fehler beim Erstellen des Benutzerdatenblatts: {str(e)}', 'error')
+        flash(f'Fehler beim Erstellen des Datenblatts: {str(e)}', 'error')
+        return redirect(url_for('user_management'))
+    finally:
+        conn.close()
+
+@app.route('/print_user_credentials/<int:user_id>')
+def print_user_credentials(user_id):
+    """Display user credentials in a print-ready format - simplified version of datasheet"""
+    if not session.get('username'):
+        return redirect(url_for('login'))
+    
+    # Check if user is an admin
+    if not session.get('admin_logged_in'):
+        flash('Nur Administratoren können Benutzerdaten einsehen', 'error')
+        return redirect(url_for('index'))
+    
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    try:
+        # Get user data with temporary password
+        cursor.execute('''
+            SELECT u.*, 
+                   CASE WHEN u.first_name IS NOT NULL AND u.last_name IS NOT NULL 
+                        THEN u.first_name || ' ' || u.last_name 
+                        ELSE u.username END as display_name,
+                   tp.temp_password
+            FROM users u
+            LEFT JOIN temp_passwords tp ON u.id = tp.user_id
+            WHERE u.id = ?
+        ''', (user_id,))
+        
+        user = cursor.fetchone()
+        if not user:
+            flash('Benutzer nicht gefunden', 'error')
+            return redirect(url_for('user_management'))
+        
+        # If no temporary password exists, generate one for printing
+        if not user['temp_password']:
+            import secrets
+            import string
+            temp_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(8))
+            
+            # Store it in the database
+            cursor.execute('DELETE FROM temp_passwords WHERE user_id = ?', (user_id,))
+            cursor.execute('INSERT INTO temp_passwords (user_id, temp_password) VALUES (?, ?)', 
+                          (user_id, temp_password))
+            conn.commit()
+            
+            # Create a new user dict with the temp password
+            user_dict = dict(user)
+            user_dict['temp_password'] = temp_password
+            
+            # Convert to sqlite3.Row-like object for template compatibility
+            class UserRow:
+                def __init__(self, data):
+                    self.data = data
+                def __getitem__(self, key):
+                    return self.data[key]
+                def get(self, key, default=None):
+                    return self.data.get(key, default)
+            
+            user = UserRow(user_dict)
+        
+        return render_template('print_credentials.html', 
+                             user=user,
+                             current_datetime=get_local_time().strftime('%d.%m.%Y %H:%M'))
+    
+    except Exception as e:
+        logging.error(f"Error displaying user credentials: {str(e)}")
+        flash(f'Fehler beim Anzeigen der Zugangsdaten: {str(e)}', 'error')
         return redirect(url_for('user_management'))
     finally:
         conn.close()
