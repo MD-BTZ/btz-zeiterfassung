@@ -1,3 +1,6 @@
+# Copyright © 2025 Michal Kopecki - BTZ Zeiterfassung
+# Alle Rechte vorbehalten. Unerlaubte Nutzung, Vervielfältigung oder Verbreitung ist untersagt.
+
 from flask import Flask, render_template, request, redirect, url_for, session, g, flash, jsonify, make_response
 import sqlite3
 import os
@@ -263,6 +266,16 @@ def check_and_fix_db_schema():
         except sqlite3.Error as e:
             print(f"Error creating consent records: {e}")
         
+        # Add missing last_login column to users table
+        if 'last_login' not in columns:
+            print("Adding last_login column to users table...")
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN last_login TIMESTAMP")
+                db.commit()
+                print("Added last_login column successfully")
+            except sqlite3.Error as e:
+                print(f"Error adding last_login column: {e}")
+        
         print("Database schema check and fix completed")
 
 
@@ -413,12 +426,12 @@ def init_db():
 
 @app.route('/')
 def index():
-    print("Index route called")
-    print(f"Session contents: {session}")
+    print("Index route aufgerufen")
+    print(f"Session Inhalt: {session}")
     
     # Check if user is logged in
     if not session.get('username'):
-        print("No username in session, redirecting to login")
+        print("Kein Benutzername in der Session, umleiten zur Login-Seite")
         return redirect(url_for('login'))
     
     print(f"User logged in: {session.get('username')}")
@@ -430,12 +443,12 @@ def index():
     
     # Admin can see all users
     if session.get('admin_logged_in'):
-        print("Admin user detected")
+        print("Admin-Benutzer erkannt")
         cursor.execute('SELECT id, username FROM users')
         users = cursor.fetchall()
     else:
         # Regular users can only see themselves
-        print("Regular user detected")
+        print("Regulärer Benutzer erkannt")
         cursor.execute('SELECT id, username FROM users WHERE id = ?', (session.get('user_id'),))
         users = cursor.fetchall()
     
@@ -444,7 +457,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print("Login route called with method:", request.method)
+    print("Login route aufgerufen mit Methode:", request.method)
     
     if request.method == 'POST':
         username = request.form['username']
@@ -487,32 +500,32 @@ def login():
                         print(f"Session: {session}")
                         
                         conn.close()
-                        flash('You have been logged in successfully!', 'success')
+                        flash('Du wurdest erfolgreich eingeloggt!', 'success')
                         
                         # Log the successful login
-                        logging.info(f"User {username} logged in successfully")
+                        logging.info(f"Benutzer {username} wurde erfolgreich eingeloggt")
                         
                         return redirect(url_for('index'))
                     else:
                         conn.close()
-                        print(f"Password validation failed for {username}")
-                        flash('Invalid username or password', 'error')
+                        print(f"Passwortvalidation fehlgeschlagen für {username}")
+                        flash('Ungültige Benutzername oder Passwort', 'error')
                         return render_template('login.html')
                 except Exception as e:
                     conn.close()
-                    print(f"Password validation error: {str(e)}")
-                    logging.error(f"Password verification error: {str(e)}")
-                    flash('An error occurred during login', 'error')
+                    print(f"Passwortvalidationfehler: {str(e)}")
+                    logging.error(f"Passwortvalidationfehler: {str(e)}")
+                    flash('Ein Fehler ist während dem Login aufgetreten', 'error')
                     return render_template('login.html')
             else:
                 conn.close()
-                print(f"User not found: {username}")
-                flash('Invalid username or password', 'error')
+                print(f"Benutzer nicht gefunden: {username}")
+                flash('Ungültige Benutzername oder Passwort', 'error')
                 return render_template('login.html')
         except Exception as e:
-            print(f"Database error: {str(e)}")
-            logging.error(f"Database error during login: {str(e)}")
-            flash('An error occurred while connecting to the database', 'error')
+            print(f"Datenbankfehler: {str(e)}")
+            logging.error(f"Datenbankfehler während dem Login: {str(e)}")
+            flash('Ein Fehler ist während dem Verbinden zur Datenbank aufgetreten', 'error')
             return render_template('login.html')
     
     return render_template('login.html')
@@ -520,7 +533,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('You have been logged out', 'success')
+    flash('Du wurdest erfolgreich abgemeldet!', 'success')
     return redirect(url_for('index'))
 
 @app.route('/deletion_requests')

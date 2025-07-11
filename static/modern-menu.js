@@ -1,4 +1,9 @@
 /**
+ * Copyright © 2025 Michal Kopecki - BTZ Zeiterfassung
+ * Alle Rechte vorbehalten. Unerlaubte Nutzung, Vervielfältigung oder Verbreitung ist untersagt.
+ */
+
+/**
  * Modern Professional Menu JavaScript
  * Handles responsive behavior, accessibility, and smooth interactions
  */
